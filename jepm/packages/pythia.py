@@ -5,7 +5,7 @@ import utilites
 utilites.provide_click_framework()   # Try to import 'click' framework or to reference included version
 import click
 
-from context import Context, run, workdir, env
+from under_the_hood import Context, run, workdir, env
 
 def install_pythia(context):
     """Install pythia according to Context"""

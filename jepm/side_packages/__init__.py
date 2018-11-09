@@ -34,14 +34,15 @@ def provide_click_framework():
             print("https://click.palletsprojects.com/en/7.x/license/")
 
         # Add embedded click paket to python search path
-        print(os.path.join(file_dir, "side_packages", "_click"))
-        sys.path.append(os.path.join(file_dir, "side_packages", "_click"))
+        click_packet_path = os.path.join(file_dir, "_click")
+        print(click_packet_path)
+        sys.path.append(click_packet_path)
 
         # Now try to import click
         try:
             import click
         except ImportError as ex:
-            utilites.print_install_click_msg()
+            print_install_click_msg()
             exit(1)
 
 

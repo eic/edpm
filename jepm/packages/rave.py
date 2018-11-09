@@ -6,13 +6,13 @@ from collections import OrderedDict
 utilites.provide_click_framework()
 import click
 
-from context import Context, PackageInstallationContext, run, env, workdir, execute_current_plan
+from under_the_hood import Context, PackageInstallationContext, run, env, workdir, execute_current_plan
 
 
 class RaveInstallationContext(PackageInstallationContext):
     """Provides data for building and installing root
 
-    PackageInstallationContext is located in context.py and contains the next standard package variables:
+    PackageInstallationContext is located in packet_installation.py and contains the next standard package variables:
 
     version       =  'v{}-{:02}-{:02}'               # Stringified version. Used to create directories and so on
     glb_app_path  =  Context.work_dir                # The directory where all other packages are installed
