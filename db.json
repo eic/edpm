@@ -1,0 +1,40 @@
+{
+    "file_version": 1,
+    "installed": {},
+    "packets": {
+        "clhep": {
+            "installs": {},
+            "required": true
+        },
+        "ejana": {
+            "installs": {},
+            "required": true
+        },
+        "genfit": {
+            "installs": {},
+            "required": true
+        },
+        "jana": {
+            "installs": {},
+            "required": true
+        },
+        "rave": {
+            "installs": {},
+            "required": true
+        },
+        "root": {
+            "installs": {
+                "/home/romanov/jleic/test/root/bin/Linux__Ubuntu18.04-x86_64-gcc7/": {
+                    "is_ejpm_owned": false,
+                    "is_selected": false
+                },
+                "/home/romanov/jleic/test2/root/root-v6-14-04": {
+                    "is_ejpm_owned": true,
+                    "is_selected": true
+                }
+            },
+            "required": true
+        }
+    },
+    "top_dir": "/home/romanov/jleic/test2"
+}

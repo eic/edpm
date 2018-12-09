@@ -2,14 +2,15 @@ import os
 import subprocess
 import sys
 
-from jepm.side_packages import provide_click_framework
+from ejpm.side_packages import provide_click_framework
 
 provide_click_framework()   # Try to import 'click' framework or to reference included version
 import click
 
 executed_commands = []
 
-class Command:
+
+class Command(object):
     """Base abstract class responsible for any command like run, env, etc"""
 
     def __init__(self):
@@ -80,6 +81,7 @@ class EnvironmentCommand(Command):
         self.is_executed = True
 
 
+
 def run(args):
     """Runs an OS command"""
 
@@ -91,7 +93,9 @@ def run(args):
         click.secho("ERROR", fg='red', bold=True, nl=True)
         click.echo(": Command return code != 0. COMMAND CONTENT:")
         click.echo(command.args)
-        raise ChildProcessError()
+        click.echo()
+
+        raise OSError()
 
 
 def workdir(path):

@@ -20,31 +20,44 @@ def print_install_click_msg():
 def provide_click_framework():
     """Function should make available the 'click' framework. Doesn't matter how!"""
 
-    global file_path, click_license_message_is_printed
-
     try:
         import click
         # everything goes smooth, no need to do anything else
-    except ImportError as ex:
+    except ImportError:
 
         # Since User didn't install click framework, we should write about click license
+        global click_license_message_is_printed
         if not click_license_message_is_printed:
             click_license_message_is_printed = True
             print("No 'click' framework is installed. Using embedded version. Since that, read the license")
             print("https://click.palletsprojects.com/en/7.x/license/")
 
-        # Add embedded click paket to python search path
+        # Add embedded click packet to python search path
         click_packet_path = os.path.join(file_dir, "_click")
-        print(click_packet_path)
         sys.path.append(click_packet_path)
 
         # Now try to import click
         try:
             import click
-        except ImportError as ex:
+        except ImportError:
             print_install_click_msg()
             exit(1)
 
 
+def provide_ansimarkup():
+    """Function should make available the 'ansimarkup'. Doesn't matter how!"""
 
+    try:
+        import ansimarkup
+        # everything goes smooth, no need to do anything else
 
+    except ImportError:
+        # Add embedded framework
+        ansimarkup_packet_path = os.path.join(file_dir, "_ansimarkup")
+        sys.path.append(ansimarkup_packet_path)
+
+        # Now try to import
+        try:
+            import click
+        except ImportError:
+            print_install_click_msg()
