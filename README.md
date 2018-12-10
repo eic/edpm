@@ -1,6 +1,10 @@
-# jepm
+# ejpm
 
-Experiments with lean jana
+**ejpm** stands for **e**<sup>**J**ANA</sup> **p**acket ~~**m**anager~~ helper
+
+ejpm goal - provide easy experience of installing e^JANA reconstruction framework and supporting packages in different environments: various operating systems, docker images, etc. The secondary goal is to help users with e^JANA plugin development cycle.
+
+The reason why ejpm is here (and a pain, which it tries to ease) - is that there is no standard convention of how all dependent packages are installd in our field. Some packages (like eigen, xerces, etc.) are usually supported by OS maintainers, while others (Cern ROOT, Geant4) are usually built by users or other packet managers and could be placed anywhere. 
 
 * Database (json file at this moment) stores the current state of installation.
 * Package installation contexts holds information of configuration and steps needed to install a package
