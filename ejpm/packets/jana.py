@@ -20,85 +20,60 @@ class JanaInstallationInstruction(PacketInstallationInstruction):
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
     install_path = {app_path}/root-{version}         # Where the binary installation is
-
     """
 
-    def __init__(self, app_path, version='master'):
+    fedora_required_packets = ""
+    fedora_optional_packets = "xerses curl"
+    ubuntu_required_packets = ""
+    ubuntu_optional_packets = "xerses curl"
+
+
+    def __init__(self, app_path, version='master', build_threads=8):
         """
 
         :param app_path: This package directory for source, build, bin
         :param version_tuple: Root version
         """
 
-        # Fill the common path pattern
-        self.source_path = "{app_path}/src/{version}" \
-            .format(app_path=self.app_path, version=self.version)
+        self.app_path = app_path
 
         #
-        # The directory for cmake build
-        self.build_path = "{app_path}/build/{version}" \
-            .format(app_path=self.app_path, version=self.version)
+        # Fill the common path pattern for sources and build
+        self.source_path = "{app_path}/src/{version}".format(app_path=self.app_path, version=self.version)
+        self.build_path = "{app_path}/build/{version}".format(app_path=self.app_path, version=self.version)
 
         #
         # The directory, where binary is installed
-        self.install_path = "{app_path}/{app_name}-{version}" \
+        self.install_path = "{app_path}/jana-{version}" \
             .format(app_path=self.app_path, app_name=self.name, version=self.version)
+        
+        #
+        # JANA download link. Clone with shallow copy
+        # TODO accept version tuple to get exact branch
+        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA.git {source_path}"\
+            .format(branch=version, source_path=self.source_path)
 
         
+        # scons command:
+        self.build_cmd = "scons -j{build_threads} -PREFIX={install_path} -VARIANT-DIR={build_path}" \
+                         "&& scons install"
+                         .format(
+                             build_threads=build_threads,
+                             build_path=self.build_path,                            # cmake source
+                    install_path=self.install_path)
 
-        #
-        # Root download link. We will use github root mirror:
-        # The tags have names like: v6-14-04
-        # http://github.com/root-project/root.git
-        # clone with shallow copy
-        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/root-project/root.git {source_path}"\
-            .format(branch=branch, source_path=self.source_path)
+        # requirments  env var to locate
+        # xerces-c     XERCESCROOT
+        # ROOT         ROOTSYS
+        # CCDB         CCDB_HOME
+        # curl         CURL_HOME
 
-        #
-        # ROOT packets to disable in our build (go with -D{name}=ON flag)
-        self.disable = ["mysql", "alien", "asimag", "bonjour", "builtin_afterimage", "castor", "chirp", "dcache",
-                        "fitsio", "gfal", "glite", "hdfs", "krb5", "odbc", "sapdb", "shadowpw", "srp", "xrootd"]
+    def step_install(self):
+        self.step_clone()
+        self.step_build()
 
-        #
-        # ROOT packets to enable in our build (go with -D{name}=OFF flag)
-        self.enable = ["roofit", "minuit2", "python"]
-
-        # cmake command:
-        # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno -dev -DCMAKE_INSTALL_PREFIX={install_path} {enable} {disable} {source_path}" \
-                         "&& cmake --build ." \
-                         "&& cmake --build . --target install"\
-            .format(enable=" ".join(["-D{}=ON".format(s) for s in self.enable]),       # enabled packets
-                    disable=" ".join(["-D{}=OFF".format(s) for s in self.disable]),    # disabled packets
-                    source_path=self.source_path,                            # cmake source
-                    install_path=self.install_path,                          # Installation path
-                    glb_make_options="-j8")                                  # make global options like '-j8'. Skip now
-
-        self.fedora_required_packets = "git cmake gcc-c++ gcc binutils libX11-devel " \
-                                       "libXpm-devel libXft-devel libXext-devel"
-
-        self.fedora_optional_packets = "gcc-gfortran openssl-devel pcre-devel "\
-                                       "mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel "\
-                                       "fftw-devel cfitsio-devel graphviz-devel "\
-                                       "avahi-compat-libdns_sd-devel libldap-dev python-devel "\
-                                       "libxml2-devel gsl-static"
-
-        self.ubuntu_required_packets = "git dpkg-dev cmake g++ gcc binutils libx11-dev " \
-                                       "libxpm-dev libxft-dev libxext-dev"
-
-        self.ubuntu_optional_packets = "gfortran libssl-dev libpcre3-dev "\
-                                       "xlibmesa-glu-dev libglew1.5-dev libftgl-dev "\
-                                       "libmysqlclient-dev libfftw3-dev libcfitsio-dev "\
-                                       "graphviz-dev libavahi-compat-libdnssd-dev "\
-                                       "libldap2-dev python-dev libxml2-dev libkrb5-dev "\
-                                       "libgsl0-dev libqt4-dev"
-
-    def install(self):
-        self.step_clone_root()
-        self.step_build_root()
-
-    def step_clone_root(self):
-        """Clones root from github mirror"""
+    def step_clone(self):
+        """Clones JANA from github mirror"""
 
         # Check the directory exists and not empty
         if os.path.exists(self.source_path) and os.path.isdir(self.source_path) and os.listdir(self.source_path):
@@ -111,26 +86,23 @@ class JanaInstallationInstruction(PacketInstallationInstruction):
         # Execute git clone command
         run(self.clone_command)
 
-    def step_build_root(self):
-        """Builds root from the ground"""
+    def step_build(self):
+        """Builds JANA from the ground"""
 
         # Create build directory
         run('mkdir -p {}'.format(self.build_path))
 
-        env('ROOTSYS', self.install_path)
-
         # go to our build directory
-        workdir(self.build_path)
+        workdir(self.source_path)
 
-        # run cmake && make && install
+        # run scons && scons install
         run(self.build_cmd)
 
-    def step_rebuild_root(self):
-        """Clear root build directory"""
+    def step_reinstall(self):
+        """Delete everything and start over"""
 
         # clear sources directories if needed
-        run('rm -rf {}'.format(self.source_path))
-        run('rm -rf {}'.format(self.build_path))
+        run('rm -rf {}'.format(self.app_path))
 
         # Now run build root
-        self.step_build_root()
+        self.step_install()
