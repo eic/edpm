@@ -6,7 +6,6 @@ import ejpm.engine.db
 
 ROOTSYS = 'ROOTSYS'
 
-
 def root_find():
     """Looks for CERN ROOT package
     :return [str] - empty list if not found or a list with 1 element - ROOTSYS path
