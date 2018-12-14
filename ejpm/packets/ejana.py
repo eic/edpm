@@ -10,7 +10,7 @@ from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.commands import run, env, workdir
 
 
-class JanaInstallation(PacketInstallationInstruction):
+class EjanaInstallation(PacketInstallationInstruction):
     """Provides data for building and installing JANA framework
 
     PackageInstallationContext is located in installation.py and contains the next standard package variables:
@@ -27,14 +27,16 @@ class JanaInstallation(PacketInstallationInstruction):
     ubuntu_required_packets = ""
     ubuntu_optional_packets = "xerses curl"
 
+
     def __init__(self, version='master', build_threads=8):
         """
 
-        :param version: Root version
+        :param app_path: This package directory for source, build, bin
+        :param version_tuple: Root version
         """
 
         # Set initial values for parent class and self
-        super(JanaInstallation, self).__init__('jana', version)
+        super(EjanaInstallation, self).__init__('ejana', version)
         self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
@@ -44,30 +46,23 @@ class JanaInstallation(PacketInstallationInstruction):
 
         #
         # use_common_dirs_scheme sets standard package variables:
-        # version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
         self.use_common_dirs_scheme(app_path)
 
         #
-        # JANA download link. Clone with shallow copy
+        # eJANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA.git {source_path}"\
+        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA.git {source_path}" \
             .format(branch=self.version, source_path=self.source_path)
 
         #
         # scons installation command:
-        self.build_command = "scons -j{build_threads} -PREFIX={install_path} -VARIANT-DIR={build_path} && scons install"\
-                         .format(build_threads=self.build_threads,
-                                 install_path=self.install_path,
-                                 build_path=self.build_path)
-
-        # requirments  env var to locate
-        # xerces-c     XERCESCROOT
-        # ROOT         ROOTSYS
-        # CCDB         CCDB_HOME
-        # curl         CURL_HOME
+        self.build_command = "scons -j{build_threads} -PREFIX={install_path} -VARIANT-DIR={build_path} && scons install" \
+            .format(build_threads=self.build_threads,
+                    install_path=self.install_path,
+                    build_path=self.build_path)
 
     def step_install(self):
         self.step_clone()

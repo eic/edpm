@@ -47,6 +47,7 @@ class RunCommand(Command):
         click.secho("Execution done. ", fg='blue', bold=True, nl=False)
         click.echo("Return code = ", nl=False)
         click.secho("%i" % self.return_code, fg='red' if self.return_code else 'green', bold=True)
+        click.echo()
 
 
 class WorkDirCommand(Command):
@@ -60,6 +61,8 @@ class WorkDirCommand(Command):
         """change directory according to path"""
         click.secho("WORKDIR:", fg='blue', bold=True, nl=False)
         click.echo(self.path)
+        click.echo()
+
         os.chdir(self.path)
         self.is_executed = True
 
@@ -77,6 +80,7 @@ class EnvironmentCommand(Command):
 
         click.secho("ENV:", fg='blue', bold=True, nl=False)
         click.echo("%s = %s" % (self.name, self.value))
+        click.echo()
         os.environ[self.name] = self.value
         self.is_executed = True
 
@@ -119,3 +123,10 @@ def _execute_command(command):
     # add executed command to the list
     global executed_commands
     executed_commands.append(command)
+
+
+def is_not_empty_dir(path):
+    """Checks the path is existing directory and it is not empty"""
+
+    return os.path.exists(path) and os.path.isdir(path) and os.listdir(path)
+

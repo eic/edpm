@@ -1,7 +1,5 @@
 import os
 import subprocess
-
-from ejpm.engine.installation import Context
 from ejpm.engine.commands import run, workdir, env
 
 

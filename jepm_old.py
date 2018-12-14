@@ -32,7 +32,7 @@ def rave_get():
     """Downloads rave"""
 
     context = package_rave.RaveInstallationContext()
-    context.step_get_rave()
+    context.step_download()
     execute_current_plan()
 
 
@@ -41,7 +41,7 @@ def rave_build():
     """Builds and installs RAVE"""
 
     context = package_rave.RaveInstallationContext()
-    context.step_build_rave()
+    context.step_build()
     execute_current_plan()
 
 

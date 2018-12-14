@@ -1,39 +1,40 @@
+from distutils.dir_util import mkpath
+
 from ejpm.side_packages import provide_click_framework
 
 provide_click_framework()
 import click
 
 from ejpm.engine.installation import PacketInstallationInstruction
-from ejpm.engine.commands import run, env, workdir
+from ejpm.engine.commands import run, env, workdir, is_not_empty_dir
 
 
 class RaveInstallation(PacketInstallationInstruction):
     """Provides data for building and installing root
 
     PackageInstallationContext is located in installation.py and contains the next standard package variables:
-
-    version       =  'v{}-{:02}-{:02}'               # Stringified version. Used to create directories and so on
-    glb_app_path  =  Context.work_dir                # The directory where all other packets are installed
-    app_path      =  {glb_app_path}/{name}           # This package directory for source/build/bin
-    download_path =  {app_path}/src/                 # The path where we download source tarbal of call git clone
-    source_path   =  {app_path}/src/{version}        # Where the sources for the current version are located
-    build_path    =  {app_path}/build/{version}      # Where sources are built. Kind of temporary dir
-    install_path  =  {app_path}/bin/{abi_name}       # Where the binary installation is
-
     """
-
-    name = 'rave'
 
     def __init__(self, version_tuple=(0, 6, 25)):
         # Call parent constructor to fill version, app_path ... and others
         # (!) it is called AFTER we override self.version
         super(RaveInstallation, self).__init__('rave', version_tuple)
 
+    def set_app_path(self, app_path):
+        """Sets all variables like source dirs, build dirs, etc"""
+        #
+        # use_common_dirs_scheme sets standard package variables:
+        # version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
+        # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
+        # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
+        # install_path = {app_path}/root-{version}         # Where the binary installation is
+        self.use_common_dirs_scheme(app_path)
+
         # ENV RAVEPATH $INSTALL_DIR_RAVE
 
         # version used in a link and in the archive
         # both download link and the archive use a name like rave-0.6.25
-        link_version = "rave-{}.{}.{}".format(*version_tuple)
+        link_version = "rave-{}.{}.{}".format(*self.version_tuple)
 
         #
         # The link to download RAVE. It is like:
@@ -65,16 +66,22 @@ class RaveInstallation(PacketInstallationInstruction):
                              "&& for f in $(ls $RAVEPATH/include/rave/*.h); do sed -i 's/RaveDllExport//g' $f; done" \
             .format(install_path=self.install_path, glb_make_options="", version=self.version)
 
-    def step_get_rave(self):
+    def step_install(self):
+        self.step_download()
+        self.step_build()
+
+    def step_download(self):
         """Downloads and extracts RAVE"""
 
-        # Go to 'src' dir
-        workdir(self.download_path)
+        # Check the directory exists and not empty
+        if is_not_empty_dir(self.source_path):
+            return  # The directory exists and is not empty. Assume it cloned
 
-        # Download and extract
-        run(self.download_command)
+        mkpath(self.download_path)     # Create source directory and any missing ancestor directories if not there
+        workdir(self.download_path)    # Go to 'src' dir
+        run(self.download_command)     # Download and extract
 
-    def step_build_rave(self):
+    def step_build(self):
         # Create build directory
         env('CLHEP_INCLUDE_DIR', '/usr/include')  # or /usr/include/CLHEP/
         env('CLHEP_LIB_DIR', '/usr/lib')

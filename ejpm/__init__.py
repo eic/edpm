@@ -10,7 +10,6 @@ provide_click_framework()   # Try to import 'click' framework or to reference in
 import click
 
 
-
 def print_first_time_message():
     click.echo("The database file doesn't exist. Probably you run 'ejpm' for the first time.")
     click.echo("Here are your options:\n"
@@ -74,20 +73,18 @@ def ejpm_cli(ctx, db, debug, top_dir):
     db_file_dir = os.path.dirname(os.path.dirname(inspect.stack()[0][1]))
     db.file_path = os.path.join(db_file_dir, "db.json")
 
-    # check if DB exists
-    if not db.exists():
-        print_first_time_message()
-        db.save()                     # call save to create the file
-
-        exit(0)
-
-    # load  the database state
-    db.load()
-
     # did user asks us to set the top dir
     if top_dir:
         db.top_dir = top_dir
         db.save()
+
+    # check if DB file already exists
+    if not db.exists():
+        print_first_time_message()
+        exit(0)
+
+    # load  the database state
+    db.load()
 
     if ctx.invoked_subcommand is None:
         pass

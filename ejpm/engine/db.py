@@ -21,7 +21,7 @@ except NameError:
     to_unicode = str
 
 
-class PacketStateDatabase:
+class PacketStateDatabase(object):
     """Class to persist installation knowledge """
 
     def __init__(self):

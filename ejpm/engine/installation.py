@@ -7,20 +7,60 @@ class PacketInstallationInstruction(object):
 
     The important here is that while we try to stick to this naming, each package can override them if needed
 
+    Usually this class is used like:
+
+    # packets/my_packet.py file:
+
+    MyPacketInstallationInstruction(PacketInstallationInstruction):
+        # ... define your packet installation instruction by
+        # defining:
+
+        def set_app_path(...)  # - function that setups variables when the installation path is known
+
+        # and logic with
+        def step_install(...)  # - installs application
+        def step_download(...) # - downloads from network
+        def step...
+
+    # usage of MyPacketInstallationInstruction is like:
+
+
+
+
     """
 
-    def __init__(self, name, app_path, version_tuple):
-
+    def __init__(self, name, version):
         #
         # Short lowercase name of a packet
         self.name = name
 
         #
-        # Root clone branch is like v6-14-04 so we format binary version accordingly
-        self.version = 'v{}-{:02}-{:02}'.format(*version_tuple)  # v6-14-04
+        # version could be given as a tuple (6, 06, 15) or some string 'master'
+        if isinstance(version, tuple):
+            self.version_tuple = version
+            self.version = 'v{}-{:02}-{:02}'.format(*version)
+        else:
+            self.version_tuple = None
+            self.version = version
 
         #
-        # Root general installation directory
+        # Next variables are set by ancestors
+        self.app_path = ""          # installation path of this packet, all other pathes relative to this
+        self.download_path = ""     # where we download the source or clone git
+        self.source_path = ""       # The directory with source files for current version
+        self.build_path = ""        # The directory for cmake/scons build
+        self.install_path = ""      # The directory, where binary is installed
+
+    def set_app_path(self, app_path):
+        """This function is used to format and fill variables, when app_path is known download command"""
+        # ... (!) inherited classes should implement its logic here
+        raise NotImplementedError()
+
+    def use_common_dirs_scheme(self, app_path):
+        """Function sets common directory scheme. It is the same for many packets:
+
+        """
+
         self.app_path = app_path
 
         #
@@ -42,3 +82,7 @@ class PacketInstallationInstruction(object):
         # The directory, where binary is installed
         self.install_path = "{app_path}/{app_name}-{version}" \
             .format(app_path=self.app_path, app_name=self.name, version=self.version)
+
+    def step_install(self):
+        """Installs application"""
+        raise NotImplementedError()
