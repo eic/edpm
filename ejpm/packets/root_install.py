@@ -12,13 +12,14 @@ class RootInstallation(PacketInstallationInstruction):
 
     """
 
-    def __init__(self, version_tuple=(6, 14, 4)):
+    def __init__(self, version_tuple=(6, 14, 4), build_threads=8):
         """
         :param version: Root version
         """
 
         # Fill the common path pattern
         super(RootInstallation, self).__init__("root", version_tuple)
+        self.build_threads = build_threads
 
     def set_app_path(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -57,13 +58,13 @@ class RootInstallation(PacketInstallationInstruction):
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {enable} {disable} {source_path}" \
-                         "&& cmake --build ." \
+                         "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
             .format(enable=" ".join(["-D{}=ON".format(s) for s in self.enable]),  # enabled packets
                     disable=" ".join(["-D{}=OFF".format(s) for s in self.disable]),  # disabled packets
                     source_path=self.source_path,  # cmake source
                     install_path=self.install_path,  # Installation path
-                    glb_make_options="-j8")  # make global options like '-j8'. Skip now
+                    build_threads=self.build_threads)  # make global options like '-j8'. Skip now
 
     def step_install(self):
         self.step_clone_root()

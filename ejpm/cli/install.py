@@ -5,8 +5,6 @@ from ejpm.engine.db import pass_db, PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.installation import PacketInstallationInstruction
 
-from ejpm.packets.genfit import GenfitInstallation
-from ejpm.packets.root_install import RootInstallation
 from ejpm.packets import pass_pm, PacketManager
 
 provide_click_framework()
@@ -25,21 +23,24 @@ def install(ctx, db, pm, packet_name, install_path=""):
     assert isinstance(db, PacketStateDatabase)
     assert isinstance(pm, PacketManager)
 
-    if packet_name in pm.packets.keys():
-        _install_packet(db, pm.packets[packet_name], install_path)
-    else:
-        print("Packet with name '{}' is not found".format(packet_name))
-        raise click.Abort()
-
     if not db.top_dir:
         _print_help_no_top_path()
         raise click.Abort()
 
+    if packet_name == 'all':
+        _install_all(db, pm)                                                # install all packets
+    elif packet_name in pm.packets.keys():
+        _install_packet(db, pm.packets[packet_name], install_path)          # install known packet
+    else:
+        print("Packet with name '{}' is not found".format(packet_name))     # don't know what to do
+        raise click.Abort()
 
     if ctx.invoked_subcommand is None:
-        click.echo('I was invoked without subcommand')
+        pass
+        # click.echo('I was invoked without subcommand')
     else:
-        click.echo('I am about to invoke %s' % ctx.invoked_subcommand)
+        pass
+        # click.echo('I am about to invoke %s' % ctx.invoked_subcommand)
 
 
 def _install_packet(db, packet, install_path):
@@ -87,7 +88,7 @@ def _install_packet(db, packet, install_path):
 def _print_help_no_top_path():
     mprint("<red>(!)</red> installation directory is not set <red>(!)</red>\n"
            "ejpm doesn't know where to install missing packets\n\n"
-           "<b>what to do:</b>\n"
+           "<b><blue>what to do:</blue></b>\n"
            "  Provide the top dir to install things to:\n"
            "     ejpm --top-dir=<path to top dir>\n"
            "  Less recommended. Provide each install command with --path flag:\n"
@@ -95,9 +96,17 @@ def _print_help_no_top_path():
            "  (--path=... is not just where binary will be installed,\n"
            "   all related stuff is placed there)\n\n"
 
-           "<b>copy paste:</b>\n"
+           "<b><blue>copy&paste:</blue></b>\n"
            "  to install missing packets in this directory: \n"
            "     ejpm --top-dir=`pwd`\n\n"
 
            "  to install missing packets to your home directory: \n"
            "     ejpm --top-dir=~/.ejana\n\n")
+
+
+def _install_all(db, pm):
+    _install_packet(db, pm.packets['root'], None)
+    _install_packet(db, pm.packets['rave'], None)
+    _install_packet(db, pm.packets['genfit'], None)
+    _install_packet(db, pm.packets['jana'], None)
+    _install_packet(db, pm.packets['ejana'], None)

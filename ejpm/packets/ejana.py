@@ -23,16 +23,14 @@ class EjanaInstallation(PacketInstallationInstruction):
     """
 
     fedora_required_packets = ""
-    fedora_optional_packets = "xerses curl"
+    fedora_optional_packets = ""
     ubuntu_required_packets = ""
-    ubuntu_optional_packets = "xerses curl"
+    ubuntu_optional_packets = ""
 
-
-    def __init__(self, version='master', build_threads=8):
+    def __init__(self, version='dmitry_dev', build_threads=8):
         """
 
-        :param app_path: This package directory for source, build, bin
-        :param version_tuple: Root version
+        :param version: Root version
         """
 
         # Set initial values for parent class and self
@@ -46,23 +44,30 @@ class EjanaInstallation(PacketInstallationInstruction):
 
         #
         # use_common_dirs_scheme sets standard package variables:
+        # version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
         self.use_common_dirs_scheme(app_path)
 
         #
-        # eJANA download link. Clone with shallow copy
+        # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA.git {source_path}" \
+        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
             .format(branch=self.version, source_path=self.source_path)
 
         #
         # scons installation command:
-        self.build_command = "scons -j{build_threads} -PREFIX={install_path} -VARIANT-DIR={build_path} && scons install" \
-            .format(build_threads=self.build_threads,
-                    install_path=self.install_path,
-                    build_path=self.build_path)
+        self.build_command = "scons install -j{build_threads} PREFIX={install_path} VARIANT-DIR={build_path} && scons install"\
+                         .format(build_threads=self.build_threads,
+                                 install_path=self.install_path,
+                                 build_path=self.build_path)
+
+        # requirments  env var to locate
+        # xerces-c     XERCESCROOT
+        # ROOT         ROOTSYS
+        # CCDB         CCDB_HOME
+        # curl         CURL_HOME
 
     def step_install(self):
         self.step_clone()
@@ -89,7 +94,7 @@ class EjanaInstallation(PacketInstallationInstruction):
         run('mkdir -p {}'.format(self.build_path))
 
         # go to source directory to invoke scons
-        workdir(self.source_path)
+        workdir(os.path.join(self.source_path, "src"))
 
         # run scons && scons install
         run(self.build_command)

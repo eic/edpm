@@ -4,6 +4,7 @@ import sys
 
 from ejpm.side_packages import provide_click_framework, provide_ansimarkup
 from ejpm.engine.db import pass_db, PacketStateDatabase
+from ejpm.engine.output import markup_print as mprint
 
 # Try to import 'click' framework or to reference included version
 provide_click_framework()   # Try to import 'click' framework or to reference included version
@@ -87,7 +88,12 @@ def ejpm_cli(ctx, db, debug, top_dir):
     db.load()
 
     if ctx.invoked_subcommand is None:
-        pass
+
+        mprint("<b><blue>ejpm</blue></b> v.{}.{}.{}".format(*(0, 0, 1)))
+        mprint("<b><blue>top dir:</blue></b> {top_dir}".format(top_dir=db.top_dir))
+
+
+
         # click.echo('I was invoked without subcommand')
     else:
         pass

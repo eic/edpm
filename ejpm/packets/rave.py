@@ -85,8 +85,6 @@ class RaveInstallation(PacketInstallationInstruction):
         # Create build directory
         env('CLHEP_INCLUDE_DIR', '/usr/include')  # or /usr/include/CLHEP/
         env('CLHEP_LIB_DIR', '/usr/lib')
-        # env('CXXFLAGS', "--std=c++11 -g -O2 -I$CLHEP_INCLUDE_DIR")
-        # env('LDFLAGS', "-L$CLHEP_LIB_DIR")
         env('RAVEPATH', self.install_path)
 
         # Rave uses ./configure so we building it in {source_path}

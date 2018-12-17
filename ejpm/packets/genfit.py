@@ -17,9 +17,9 @@ class GenfitInstallation(PacketInstallationInstruction):
     install_path = {app_path}/root-{version}         # Where the binary installation is
     """
 
-    fedora_required_packets = ""
+    fedora_required_packets = "boost-devel"         # Actually boost-devel it is needed for Rave but Genfit get error
     fedora_optional_packets = ""
-    ubuntu_required_packets = ""
+    ubuntu_required_packets = "libboost-dev"
     ubuntu_optional_packets = ""
 
     def __init__(self, version='master', build_threads=8):
@@ -50,7 +50,7 @@ class GenfitInstallation(PacketInstallationInstruction):
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
-                         "&& cmake --build -j{build_threads} ." \
+                         "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(
                              source_path=self.source_path,    # cmake source
