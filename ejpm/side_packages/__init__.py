@@ -29,8 +29,9 @@ def provide_click_framework():
         global click_license_message_is_printed
         if not click_license_message_is_printed:
             click_license_message_is_printed = True
-            print("No 'click' framework is installed. Using embedded version. Since that, read the license")
-            print("https://click.palletsprojects.com/en/7.x/license/")
+            # TODO logging
+            # print("No 'click' framework is installed. Using embedded version. Since that, read the license")
+            # print("https://click.palletsprojects.com/en/7.x/license/")
 
         # Add embedded click packet to python search path
         click_packet_path = os.path.join(file_dir, "_click")

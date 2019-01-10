@@ -5,8 +5,6 @@ from ejpm.engine.db import pass_db, PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.installation import PacketInstallationInstruction
 
-from ejpm.packets.genfit import GenfitInstallation
-from ejpm.packets.root_install import RootInstallation
 from ejpm.packets import pass_pm, PacketManager
 
 provide_click_framework()
