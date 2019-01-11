@@ -2,16 +2,22 @@
 
 **ejpm** stands for **e**<sup>**J**ANA</sup> **p**acket ~~**m**anager~~ helper
 
-**The goal** of ejpm is to provide easy experience of installing e<sup>JANA</sup> 
-reconstruction framework and supporting packages in different environments: 
-various operating systems, docker images, etc. 
+**The goal** of ejpm is to provide easy experience of:
+
+* installing e<sup>JANA</sup> reconstruction framework and supporting packages
+* uify installation in different environments: various operating systems, docker images, etc. 
+
 The secondary goal is to help users with e^JANA plugin development cycle.
 
-**The reason** why ejpm is here (and a pain, which it tries to cure) - is that 
+
+
+### The reason
+
+why ejpm is here (and a pain, it tries to resolve) - is that 
 there is no standard convention in our field of how all dependent packages are 
 installed. Some packages (like eigen, xerces, etc.) are usually supported by 
 OS maintainers, while others (Cern ROOT, Geant4) are usually built by users or 
-other packet managers and could be placed anywhere. 
+other packet managers and could be located anywhere. 
 
 It should be as easy as:
 
@@ -29,7 +35,9 @@ It also gives a possibility to fine control over dependencies
 ```
 
 
+
 What ejpm is not: 
+
 1. It is not a real package manager, which automatically solves dependencies
 2. **ejpm is not a requirment** for e<sup>JANA</sup>. It is not a part of e<sup>JANA</sup> 
     build system and one can compile and install e<sup>JANA</sup> without ejpm   
