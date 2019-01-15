@@ -28,11 +28,11 @@ def install(ctx, db, pm, packet_name, install_path=""):
         raise click.Abort()
 
     if packet_name == 'all':
-        _install_all(db, pm)                                                # install all packets
+        _install_all(db, pm)  # install all packets
     elif packet_name in pm.packets.keys():
-        _install_packet(db, pm.packets[packet_name], install_path)          # install known packet
+        _install_packet(db, pm.packets[packet_name], install_path)  # install known packet
     else:
-        print("Packet with name '{}' is not found".format(packet_name))     # don't know what to do
+        print("Packet with name '{}' is not found".format(packet_name))  # don't know what to do
         raise click.Abort()
 
     if ctx.invoked_subcommand is None:
@@ -53,7 +53,7 @@ def _install_packet(db, packet, install_path):
         :type packet: PacketInstallationInstruction
         :var install_path: Path to install app to. If empty {db.top_dir}/{packet.name} is used
         :type install_path: str
-    
+
     """
 
     assert isinstance(packet, PacketInstallationInstruction)
@@ -89,6 +89,7 @@ def _install_non_existent_packet(db, packet, install_path):
     if db.get_active_install_path(packet.name) is not None:
         _install_packet(db, packet, install_path)
 
+
 def _print_help_no_top_path():
     mprint("<red>(!)</red> installation directory is not set <red>(!)</red>\n"
            "ejpm doesn't know where to install missing packets\n\n"
@@ -109,8 +110,6 @@ def _print_help_no_top_path():
 
 
 def _install_all(db, pm):
-
-
     _install_packet(db, pm.packets['rave'], None)
     _install_packet(db, pm.packets['genfit'], None)
     _install_packet(db, pm.packets['jana'], None)

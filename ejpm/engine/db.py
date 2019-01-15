@@ -20,6 +20,8 @@ try:
 except NameError:
     to_unicode = str
 
+IS_SELECTED = 'is_selected'
+IS_EJPM_OWNED = 'is_ejpm_owned'
 
 class PacketStateDatabase(object):
     """Class to persist installation knowledge """
@@ -36,8 +38,8 @@ class PacketStateDatabase(object):
                     "installs":
                     {'/home/romanov/jleic/test/root/bin/Linux__Ubuntu18.04-x86_64-gcc7/':
                         {
-                            'is_ejpm_owned': False,
-                            'is_selected': True
+                            IS_EJPM_OWNED: False,
+                            IS_SELECTED: True
                         }
                     }
                 },
@@ -96,10 +98,39 @@ class PacketStateDatabase(object):
 
     @property
     def packet_names(self):
+        """Return packet names of known packets"""
         return self.data['packets'].keys()
 
     def get_installs(self, packet_name):
-        return self.data['packets'][packet_name]['installs'];
+        return self.data['packets'][packet_name]['installs']
+
+    def get_active_install(self, packet_name):
+        installs = self.get_installs(packet_name)
+
+        for path, data in installs.items():
+            if data[IS_SELECTED]:
+                return path, data
+
+        return None, None
+
+    def get_active_installs(self):
+        """Returns name:{path:value} of active installs"""
+        active_installs = {}
+        for name in self.packet_names:
+            path, data = self.get_active_install(name)
+            if path is not None:
+                active_installs[path]=data
+
+    def get_active_install_path(self, packet_name):
+        """Checks if this <packet_name> has 'active' installation (means ejana can use it)"""
+
+        path, _ = self.get_active_install(packet_name)
+        return path is not None
+
+    def get_active_install_path(self, packet_name):
+        """Gets <packet_name> 'active' (means ejana uses it) installation path (which is path to binaries)"""
+        path, _ = self.get_active_install(packet_name)
+        return path
 
     def get_install(self, packet_name, path):
         """
@@ -121,11 +152,11 @@ class PacketStateDatabase(object):
         # deselect other installations if the new one is selected
         if is_selected:
             for prop in installs.values():
-                prop["is_selected"] = False
+                prop[IS_SELECTED] = False
 
         # set selected and ownership
-        install["is_selected"] = is_selected
-        install["is_ejpm_owned"] = is_ejpm_owned
+        install[IS_SELECTED] = is_selected
+        install[IS_EJPM_OWNED] = is_ejpm_owned
 
 
     @property

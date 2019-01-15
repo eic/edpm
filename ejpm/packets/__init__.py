@@ -24,13 +24,39 @@ class PacketManager:
 
         # But now we just import and create them manually
         self.packets = {}
+        self.env_generators = {}
 
         # Create all subclasses of PacketInstallationInstruction and add here
         for cls in PacketInstallationInstruction.__subclasses__():
-            self.add_installer(cls())
+            installer = cls()
+            self.add_installer(installer)
+
+            if hasattr(installer, 'gen_env'):
+                self.add_env_generator(installer.name, installer.gen_env)
 
     def add_installer(self, installer):
         self.packets[installer.name] = installer
+
+    def add_env_generator(self, name, env_gen):
+        self.env_generators[name] = env_gen
+
+    def gen_bash_environment(self, name_paths):
+
+        output = ""     # a string holding the result
+
+        # Go through provided name-path pairs:
+        for name, path in name_paths.items():
+
+            # If we have a generator for this program
+            if name in self.env_generators.keys():
+                output += "# =============================\n# {}\n# =============================\n".format(name)
+                env_gen = self.env_generators[name]
+                steps_list = []
+
+                for step in env_gen(path):
+                    output += step.gen_bash(steps_list)
+                    steps_list.append(step)
+        return output
 
 
 # Create a PacketManager class and @pass_pm decorator so our commands could use it

@@ -85,7 +85,6 @@ class EnvironmentCommand(Command):
         self.is_executed = True
 
 
-
 def run(args):
     """Runs an OS command"""
 
@@ -129,66 +128,4 @@ def is_not_empty_dir(path):
     """Checks the path is existing directory and it is not empty"""
 
     return os.path.exists(path) and os.path.isdir(path) and os.listdir(path)
-
-class EnvManipulation(object):
-    def __init__(self, name, value):
-        self.name = name
-        self.value = value
-
-    def gen_bash(self, existing_list):
-        raise NotImplementedError()
-
-    def gen_csh(self, existing_list):
-        raise NotImplementedError()
-
-    @staticmethod
-    def mentioned_before(existing_list, env_manip):
-        for existing in existing_list:
-            if env_manip.name == existing.name:
-                return True
-        return False
-
-
-class EnvAppend(EnvManipulation):
-
-    def __init__(self, name, value):
-        super(EnvAppend, self).__init__(name, value)
-
-    def gen_bash(self, existing_list):
-        if self.mentioned_before(existing_list, self):
-            pass
-        else:
-            pass
-
-    def gen_csh(self, existing_list):
-        if self.mentioned_before(existing_list, self):
-            pass
-        else:
-            pass
-
-class EnvPrepend(EnvManipulation):
-    def __init__(self, name, value):
-        super(EnvPrepend, self).__init__(name, value)
-
-    def gen_bash(self, existing_list):
-        if self.mentioned_before(existing_list, self):
-            pass
-        else:
-            pass
-
-    def gen_csh(self, existing_list):
-        if self.mentioned_before(existing_list, self):
-            pass
-        else:
-            pass
-
-class EnvSet(EnvManipulation):
-    def __init__(self, name, value):
-        super(EnvSet, self).__init__(name, value)
-
-    def gen_bash(self, existing_list):
-        pass
-
-    def gen_csh(self, existing_list):
-        pass
 

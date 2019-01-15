@@ -1,6 +1,7 @@
 import os
 from distutils.dir_util import mkpath
 
+from ejpm.engine.env import EnvSource
 from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.commands import run, env, workdir, is_not_empty_dir
 
@@ -104,6 +105,11 @@ class RootInstallation(PacketInstallationInstruction):
         # Now run build root
         self.step_build_root()
 
+    @staticmethod
+    def gen_env(install_path):
+        yield EnvSource(install_path)
+
+
     fedora_required_packets = "git cmake gcc-c++ gcc binutils libX11-devel " \
                               "libXpm-devel libXft-devel libXext-devel"
 
@@ -122,3 +128,31 @@ class RootInstallation(PacketInstallationInstruction):
                               "graphviz-dev libavahi-compat-libdnssd-dev " \
                               "libldap2-dev python-dev libxml2-dev libkrb5-dev " \
                               "libgsl0-dev libqt4-dev"
+
+
+
+def root_find():
+    """Looks for CERN ROOT package
+    :return [str] - empty list if not found or a list with 1 element - ROOTSYS path
+
+    The only way to find ROOT is by checking for ROOTSYS package,
+    The function family xxx_find() return list in general
+    so this function returns ether empty list or a list with 1 element - root path
+    """
+
+    # The only way to find a CERN ROOT is by
+    result = []
+
+    # Check ROOTSYS environment variable
+    if ROOTSYS not in os.environ:
+        color_echo("ROOTSYS", " not found in the environment", 'red')
+        return result
+
+    # Now check ROOTSYS exists in the system
+    root_sys_path = os.environ[ROOTSYS]
+    if not os.path.isdir(root_sys_path):
+        color_echo("WARNING", " ROOTSYS points to nonexistent directory of a file")
+        return result
+
+    # Looks like root exists, return the path
+    return [root_sys_path]

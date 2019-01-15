@@ -1,61 +1,120 @@
 
-class BaseEnvAction(object):
 
-    def __init__(self, name, value, description):
+
+class EnvManipulation(object):
+    def __init__(self, name, value):
         self.name = name
         self.value = value
-        self.description = description
 
-    def gen_bash(self):
-        raise NotImplementedError
+    def gen_bash(self, existing_list):
+        raise NotImplementedError()
 
-    def gen_csh(self):
-        raise NotImplementedError
+    def gen_csh(self, existing_list):
+        raise NotImplementedError()
 
-    def update_python_env(self):
-        raise NotImplementedError
-
-
-class EnvSet(BaseEnvAction):
-
-    def __init__(self, name, value, description):
-        super(EnvSet, self).__init__(name, value, description)
-
-    def gen_bash(self):
-        raise NotImplementedError
-
-    def gen_csh(self):
-        raise NotImplementedError
-
-    def update_python_env(self):
-        raise NotImplementedError
+    @staticmethod
+    def mentioned_before(existing_list, env_manip):
+        for existing in existing_list:
+            if env_manip.name == existing.name:
+                return True
+        return False
 
 
-class EnvAppend(BaseEnvAction):
+class EnvSource(EnvManipulation):
+    def __init__(self, name):
+        super(EnvSource, self).__init__(name, None)
 
-    def __init__(self, name, value, description):
-        super(EnvAppend, self).__init__(name, value, description)
+    def gen_bash(self, existing_list):
+        return "source {name}".format(name=self.name)
 
-    def gen_bash(self):
-        raise NotImplementedError
-
-    def gen_csh(self):
-        raise NotImplementedError
-
-    def update_python_env(self):
-        raise NotImplementedError
+    def gen_csh(self, existing_list):
+        return self.gen_bash()
 
 
-class EnvPrepend(BaseEnvAction):
+class EnvAppend(EnvManipulation):
 
-    def __init__(self, name, value, description):
-        super(EnvPrepend, self).__init__(name, value, description)
+    def __init__(self, name, value):
+        super(EnvAppend, self).__init__(name, value)
 
-    def gen_bash(self):
-        raise NotImplementedError
+    def gen_bash(self, existing_list):
+        ret_str = '\n# === {name} ===\n\n'
 
-    def gen_csh(self):
-        raise NotImplementedError
+        if not self.mentioned_before(existing_list, self):
+            ret_str += (
+                '# Make sure {name} is set\n'
+                'if [ -z "${name}" ]; then\n' 
+                '    export {name}="{value}"\n'
+                'else\n'
+                '    export {name}=${name}:"{value}"'
+                'fi')
+        else:
+            ret_str += 'export {name}=${name}:"{value}"'
 
-    def update_python_env(self):
-        raise NotImplementedError
+        return ret_str.format(name=self.name, value=self.value)
+
+    def gen_csh(self, existing_list):
+
+        ret_str = '\n# === {name} ===\n\n'
+
+        if not self.mentioned_before(existing_list, self):
+            ret_str += (
+                '# Make sure {name} is set\n'
+                'if ( ! $?{name} ) then\n'
+                '    setenv {name} "{value}"\n'
+                'else\n'
+                '    setenv {name} ${name}:"{value}"'
+                'fi')
+        else:
+            ret_str += 'setenv {name} ${name}:"{value}"'
+
+        return ret_str.format(name=self.name, value=self.value)
+
+
+class EnvPrepend(EnvManipulation):
+    def __init__(self, name, value):
+        super(EnvPrepend, self).__init__(name, value)
+
+    def gen_bash(self, existing_list):
+        ret_str = '\n# === {name} ===\n\n'
+
+        if not self.mentioned_before(existing_list, self):
+            ret_str += (
+                '# Make sure {name} is set\n'
+                'if [ -z "${name}" ]; then\n' 
+                '    export {name}="{value}"\n'
+                'else\n'
+                '    export {name}="{value}":${name}'
+                'fi')
+        else:
+            ret_str += 'export {name}="{value}":${name}'
+
+        return ret_str.format(name=self.name, value=self.value)
+
+    def gen_csh(self, existing_list):
+
+        ret_str = '\n# === {name} ===\n\n'
+
+        if not self.mentioned_before(existing_list, self):
+            ret_str += (
+                '# Make sure {name} is set\n'
+                'if ( ! $?{name} ) then\n'
+                '    setenv {name} "{value}"\n'
+                'else\n'
+                '    setenv {name} "{value}":${name}'
+                'fi')
+        else:
+            ret_str += 'setenv {name} "{value}":${name}'
+
+        return ret_str.format(name=self.name, value=self.value)
+
+
+class EnvSet(EnvManipulation):
+    def __init__(self, name, value):
+        super(EnvSet, self).__init__(name, value)
+
+    def gen_bash(self, existing_list):
+        return 'export {name}="{value}"'.format(name=self.name, value=self.value)
+
+    def gen_csh(self, existing_list):
+        return 'setenv {name} "{value}"'.format(name=self.name, value=self.value)
+
