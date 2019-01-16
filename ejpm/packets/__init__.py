@@ -1,14 +1,9 @@
 import importlib
+import io
 import pkgutil
 
 import ejpm
 from ejpm.engine.installation import PacketInstallationInstruction
-
-from ejpm.side_packages import provide_click_framework
-
-# Try to import 'click' framework or to reference included version
-provide_click_framework()  # Try to import 'click' framework or to reference included version
-import click
 
 
 def import_all_submodules():
@@ -40,26 +35,51 @@ class PacketManager:
     def add_env_generator(self, name, env_gen):
         self.env_generators[name] = env_gen
 
-    def gen_bash_environment(self, name_paths):
+    def gen_shell_env_text(self, name_data, shell='bash'):
+        """Generates a text that sets environment for a given shell """
 
         output = ""     # a string holding the result
 
         # Go through provided name-path pairs:
-        for name, path in name_paths.items():
+        for name, data in name_data.items():
 
-            # If we have a generator for this program
-            if name in self.env_generators.keys():
-                output += "# =============================\n# {}\n# =============================\n".format(name)
-                env_gen = self.env_generators[name]
-                steps_list = []
+            # if some packet has no data, or there is no environ generator for it, we skip it
+            if not data or name not in self.env_generators.keys():
+                continue
 
-                for step in env_gen(path):
-                    output += step.gen_bash(steps_list)
-                    steps_list.append(step)
+            env_gen = self.env_generators[name]
+
+            output += "\n\n"
+            output += "# =============================\n"
+            output += "# {}\n".format(name)
+            output += "# =============================\n"
+
+            # env_gen(data) provides environment manipulation instructions based on the given data
+            for step in env_gen(data):
+                output += step.gen_csh() if shell == 'csh' else step.gen_bash() # bash or csh?
+                output += '\n'
         return output
 
+    def gen_bash_env_text(self, name_data):
+        """Generates a text that sets environment for bash shell """
+        return self.gen_shell_env_text(name_data, shell='bash')
 
-# Create a PacketManager class and @pass_pm decorator so our commands could use it
-pass_pm = click.make_pass_decorator(PacketManager, ensure=True)
+    def gen_csh_env_text(self, name_data):
+        """Generates a text that sets environment for csh/tcsh shell """
+        return self.gen_shell_env_text(name_data, shell='csh')
+
+    def update_python_env(self, name_data):
+        """Updates python environment according to (name,paths) pairs
+        :param name_paths:
+        """
+
+        # Go through provided name-path pairs:
+        for name, data in name_data.items():
+
+            # If we have a generator for this program and installation data
+            if data and name in self.env_generators.keys():
+                env_gens = self.env_generators[name]
+                for env_gen in env_gens(data):          # Go through 'environment generators' look engine/env_gen.py
+                    env_gen.update_python_env()         # Do environment update
 
 

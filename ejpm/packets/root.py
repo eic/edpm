@@ -1,9 +1,12 @@
 import os
 from distutils.dir_util import mkpath
 
-from ejpm.engine.env import EnvSource
+from ejpm.engine import env_gen
 from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.commands import run, env, workdir, is_not_empty_dir
+
+
+ROOTSYS = "ROOTSYS"
 
 
 class RootInstallation(PacketInstallationInstruction):
@@ -106,8 +109,39 @@ class RootInstallation(PacketInstallationInstruction):
         self.step_build_root()
 
     @staticmethod
-    def gen_env(install_path):
-        yield EnvSource(install_path)
+    def gen_env(data):
+        install_path = data['install_path']
+        def update_python_environment():
+            """Function that will update ROOT environment in python
+            We need this function because we cannot source thisroot in python
+            """
+
+            root_bin = os.path.join(install_path, 'bin')
+            root_lib = os.path.join(install_path, 'lib')
+            root_jup = os.path.join(install_path, 'etc','notebook')
+
+            env_updates = [
+                env_gen.Set('ROOTSYS', install_path),
+                env_gen.Prepend('PATH', root_bin),
+                env_gen.Prepend('LD_LIBRARY_PATH', root_lib),
+                env_gen.Prepend('DYLD_LIBRARY_PATH', root_lib),
+                env_gen.Prepend('PYTHONPATH', root_lib),
+                env_gen.Prepend('CMAKE_PREFIX_PATH', install_path),
+                env_gen.Prepend('JUPYTER_PATH', root_jup),
+            ]
+
+            for updater in env_updates:
+                updater.update_python_env()
+
+        # We just call thisroot.xx in different shells
+
+        manipulation = env_gen.RawText(
+            "source {}".format(os.path.join(install_path, 'bin', 'thisroot.sh')),
+            "source {}".format(os.path.join(install_path, 'bin', 'thisroot.csh')),
+            update_python_environment
+        )
+
+        yield manipulation
 
 
     fedora_required_packets = "git cmake gcc-c++ gcc binutils libX11-devel " \
@@ -145,13 +179,13 @@ def root_find():
 
     # Check ROOTSYS environment variable
     if ROOTSYS not in os.environ:
-        color_echo("ROOTSYS", " not found in the environment", 'red')
+        print("<red>ROOTSYS</red> not found in the environment")
         return result
 
     # Now check ROOTSYS exists in the system
     root_sys_path = os.environ[ROOTSYS]
     if not os.path.isdir(root_sys_path):
-        color_echo("WARNING", " ROOTSYS points to nonexistent directory of a file")
+        print("WARNING", " ROOTSYS points to nonexistent directory of a file")
         return result
 
     # Looks like root exists, return the path

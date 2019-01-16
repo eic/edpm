@@ -7,11 +7,7 @@ Like: name, installation path, installation date,
 import json
 import os
 import io
-from ejpm.side_packages import provide_click_framework
 
-# Try to import 'click' framework or to reference included version
-provide_click_framework()  # Try to import 'click' framework or to reference included version
-import click
 
 # Make it work for Python 2+3 and with Unicode
 try:
@@ -20,8 +16,10 @@ try:
 except NameError:
     to_unicode = str
 
-IS_SELECTED = 'is_selected'
-IS_EJPM_OWNED = 'is_ejpm_owned'
+INSTALL_PATH = 'install_path'
+IS_OWNED = 'is_owned'
+IS_ACTIVE = 'is_active'
+
 
 class PacketStateDatabase(object):
     """Class to persist installation knowledge """
@@ -36,32 +34,33 @@ class PacketStateDatabase(object):
                 "root": {
                     "required": True,
                     "installs":
-                    {'/home/romanov/jleic/test/root/bin/Linux__Ubuntu18.04-x86_64-gcc7/':
+                    [
                         {
-                            IS_EJPM_OWNED: False,
-                            IS_SELECTED: True
+                            INSTALL_PATH: '/home/romanov/jleic/test/root/bin/Linux__Ubuntu18.04-x86_64-gcc7/',
+                            IS_OWNED: False,
+                            IS_ACTIVE: True
                         }
-                    }
+                    ]
                 },
                 "clhep": {
                     "required": True,
-                    "installs": {}
+                    "installs": []
                 },
                 "genfit": {
                     "required": True,
-                    "installs": {}
+                    "installs": []
                 },
                 "rave": {
                     "required": True,
-                    "installs": {}
+                    "installs": []
                 },
                 "jana": {
                     "required": True,
-                    "installs": {}
+                    "installs": []
                 },
                 "ejana": {
                     "required": True,
-                    "installs": {}
+                    "installs": []
                 },
             },
             "top_dir": "",
@@ -80,7 +79,7 @@ class PacketStateDatabase(object):
         """Saves self.data to a file self.file_path"""
 
         if not self.file_path:
-            raise FileNotFoundError()
+            raise AssertionError()
 
         # Write JSON file
         with io.open(self.file_path, 'w', encoding='utf8') as outfile:
@@ -107,30 +106,15 @@ class PacketStateDatabase(object):
     def get_active_install(self, packet_name):
         installs = self.get_installs(packet_name)
 
-        for path, data in installs.items():
-            if data[IS_SELECTED]:
-                return path, data
+        for install in installs:
+            if install['is_active']:
+                return install
 
-        return None, None
+        return None
 
     def get_active_installs(self):
-        """Returns name:{path:value} of active installs"""
-        active_installs = {}
-        for name in self.packet_names:
-            path, data = self.get_active_install(name)
-            if path is not None:
-                active_installs[path]=data
-
-    def get_active_install_path(self, packet_name):
-        """Checks if this <packet_name> has 'active' installation (means ejana can use it)"""
-
-        path, _ = self.get_active_install(packet_name)
-        return path is not None
-
-    def get_active_install_path(self, packet_name):
-        """Gets <packet_name> 'active' (means ejana uses it) installation path (which is path to binaries)"""
-        path, _ = self.get_active_install(packet_name)
-        return path
+        """Returns {name:{install_data}} of active installs"""
+        return {name: self.get_active_install(name) for name in self.packet_names}
 
     def get_install(self, packet_name, path):
         """
@@ -142,26 +126,43 @@ class PacketStateDatabase(object):
         if path in self.data['packets'][packet_name]['installs']:
             return path
 
-    def update_install(self, packet_name, path, is_ejpm_owned, is_selected):
-        installs = self.data['packets'][packet_name]['installs'];
-        if path in installs.keys():
-            install = installs[path]
-        else:
-            installs[path] = install = {}
+    def update_install(self, packet_name, install_path, is_owned, is_active):
+        """
+
+        :param packet_name: Name of the packet. Like root, genfit, rave, etc
+        :param install_path: Path of the installation
+        :param is_owned: Is owned and managed by EJPM
+        :param is_active: Is active. Means is used to build other packets, etc
+        :return:
+        """
+
+        installs = self.data['packets'][packet_name]['installs']
+
+        # Search for existing installation with this installation path
+        existing_install = None
+        for install in installs:
+            if install[INSTALL_PATH] == install_path:
+                existing_install = install
+                break
+
+        # If we didn't find an install, lets add a new one
+        if existing_install is None:
+            existing_install = {}
+            installs.append(existing_install)
 
         # deselect other installations if the new one is selected
-        if is_selected:
-            for prop in installs.values():
-                prop[IS_SELECTED] = False
+        if is_active:
+            for install in installs:
+                install[IS_ACTIVE] = False
 
         # set selected and ownership
-        install[IS_SELECTED] = is_selected
-        install[IS_EJPM_OWNED] = is_ejpm_owned
+        existing_install[INSTALL_PATH] = install_path
+        existing_install[IS_ACTIVE] = is_active
+        existing_install[IS_OWNED] = is_owned
 
-
-    @property
-    def missing(self):
-        return [p for p in self.data['packets'].keys() if p not in self.data['installed'].keys()]
+    #@property
+    #def missing(self):
+    #    return [p for p in self.data['packets'].keys() if self.data['installs']]
 
     @property
     def top_dir(self):
@@ -170,9 +171,3 @@ class PacketStateDatabase(object):
     @top_dir.setter
     def top_dir(self, path):
         self.data["top_dir"] = path
-
-
-# Create a database class and @pass_db decorator so our commands could use it
-pass_db = click.make_pass_decorator(PacketStateDatabase, ensure=True)
-
-

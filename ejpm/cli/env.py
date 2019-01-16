@@ -1,39 +1,37 @@
-import os
-
+from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
+from ejpm.engine.db import PacketStateDatabase
+from ejpm.packets import PacketManager
 from ejpm.side_packages import provide_click_framework
-from ejpm.engine.db import pass_db, PacketStateDatabase, IS_SELECTED
-from ejpm.engine.output import markup_print as mprint
-from ejpm.engine.installation import PacketInstallationInstruction
-
-from ejpm.packets import pass_pm, PacketManager
 
 provide_click_framework()
 import click
 
 
 @click.group(invoke_without_command=True)
-@pass_pm
-@pass_db
+@pass_ejpm_context
 @click.pass_context
-def env(ctx, db, pm):
+def env(ctx, ectx):
     """Installs packets"""
 
+    assert isinstance(ectx, EjpmContext)
+
+    # Packet state database
+    db = ectx.db
     assert isinstance(db, PacketStateDatabase)
+
+    # Packet manager
+    pm = ectx.pm
     assert isinstance(pm, PacketManager)
 
+    # check if DB file already exists
+    if not db.exists():
+        print("Database doesn't exist. 'env' command has nothing to do")
+        return
+
     if ctx.invoked_subcommand is None:
-        names_order = ['root', 'rave', 'genfit', 'jana', 'ejana']
+        print(ectx.pm.gen_bash_env_text(db.get_active_installs()))
 
-        name_paths = {}
-        for name in names_order:
-            path, _ = db.get_active_install(name)
-            if path is None:
-                print("# (!) no active path for {}. Skipping environment!".format(name))
-            else:
-                name_paths[name]=path
 
-        if name_paths:
-            print(pm.gen_bash_environment(name_paths))
 
     else:
         pass

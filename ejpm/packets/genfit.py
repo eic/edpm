@@ -6,8 +6,9 @@ export BMS_OSNAME=`./SBMS/osrelease.pl`
 
 import os
 
+from ejpm.engine.commands import run, workdir
+from ejpm.engine.env_gen import Set, Append
 from ejpm.engine.installation import PacketInstallationInstruction
-from ejpm.engine.commands import run, env, workdir
 
 
 class GenfitInstallation(PacketInstallationInstruction):
@@ -30,6 +31,8 @@ class GenfitInstallation(PacketInstallationInstruction):
         # Set initial values for parent class and self
         super(GenfitInstallation, self).__init__('genfit', version)
         self.build_threads = build_threads
+        self.clone_command = ''             # will be set by self.set_app_path
+        self.build_cmd = ''                 # will be set by self.set_app_path
 
     def set_app_path(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -101,3 +104,16 @@ class GenfitInstallation(PacketInstallationInstruction):
 
         # Now run build root
         self.step_install()
+
+    @staticmethod
+    def gen_env(data):
+        path = data['install_path']
+        """Generates environments to be set"""
+
+        yield Set('GENFIT', os.path.join(path, 'bin'))
+
+        import platform
+        if platform.system() == 'Darwin':
+            yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib'))
+
+        yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))

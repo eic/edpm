@@ -1,5 +1,6 @@
 from distutils.dir_util import mkpath
 
+from ejpm.engine.env_gen import Set, Prepend
 from ejpm.side_packages import provide_click_framework
 
 provide_click_framework()
@@ -93,6 +94,15 @@ class RaveInstallation(PacketInstallationInstruction):
 
         # run cmake && make && install
         run(self.build_command)
+
+    @staticmethod
+    def gen_env(data):
+        install_path = data['install_path']
+
+        yield Set('RAVEPATH', install_path)
+        yield Prepend('CMAKE_PREFIX_PATH', '$RAVEPATH/share/rave')
+
+
 
     def step_set_env(self):
         """

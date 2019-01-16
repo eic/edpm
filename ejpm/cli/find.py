@@ -1,18 +1,20 @@
+from ejpm.cli.ejpm_context import pass_ejpm_context
 from ejpm.side_packages import provide_click_framework
-from ejpm.engine.db import pass_db, PacketStateDatabase
+from ejpm.engine.db import PacketStateDatabase
 
 
 provide_click_framework()
 import click
 
 @click.group(invoke_without_command=True)
-@pass_db
+@pass_ejpm_context
 @click.pass_context
-def find(ctx, db):
-    assert (isinstance(db, PacketStateDatabase))
+def find(ctx, ectx):
+    assert (isinstance(ectx.db, PacketStateDatabase))
     #if not click.confirm("All packets will be installed here:"):
     #        click.echo('Existing without deleting experiment.')
 
+    db = ectx.db
 
     click.echo("installed packets:")
 

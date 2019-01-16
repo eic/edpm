@@ -6,6 +6,7 @@ export BMS_OSNAME=`./SBMS/osrelease.pl`
 
 import os
 
+from ejpm.engine.env_gen import Prepend, Set
 from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.commands import run, env, workdir
 
@@ -107,3 +108,12 @@ class JanaInstallation(PacketInstallationInstruction):
 
         # Now run build root
         self.step_install()
+
+    @staticmethod
+    def gen_env(data):
+        install_path = data['install_path']
+        """Generates environments to be set"""
+
+        yield Set('JANA_HOME', install_path)
+        yield Set('JANA_PLUGIN_PATH', '$JANA_HOME/plugins')
+        yield Prepend('PATH', '$JANA_HOME/bin')
