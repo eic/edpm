@@ -221,5 +221,5 @@ def _update_python_env(ectx, dep_order, mode=''):
         if name in inst_by_name.keys() and name in ectx.pm.env_generators.keys():
             mprint("<blue><b>Updating python environment for '{}'</b></blue>".format(name))
             env_gens = ectx.pm.env_generators[name]
-            for env_gen in env_gens(inst):          # Go through 'environment generators' look engine/env_gen.py
+            for env_gen in env_gens(inst_by_name[name]):          # Go through 'environment generators' look engine/env_gen.py
                 env_gen.update_python_env()         # Do environment update
