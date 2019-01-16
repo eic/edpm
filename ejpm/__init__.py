@@ -76,7 +76,7 @@ def _print_packets_info(db):
             is_active = installation[IS_ACTIVE]
             is_active_str = '*' if is_active else ' '
             path_str = installation[INSTALL_PATH]
-            id_str = "[{}]".format(i).rjust(4) if len(installs.keys()) > 1 else ""
+            id_str = "[{}]".format(i).rjust(4) if len(installs) > 1 else ""
             mprint("  {}{} {} {}".format(is_active_str, id_str, path_str, is_owned_str))
 
 

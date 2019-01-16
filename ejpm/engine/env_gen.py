@@ -39,7 +39,7 @@ class Append(EnvironmentManipulation):
             'if [ -z "${name}" ]; then\n'
             '    export {name}="{value}"\n'
             'else\n'
-            '    export {name}=${name}:"{value}"'
+            '    export {name}=${name}:"{value}"\n'
             'fi')
 
         return ret_str.format(name=self.name, value=self.value)
@@ -52,13 +52,14 @@ class Append(EnvironmentManipulation):
             'if ( ! $?{name} ) then\n'
             '    setenv {name} "{value}"\n'
             'else\n'
-            '    setenv {name} ${name}:"{value}"'
+            '    setenv {name} ${name}:"{value}"\n'
             'fi')
 
         return ret_str.format(name=self.name, value=self.value)
 
     def update_python_env(self):
         """Sets environment internally for python"""
+        print("   update_env:  append ${} by '{}'".format(self.name, self.value))
         if self.name in os.environ.keys():
             os.environ[self.name] += os.pathsep + self.value
         else:
@@ -100,6 +101,8 @@ class Prepend(EnvironmentManipulation):
 
     def update_python_env(self):
         """Sets environment internally for python"""
+
+        print("   update_env: prepend ${} by '{}'".format(self.name, self.value))
         if self.name in os.environ.keys():
             os.environ[self.name] = self.value + os.pathsep + os.environ[self.name]
         else:
@@ -122,6 +125,8 @@ class Set(EnvironmentManipulation):
 
     def update_python_env(self):
         """Sets environment internally for python"""
+
+        print("   update_env:     set ${} = '{}'".format(self.name, self.value))
         os.environ[self.name] = self.value
 
 
@@ -149,6 +154,7 @@ class RawText(EnvironmentManipulation):
 
     def update_python_env(self):
         """Sets environment internally for python"""
+        print("   update_env: RawText step will update env")
         self.python_env()
 
 

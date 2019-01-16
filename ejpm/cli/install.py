@@ -45,13 +45,12 @@ def install(ctx, ectx, packet_name, install_path=""):
         raise click.Abort()
 
     if packet_name == 'all':
-        _update_env_assuming_install_all(ectx)                      # set environment spitting on existing missing
         _install_all(ectx)                                          # install all packets
     if packet_name == 'missing':
-        _update_env_assuming_install_missing(ectx)                  # set environment assuming we'll install missing
         _install_missing(ectx)                                      # install only missing packets
     elif packet_name in pm.packets.keys():
-        pm.update_python_env(db.get_active_installs())              # get active environment 'as is'
+        # single packet installation, no dependencies
+        _update_python_env(ectx, pm.packets.keys())                 # update environment 'as is'
         _install_packet(db, pm.packets[packet_name], install_path)  # install known packet
 
     # Update environment scripts
@@ -135,6 +134,8 @@ def _print_help_no_top_path():
 def _install_all(ectx):
     assert isinstance(ectx, EjpmContext)
 
+    _update_python_env(ectx, ectx.dep_order, mode='all')  # set environment spitting on existing missing
+
     packets = [ectx.pm.packets[name] for name in ectx.dep_order]
 
     for packet in packets:
@@ -147,66 +148,78 @@ def _install_missing(ectx):
     active_installs = ectx.db.get_active_installs()
 
     names_to_install = []
-    mprint("\nMissing and known packets status:")
+    mprint("\nPackets known state:")
     for name, data in active_installs.items():
         if not data:
-            mprint("   <blue>{}</blue> - to be installed", name)
+            mprint("   <blue>{}</blue> - not installed", name)
             names_to_install.append(name)
         else:
-            mprint("   <blue>{}</blue> - at: {}, ", name, data['install_path'])
+            is_owned_str = '(owned)' if data['is_owned'] else ''
+            mprint("   <blue>{}</blue> - at: {} {}, ", name, data['install_path'], is_owned_str)
 
     packets = [ectx.pm.packets[name] for name in ectx.dep_order if name in names_to_install]
+
+    # Is there something to build
+    if not packets:
+        mprint("Nothing to build!")
+        return
 
     mprint("\n <b>INSTALLATION ORDER</b>:")
     for packet in packets:
         mprint("   <blue>{}</blue> : {}", packet.name, packet.install_path)
 
+    # Set environment before build
+    _update_python_env(ectx, ectx.dep_order, mode='missing')  # set environment spitting on existing missing
+
     for packet in packets:
         _install_packet(ectx.db, packet)
 
 
-def _update_env_assuming_install_missing(ectx):
+def _update_python_env(ectx, dep_order, mode=''):
     """Update python os.environ assuming we will install missing packets"""
 
     from ejpm.engine.db import IS_OWNED, IS_ACTIVE, INSTALL_PATH
     assert isinstance(ectx, EjpmContext)
 
-    # Go through provided name-path pairs:
-    for name, data in ectx.db.get_active_installs().items():
+    # Pretty header
+    mprint("<magenta>=========================================</magenta>")
+    mprint("<green> SETTING ENVIRONMENT</green>")
+    mprint("<magenta>=========================================</magenta>\n")
 
-        # There is no installation data for the packet, but we assume we will install it now!
-        if not data:
-            data = {
+    # We will look through database and see, what is 'active installation' of packages
+    # Depending on mode, we will try to:
+    #    mode     | action
+    #   ----------+----------
+    #   'missing' | replace missing installations assuming we will install the package
+    #   'all'     | replace all packets installation path assuming we will install all by our script
+    #   ''        | just skip missing
+
+    inst_by_name = {}
+    for name, inst in ectx.db.get_active_installs().items():
+
+        if mode == 'missing':
+            # There is no installation data for the packet, but we assume we will install it now!
+            if not inst:
+                inst = {
+                    INSTALL_PATH: os.path.join(ectx.db.top_dir, name),
+                    IS_ACTIVE: True,
+                    IS_OWNED: True
+                }
+        elif mode == 'all':
+            # We overwrite installation path for the packet
+            inst = {
                 INSTALL_PATH: os.path.join(ectx.db.top_dir, name),
                 IS_ACTIVE: True,
                 IS_OWNED: True
             }
 
+        if inst:
+            inst_by_name[name] = inst
+
+    for name in dep_order:
         # If we have a generator for this program and installation data
-        if data and name in ectx.pm.env_generators.keys():
+        if name in inst_by_name.keys() and name in ectx.pm.env_generators.keys():
+            mprint("<blue><b>Updating python environment for '{}'</b></blue>".format(name))
             env_gens = ectx.pm.env_generators[name]
-            for env_gen in env_gens(data):          # Go through 'environment generators' look engine/env_gen.py
-                env_gen.update_python_env()         # Do environment update
-
-
-def _update_env_assuming_install_all(ectx):
-    """Update python os.environ assuming we will install all packets by ourselves"""
-
-    from ejpm.engine.db import IS_OWNED, IS_ACTIVE, INSTALL_PATH
-    assert isinstance(ectx, EjpmContext)
-
-    # Go through provided name-path pairs:
-    for name, data in ectx.db.get_active_installs().items():
-
-        # We overwrite data for the packet
-        data = {
-            INSTALL_PATH: os.path.join(ectx.db.top_dir, name),
-            IS_ACTIVE: True,
-            IS_OWNED: True
-        }
-
-        # If we have a generator for this program and installation data
-        if data and name in ectx.pm.env_generators.keys():
-            env_gens = ectx.pm.env_generators[name]
-            for env_gen in env_gens(data):          # Go through 'environment generators' look engine/env_gen.py
+            for env_gen in env_gens(inst):          # Go through 'environment generators' look engine/env_gen.py
                 env_gen.update_python_env()         # Do environment update
