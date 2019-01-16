@@ -191,3 +191,7 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 venv2/
+
+env\.csh
+
+env\.sh
