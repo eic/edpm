@@ -1,3 +1,4 @@
+import os
 from distutils.dir_util import mkpath
 
 from ejpm.engine.env_gen import Set, Prepend
@@ -99,8 +100,10 @@ class RaveInstallation(PacketInstallationInstruction):
     def gen_env(data):
         install_path = data['install_path']
 
+
         yield Set('RAVEPATH', install_path)
-        yield Prepend('CMAKE_PREFIX_PATH', '$RAVEPATH/share/rave')
+        yield Prepend('CMAKE_PREFIX_PATH', os.path.join(install_path, 'share', 'rave'))
+        yield Prepend('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
 
 
 

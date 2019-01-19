@@ -112,7 +112,6 @@ class ClhepInstallation(PacketInstallationInstruction):
         path = data['install_path']
         yield Set('CLHEP', path)
 
-
         import platform
         if platform.system() == 'Darwin':
             yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib'))

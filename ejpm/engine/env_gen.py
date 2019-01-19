@@ -33,19 +33,27 @@ class Append(EnvironmentManipulation):
 
     def gen_bash(self):
         """Generates bash piece of code"""
-        ret_str = (
-            '\n'
-            '# Make sure {name} is set\n'
-            'if [ -z "${name}" ]; then\n'
-            '    export {name}="{value}"\n'
-            'else\n'
-            '    export {name}=${name}:"{value}"\n'
-            'fi')
+
+        # Here is the right way to APPEND in bash:
+        # PATH = "${PATH:+${PATH}:}$HOME/bin"
+        # https://unix.stackexchange.com/a/415028/109031
+        ret_str = "export {name}=${{{name}:+${{{name}}}:}}{value}\n"
+
+        #for appending(instead of PATH="$PATH:$HOME/bin") and
+        # ret_str = (
+        #     '\n'
+        #     '# Make sure {name} is set\n'
+        #     'if [ -z "${name}" ]; then\n'
+        #     '    export {name}="{value}"\n'
+        #     'else\n'
+        #     '    export {name}=${name}:"{value}"\n'
+        #     'fi')
 
         return ret_str.format(name=self.name, value=self.value)
 
     def gen_csh(self):
         """Generates csh piece code"""
+
         ret_str = (
             '\n'
             '# Make sure {name} is set\n'
@@ -74,14 +82,20 @@ class Prepend(EnvironmentManipulation):
 
     def gen_bash(self):
         """Generates bash piece of code"""
-        ret_str = (
-            '\n'
-            '# Make sure {name} is set\n'
-            'if [ -z "${name}" ]; then\n'
-            '    export {name}="{value}"\n'
-            'else\n'
-            '    export {name}="{value}":${name}\n'
-            'fi')
+
+        # Here is the right way to prepend in bash:
+        # #PATH = "$HOME/bin${PATH:+:${PATH}}"
+        # https://unix.stackexchange.com/a/415028/109031
+        ret_str = "export {name}={value}${{{name}:+:${{{name}}}}}\n"
+
+        # ret_str = (
+        #     '\n'
+        #     '# Make sure {name} is set\n'
+        #     'if [ -z "${name}" ]; then\n'
+        #     '    export {name}="{value}"\n'
+        #     'else\n'
+        #     '    export {name}="{value}":${name}\n'
+        #     'fi')
 
         return ret_str.format(name=self.name, value=self.value)
 

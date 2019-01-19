@@ -7,14 +7,10 @@ Like: name, installation path, installation date,
 import json
 import os
 import io
+from ejpm.engine.py23 import to_unicode
 
 
-# Make it work for Python 2+3 and with Unicode
-try:
-    # noinspection PyUnresolvedReferences
-    to_unicode = unicode
-except NameError:
-    to_unicode = str
+
 
 INSTALL_PATH = 'install_path'
 IS_OWNED = 'is_owned'
@@ -141,7 +137,7 @@ class PacketStateDatabase(object):
         # Search for existing installation with this installation path
         existing_install = None
         for install in installs:
-            if install[INSTALL_PATH] == install_path:
+            if install[INSTALL_PATH] == to_unicode(install_path):
                 existing_install = install
                 break
 

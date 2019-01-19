@@ -114,5 +114,5 @@ class EjanaInstallation(PacketInstallationInstruction):
         path = data['install_path']
         """Generates environments to be set"""
 
-        yield Set('JANA_PLUGIN_PATH', os.path.join(path, 'plugins'))
+        yield Prepend('JANA_PLUGIN_PATH', os.path.join(path, 'plugins'))
         yield Prepend('PATH', os.path.join(path, 'bin'))

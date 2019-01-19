@@ -110,7 +110,8 @@ class GenfitInstallation(PacketInstallationInstruction):
         path = data['install_path']
         """Generates environments to be set"""
 
-        yield Set('GENFIT', os.path.join(path, 'bin'))
+        yield Set('GENFIT', path)
+        yield Set('GENFIT_DIR', path)
 
         import platform
         if platform.system() == 'Darwin':

@@ -99,7 +99,7 @@ def _install_packet(db, packet, install_path='', replace_active=True):
         exit(1)
 
     # if we are here, the packet is installed
-    mprint("<green>Root installation step done!</green>\n")
+    mprint("<green>{} installation step done!</green>\n", packet.name)
 
     # Add to DB that we installed a packet
     mprint("Adding path to database...\n   This {} installation is set as <blue>selected</blue>", packet.name)
@@ -221,5 +221,5 @@ def _update_python_env(ectx, dep_order, mode=''):
         if name in inst_by_name.keys() and name in ectx.pm.env_generators.keys():
             mprint("<blue><b>Updating python environment for '{}'</b></blue>".format(name))
             env_gens = ectx.pm.env_generators[name]
-            for env_gen in env_gens(inst_by_name[name]):          # Go through 'environment generators' look engine/env_gen.py
-                env_gen.update_python_env()         # Do environment update
+            for env_gen in env_gens(inst_by_name[name]):   # Go through 'environment generators' look engine/env_gen.py
+                env_gen.update_python_env()                # Do environment update

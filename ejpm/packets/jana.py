@@ -6,7 +6,7 @@ export BMS_OSNAME=`./SBMS/osrelease.pl`
 
 import os
 
-from ejpm.engine.env_gen import Prepend, Set
+from ejpm.engine.env_gen import Prepend, Set, Append
 from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.commands import run, env, workdir
 
@@ -54,7 +54,7 @@ class JanaInstallation(PacketInstallationInstruction):
         #
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA.git {source_path}"\
+        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA2.git {source_path}"\
             .format(branch=self.version, source_path=self.source_path)
 
         #
@@ -115,5 +115,5 @@ class JanaInstallation(PacketInstallationInstruction):
         """Generates environments to be set"""
 
         yield Set('JANA_HOME', install_path)
-        yield Set('JANA_PLUGIN_PATH', '$JANA_HOME/plugins')
+        yield Append('JANA_PLUGIN_PATH', '$JANA_HOME/plugins')
         yield Prepend('PATH', '$JANA_HOME/bin')
