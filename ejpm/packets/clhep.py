@@ -52,7 +52,7 @@ class ClhepInstallation(PacketInstallationInstruction):
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
+        self.build_cmd = "cmake -Wno-dev -DCLHEP_SINGLE_THREAD=ON -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(
@@ -111,9 +111,11 @@ class ClhepInstallation(PacketInstallationInstruction):
 
         path = data['install_path']
         yield Set('CLHEP', path)
+        yield Set('CLHEPPATH', path)        # Some system look for CLHEP this way
 
         import platform
         if platform.system() == 'Darwin':
             yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib'))
 
         yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
+        yield Append('PATH', os.path.join(path, 'bin'))             # to make available clhep-config and others

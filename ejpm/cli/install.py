@@ -11,12 +11,16 @@ provide_click_framework()
 import click
 
 
-@click.group(invoke_without_command=True)
+#@click.group(invoke_without_command=True)
+@click.command()
 @click.option('--path', 'install_path', default='')
+@click.option('--all', 'dep_mode', flag_value='all')
+@click.option('--missing', 'dep_mode', flag_value='missing')
+@click.option('--single', 'dep_mode', flag_value='single', default=True)
 @click.argument('packet_name', nargs=1)
 @pass_ejpm_context
 @click.pass_context
-def install(ctx, ectx, packet_name, install_path=""):
+def install(ctx, ectx, dep_mode, packet_name, install_path=""):
     """Installs packets"""
 
     db = ectx.db
@@ -26,7 +30,7 @@ def install(ctx, ectx, packet_name, install_path=""):
     assert isinstance(pm, PacketManager)
 
     # Check if packet_name is all, missing or for known packet
-    is_valid_packet_name = packet_name in ['all', 'missing'] + pm.packets.keys()
+    is_valid_packet_name = packet_name in pm.packets.keys()
 
     if not is_valid_packet_name:
         print("Packet with name '{}' is not found".format(packet_name))  # don't know what to do
@@ -44,14 +48,8 @@ def install(ctx, ectx, packet_name, install_path=""):
         _print_help_no_top_path()
         raise click.Abort()
 
-    if packet_name == 'all':
-        _install_all(ectx)                                          # install all packets
-    if packet_name == 'missing':
-        _install_missing(ectx)                                      # install only missing packets
-    elif packet_name in pm.packets.keys():
-        # single packet installation, no dependencies
-        _update_python_env(ectx, pm.packets.keys())                 # update environment 'as is'
-        _install_packet(db, pm.packets[packet_name], install_path)  # install known packet
+    # Install packets
+    _install_with_deps(ectx, packet_name, pm.packets[packet_name].required_deps, mode=dep_mode)
 
     # Update environment scripts
     mprint("Updating environment script files...\n")
@@ -107,71 +105,55 @@ def _install_packet(db, packet, install_path='', replace_active=True):
     db.save()
 
 
-def _install_non_existent_packet(db, packet, install_path):
-    if db.get_active_install_path(packet.name) is not None:
-        _install_packet(db, packet, install_path)
-
-
-def _print_help_no_top_path():
-    mprint("<red>(!)</red> installation directory is not set <red>(!)</red>\n"
-           "ejpm doesn't know where to install missing packets\n\n"
-           "<b><blue>what to do:</blue></b>\n"
-           "  Provide the top dir to install things to:\n"
-           "     ejpm --top-dir=<path to top dir>\n"
-           "  Less recommended. Provide each install command with --path flag:\n"
-           "     ejpm install <packet> --path=<path for packet>\n"
-           "  (--path=... is not just where binary will be installed,\n"
-           "   all related stuff is placed there)\n\n"
-
-           "<b><blue>copy&paste:</blue></b>\n"
-           "  to install missing packets in this directory: \n"
-           "     ejpm --top-dir=`pwd`\n\n"
-
-           "  to install missing packets to your home directory: \n"
-           "     ejpm --top-dir=~/.ejana\n\n")
-
-
-def _install_all(ectx):
+def _install_with_deps(ectx, packet_name, dep_names, mode):
     assert isinstance(ectx, EjpmContext)
 
-    _update_python_env(ectx, ectx.dep_order, mode='all')  # set environment spitting on existing missing
+    # If we install just a single packet desired_names a single name
+    desired_names = dep_names + [packet_name] if dep_names else [packet_name]
 
-    packets = [ectx.pm.packets[name] for name in ectx.dep_order]
-
-    for packet in packets:
-        _install_packet(ectx.db, packet)
-
-
-def _install_missing(ectx):
-    assert isinstance(ectx, EjpmContext)
-
-    active_installs = ectx.db.get_active_installs()
-
-    names_to_install = []
-    mprint("\nPackets known state:")
-    for name, data in active_installs.items():
+    #
+    # Lets see what is missing and tell it to the user
+    missing_packets = []
+    mprint("\nCurrent status of the packet and dependencies:")
+    for name in desired_names:
+        data = ectx.db.get_active_install(name)
         if not data:
             mprint("   <blue>{}</blue> - not installed", name)
-            names_to_install.append(name)
+            missing_packets.append(name)
         else:
             is_owned_str = '(owned)' if data['is_owned'] else ''
             mprint("   <blue>{}</blue> - at: {} {}, ", name, data['install_path'], is_owned_str)
 
-    packets = [ectx.pm.packets[name] for name in ectx.dep_order if name in names_to_install]
+    #
+    # Select packets to install. mode tells what we should do with dependencies
+    if mode == 'missing':
+        # select only missing packets
+        install_packets = [ectx.pm.packets[name] for name in desired_names if name in missing_packets]
+    elif mode == 'single':
+        # single = we only one packet
+        install_packets = [ectx.pm.packets[packet_name]]
+    elif mode == 'all':
+        # all - we just overwrite everything
+        install_packets = [ectx.pm.packets[name] for name in desired_names]
+    else:
+        raise NotImplementedError("installation dependencies mode is not in [missing, single, all]")
 
-    # Is there something to build
-    if not packets:
-        mprint("Nothing to build!")
+    #
+    # Is there something to build?
+    if not install_packets:
+        mprint("Nothing to build and install!")
         return
 
+    # Print user what is going to be built
     mprint("\n <b>INSTALLATION ORDER</b>:")
-    for packet in packets:
+    for packet in install_packets:
         mprint("   <blue>{}</blue> : {}", packet.name, packet.install_path)
 
     # Set environment before build
-    _update_python_env(ectx, ectx.dep_order, mode='missing')  # set environment spitting on existing missing
+    _update_python_env(ectx,  ectx.pm.packets, mode)  # set environment spitting on existing missing
 
-    for packet in packets:
+    #
+    for packet in install_packets:
         _install_packet(ectx.db, packet)
 
 
@@ -223,3 +205,22 @@ def _update_python_env(ectx, dep_order, mode=''):
             env_gens = ectx.pm.env_generators[name]
             for env_gen in env_gens(inst_by_name[name]):   # Go through 'environment generators' look engine/env_gen.py
                 env_gen.update_python_env()                # Do environment update
+
+
+def _print_help_no_top_path():
+    mprint("<red>(!)</red> installation directory is not set <red>(!)</red>\n"
+           "ejpm doesn't know where to install missing packets\n\n"
+           "<b><blue>what to do:</blue></b>\n"
+           "  Provide the top dir to install things to:\n"
+           "     ejpm --top-dir=<path to top dir>\n"
+           "  Less recommended. Provide each install command with --path flag:\n"
+           "     ejpm install <packet> --path=<path for packet>\n"
+           "  (--path=... is not just where binary will be installed,\n"
+           "   all related stuff is placed there)\n\n"
+
+           "<b><blue>copy&paste:</blue></b>\n"
+           "  to install missing packets in this directory: \n"
+           "     ejpm --top-dir=`pwd`\n\n"
+
+           "  to install missing packets to your home directory: \n"
+           "     ejpm --top-dir=~/.ejana\n\n")

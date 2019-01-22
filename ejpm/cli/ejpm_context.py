@@ -24,7 +24,6 @@ class EjpmContext(object):
         self.db = PacketStateDatabase()
         self.pm = PacketManager()
         self.config = {}
-        self.dep_order = ['root', 'rave', 'genfit', 'jana', 'ejana']     # dependency order
 
         # EJPM home path
         # call 3 times dirname as we have <db path>/ejpm/cli

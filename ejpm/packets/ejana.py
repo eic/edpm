@@ -39,6 +39,7 @@ class EjanaInstallation(PacketInstallationInstruction):
         self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
+        self.required_deps = ['clhep', 'root', 'rave', 'genfit', 'jana']
 
     def set_app_path(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""

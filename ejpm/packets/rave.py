@@ -64,7 +64,7 @@ class RaveInstallation(PacketInstallationInstruction):
         # GenFit CMake system does not honor even the CXXFLAGS passed into it!
 
         self.build_command = "./configure --disable-java --prefix=$RAVEPATH " \
-                             "&& make -j{glb_make_options} install" \
+                             '&& CXXFLAGS="-std=c++11" make -j{glb_make_options} install' \
                              "&& for f in $(ls $RAVEPATH/include/rave/*.h); do sed -i 's/RaveDllExport//g' $f; done" \
             .format(install_path=self.install_path, glb_make_options="", version=self.version)
 
@@ -85,8 +85,13 @@ class RaveInstallation(PacketInstallationInstruction):
 
     def step_build(self):
         # Create build directory
-        env('CLHEP_INCLUDE_DIR', '/usr/include')  # or /usr/include/CLHEP/
-        env('CLHEP_LIB_DIR', '/usr/lib')
+
+        # If we or user installed CLHEP it should be in environ
+        if 'CLHEPPATH' not in os.environ:
+            # Ubuntu and other systems may have CLHEP installed through official repos
+            env('CLHEP_INCLUDE_DIR', '/usr/include')  # or /usr/include/CLHEP/
+            env('CLHEP_LIB_DIR', '/usr/lib')
+
         env('RAVEPATH', self.install_path)
 
         # Rave uses ./configure so we building it in {source_path}

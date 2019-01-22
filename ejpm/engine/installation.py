@@ -50,6 +50,8 @@ class PacketInstallationInstruction(object):
         self.source_path = ""       # The directory with source files for current version
         self.build_path = ""        # The directory for cmake/scons build
         self.install_path = ""      # The directory, where binary is installed
+        self.required_deps = []     # Packets which are required for this to run
+        self.optional_deps = []     # Optional packets
 
     def set_app_path(self, app_path):
         """This function is used to format and fill variables, when app_path is known download command"""
@@ -86,3 +88,5 @@ class PacketInstallationInstruction(object):
     def step_install(self):
         """Installs application"""
         raise NotImplementedError()
+
+
