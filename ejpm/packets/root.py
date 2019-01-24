@@ -16,7 +16,7 @@ class RootInstallation(PacketInstallationInstruction):
 
     """
 
-    def __init__(self, version_tuple=(6, 14, 4), build_threads=8):
+    def __init__(self, version_tuple=(6, 16, 0), build_threads=8):
         """
         :param version: Root version
         """
