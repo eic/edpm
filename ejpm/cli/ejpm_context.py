@@ -5,6 +5,7 @@ import os
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.packets import PacketManager
 from ejpm.side_packages import provide_click_framework
+from ejpm.engine.output import markup_print as mprint
 
 # Try to import 'click' framework or to reference included version
 provide_click_framework()  # Try to import 'click' framework or to reference included version
@@ -39,6 +40,32 @@ class EjpmContext(object):
         # environment script paths
         self.config[ENV_SH_PATH] = os.path.join(ejpm_home_path, "env.sh")
         self.config[ENV_CSH_PATH] = os.path.join(ejpm_home_path, "env.csh")
+
+    def ensure_db_exists(self):
+        """Check if DB exist, create it or aborts everything
+
+
+         All ensure_xxx functions check the problem, fix it or write message and call Click.Abort()
+         """
+        # save DB no db...
+        if not self.db.exists():
+            mprint("<green>creating database...</green>")
+            self.db.save()
+
+    def ensure_packet_known(self, packet_name):
+        """Check if packet_name is of known packets or aborts everything
+
+           All ensure_xxx functions check the problem, fix it or write message and call Click.Abort()
+        """
+
+        # Check if packet_name is all, missing or for known packet
+        is_valid_packet_name = packet_name in self.pm.packets.keys()
+
+        if not is_valid_packet_name:
+            print("Packet with name '{}' is not found".format(packet_name))  # don't know what to do
+            raise click.Abort()
+
+
 
     def save_shell_environ(self, file_path, shell):
         """Generates and saves shell environment to a file
