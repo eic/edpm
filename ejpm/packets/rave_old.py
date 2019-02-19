@@ -11,7 +11,7 @@ from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.commands import run, env, workdir, is_not_empty_dir
 
 
-class RaveInstallation(PacketInstallationInstruction):
+class RaveOldInstallation(PacketInstallationInstruction):
     """Provides data for building and installing root
 
     PackageInstallationContext is located in installation.py and contains the next standard package variables:
@@ -20,7 +20,7 @@ class RaveInstallation(PacketInstallationInstruction):
     def __init__(self, version_tuple=(0, 6, 25)):
         # Call parent constructor to fill version, app_path ... and others
         # (!) it is called AFTER we override self.version
-        super(RaveInstallation, self).__init__('rave', version_tuple)
+        super(RaveOldInstallation, self).__init__('rave_old', version_tuple)
 
     def set_app_path(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -85,13 +85,6 @@ class RaveInstallation(PacketInstallationInstruction):
 
     def step_build(self):
         # Create build directory
-
-        # If we or user installed CLHEP it should be in environ
-        if 'CLHEPPATH' not in os.environ:
-            # Ubuntu and other systems may have CLHEP installed through official repos
-            env('CLHEP_INCLUDE_DIR', '/usr/include')  # or /usr/include/CLHEP/
-            env('CLHEP_LIB_DIR', '/usr/lib')
-
         env('RAVEPATH', self.install_path)
 
         # Rave uses ./configure so we building it in {source_path}
@@ -104,13 +97,9 @@ class RaveInstallation(PacketInstallationInstruction):
     @staticmethod
     def gen_env(data):
         install_path = data['install_path']
-
-
         yield Set('RAVEPATH', install_path)
         yield Prepend('CMAKE_PREFIX_PATH', os.path.join(install_path, 'share', 'rave'))
         yield Prepend('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
-
-
 
     def step_set_env(self):
         """

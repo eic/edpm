@@ -11,7 +11,7 @@ from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.commands import run, env, workdir
 
 
-class EjanaInstallation(PacketInstallationInstruction):
+class DevEjanaInstallation(PacketInstallationInstruction):
     """Provides data for building and installing JANA framework
 
     PackageInstallationContext is located in installation.py and contains the next standard package variables:
@@ -35,7 +35,7 @@ class EjanaInstallation(PacketInstallationInstruction):
         """
 
         # Set initial values for parent class and self
-        super(EjanaInstallation, self).__init__('ejana', version)
+        super(DevEjanaInstallation, self).__init__('ejana', version)
         self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
@@ -55,7 +55,7 @@ class EjanaInstallation(PacketInstallationInstruction):
         #
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
+        self.clone_command = "git clone -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
             .format(branch=self.version, source_path=self.source_path)
 
         #

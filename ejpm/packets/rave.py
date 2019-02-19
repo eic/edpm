@@ -17,10 +17,16 @@ class RaveInstallation(PacketInstallationInstruction):
     PackageInstallationContext is located in installation.py and contains the next standard package variables:
     """
 
-    def __init__(self, version_tuple=(0, 6, 25)):
+    def __init__(self, version="master", build_threads=8):
         # Call parent constructor to fill version, app_path ... and others
         # (!) it is called AFTER we override self.version
-        super(RaveInstallation, self).__init__('rave', version_tuple)
+        super(RaveInstallation, self).__init__('rave', version)
+
+        self.clone_command = ""
+        self.bootstrap_command = ""         # This command is called after clone command
+        self.build_command = ""
+        self.build_threads = build_threads
+
 
     def set_app_path(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -34,63 +40,48 @@ class RaveInstallation(PacketInstallationInstruction):
 
         # ENV RAVEPATH $INSTALL_DIR_RAVE
 
-        # version used in a link and in the archive
-        # both download link and the archive use a name like rave-0.6.25
-        link_version = "rave-{}.{}.{}".format(*self.version_tuple)
+        # JANA download link. Clone with shallow copy
+        # TODO accept version tuple to get exact branch
+        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/WolfgangWaltenberger/rave.git {source_path}" \
+            .format(branch=self.version, source_path=self.source_path)
 
-        #
-        # The link to download RAVE. It is like:
-        # https://rave.hepforge.org/downloads?f=rave-0.6.25.tar.gz
-        self.download_link = "https://rave.hepforge.org/downloads?f={link_version}.tar.gz" \
-            .format(link_version=link_version)
+        self.bootstrap_command = './bootstrap'
 
-        #
-        # Command to download and exctract RAVE
-        self.download_command = "wget -N -O {version}.tar.gz --no-check-certificate {download_link}" \
-                                "&& rm -rf {version}" \
-                                "&& tar -xzf {version}.tar.gz" \
-                                "&& mv {link_version} {version}" \
-            .format(version=self.version,
-                    link_version=link_version,
-                    download_link=self.download_link)
-
-        # Support for including RAVE in the build of GenFit is completely broken.
-        # Neither the pkgconfig nor RAVE_XXX envars method actually works. Also,
-        # rave seems to install with a bunch of "RaveDllExport" keywords in the
-        # headers which so be defined as empty strings for Linux. The only file
-        # that defines them is vcconfig.h which exists only in the build directory
-        # and not in the installed include directory. VERY frustrating! The solution
-        # requires stripping this out of the RAVE headers since the ultra-crappy
-        # GenFit CMake system does not honor even the CXXFLAGS passed into it!
-
-        self.build_command = "./configure --disable-java --prefix=$RAVEPATH " \
-                             '&& CXXFLAGS="-std=c++11" make -j{glb_make_options} install' \
+        # cmake command:
+        # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
+        # (!) {{clhep_lib_dir}} and {{clhep_include_dir}} is in 2 braces. So it becomes {clhep_include_dir}
+        #     on step_build the right environment will be set and we will use .format(..) again to fill them
+        #     ugly? YEA!!! say hello to RAVE
+        self.build_command = './configure --disable-java --prefix=$RAVEPATH ' \
+                             ' LDFLAGS="-L{{clhep_lib_dir}}" ' \
+                             ' CXXFLAGS="-std=c++11 -I{{clhep_include_dir}}" ' \
+                             '&&   make -j{glb_make_options} install' \
                              "&& for f in $(ls $RAVEPATH/include/rave/*.h); do sed -i 's/RaveDllExport//g' $f; done" \
-            .format(install_path=self.install_path, glb_make_options="", version=self.version)
+            .format(install_path=self.install_path,
+                    glb_make_options="",
+                    version=self.version)
 
     def step_install(self):
-        self.step_download()
+        self.step_clone()
         self.step_build()
 
-    def step_download(self):
-        """Downloads and extracts RAVE"""
+    def step_clone(self):
+        """Clones JANA from github mirror"""
 
         # Check the directory exists and not empty
-        if is_not_empty_dir(self.source_path):
-            return  # The directory exists and is not empty. Assume it cloned
+        if os.path.exists(self.source_path) and os.path.isdir(self.source_path) and os.listdir(self.source_path):
+            # The directory exists and is not empty. Nothing to do
+            return
+        else:
+            # Create the directory
+            run('mkdir -p {}'.format(self.source_path))
 
-        mkpath(self.download_path)     # Create source directory and any missing ancestor directories if not there
-        workdir(self.download_path)    # Go to 'src' dir
-        run(self.download_command)     # Download and extract
+        run(self.clone_command)         # Execute git clone command
+        workdir(self.source_path)       # Go to our build directory
+        run(self.bootstrap_command)     # This command required by rave once...
 
     def step_build(self):
         # Create build directory
-
-        # If we or user installed CLHEP it should be in environ
-        if 'CLHEPPATH' not in os.environ:
-            # Ubuntu and other systems may have CLHEP installed through official repos
-            env('CLHEP_INCLUDE_DIR', '/usr/include')  # or /usr/include/CLHEP/
-            env('CLHEP_LIB_DIR', '/usr/lib')
 
         env('RAVEPATH', self.install_path)
 
@@ -98,19 +89,25 @@ class RaveInstallation(PacketInstallationInstruction):
         # go to our build directory
         workdir(self.source_path)
 
+        # environment variables CLHEP_LIB_DIR and CLHEP_INCLUDE_DIR should be set at this stage to compile it
+        # otherwise we fall back to default debian install location (RHEL7 doesn't have clep in its repo)
+        clhep_lib_dir = os.environ.get('CLHEP_LIB_DIR', '/usr/lib')
+        clhep_include_dir = os.environ.get('CLHEP_INCLUDE_DIR', '/usr/include')
+
+        build_command_with_clhep = self.build_command.format(
+            clhep_lib_dir=clhep_lib_dir,
+            clhep_include_dir=clhep_include_dir)
+
         # run cmake && make && install
-        run(self.build_command)
+        run(build_command_with_clhep)
 
     @staticmethod
     def gen_env(data):
         install_path = data['install_path']
 
-
         yield Set('RAVEPATH', install_path)
         yield Prepend('CMAKE_PREFIX_PATH', os.path.join(install_path, 'share', 'rave'))
         yield Prepend('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
-
-
 
     def step_set_env(self):
         """
