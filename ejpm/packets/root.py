@@ -16,27 +16,23 @@ class RootInstallation(PacketInstallationInstruction):
 
     """
 
-    def __init__(self, version_tuple=(6, 16, 0), build_threads=8):
+    def __init__(self, build_threads=8):
         """
         :param version: Root version
         """
 
         # Fill the common path pattern
-        super(RootInstallation, self).__init__("root", version_tuple)
+        super(RootInstallation, self).__init__("root")
         self.build_threads = build_threads
-        self.tags = [
-            'root-v6-14',
-            'root-v6-16'
-        ]
 
-    def setup(self, app_path, tag_name):
+
+    def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
         # Root clone branch is like v6-14-04 so if a version is given by tuple (which is awaited at this point)
         # we format 'version' string so that we can use it as a branch name for clone command
-        if self.default_tag_tuple:
-            self.version = 'v{}-{:02}-{:02}'.format(*self.default_tag_tuple)  # v6-14-04
+        version = 'v{}-{:02}-{:02}'.format(6, 14, 04)  # v6-14-04
 
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -44,7 +40,7 @@ class RootInstallation(PacketInstallationInstruction):
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(app_path)
+        self.use_common_dirs_scheme(app_path, version)
 
         #
         # Root download link. We will use github root mirror:
@@ -52,7 +48,7 @@ class RootInstallation(PacketInstallationInstruction):
         # http://github.com/root-project/root.git
         # clone with shallow copy
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/root-project/root.git {source_path}" \
-            .format(branch=self.version, source_path=self.source_path)
+            .format(branch=version, source_path=self.source_path)
 
         #
         # ROOT packets to disable in our build (go with -D{name}=ON flag)

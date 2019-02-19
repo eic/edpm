@@ -40,15 +40,43 @@ class EjanaInstallation(PacketInstallationInstruction):
             'dev': {'branch': 'dmitry_dev'}       # development tag
         }
 
-        super(EjanaInstallation, self).__init__('ejana', default_tag)
+        super(EjanaInstallation, self).__init__('ejana')
         self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
         self.required_deps = ['clhep', 'root', 'rave', 'genfit', 'jana']
-        self.tags['master', 'dev']
+
+
+    def _setup_dev(self, app_path):
+        """Sets all variables like source dirs, build dirs, etc"""
+
+        # For dev version we don't use common path scheme
+        self.app_path = app_path
+        self.download_path = None      # we don't use download_path at all
+
+        branch = self.tags['dev']['branch']
+        # The directory with source files for current version
+        self.source_path = "{app_path}/dev".format(app_path=self.app_path)
+        self.build_path = "{app_path}/dev/.build".format(app_path=self.app_path)  # build in dev directory
+        self.install_path = "{app_path}/dev/build".format(app_path=self.app_path)
+
+        #
+        # ejana download link
+        self.clone_command = "git clone -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
+            .format(branch=branch, source_path=self.source_path)
+
+        #
+        # scons installation command:
+        self.build_command = "scons install -j{build_threads}".format(build_threads=self.build_threads)
 
     def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
+
+        if self.selected_tag == 'dev':
+            return self._setup_dev(app_path)
+
+        # it is not a dev setup
+        branch = 'master'
 
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -56,7 +84,7 @@ class EjanaInstallation(PacketInstallationInstruction):
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(app_path)
+        self.use_common_dirs_scheme(app_path, branch)
 
         #
         # JANA download link. Clone with shallow copy

@@ -59,7 +59,7 @@ class EjpmContext(object):
         """
 
         # Check if packet_name is all, missing or for known packet
-        is_valid_packet_name = packet_name in self.pm.packets.keys()
+        is_valid_packet_name = packet_name in self.pm.installers_by_name.keys()
 
         if not is_valid_packet_name:
             print("Packet with name '{}' is not found".format(packet_name))  # don't know what to do

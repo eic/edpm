@@ -17,10 +17,10 @@ import click
 @click.option('--all', 'dep_mode', flag_value='all')
 @click.option('--missing', 'dep_mode', flag_value='missing')
 @click.option('--single', 'dep_mode', flag_value='single', default=True)
-@click.argument('packet_name', nargs=1)
+@click.argument('name', nargs=1)
 @pass_ejpm_context
 @click.pass_context
-def install(ctx, ectx, dep_mode, packet_name, install_path=""):
+def install(ctx, ectx, dep_mode, name, install_path=""):
     """Installs packets"""
 
     db = ectx.db
@@ -30,10 +30,10 @@ def install(ctx, ectx, dep_mode, packet_name, install_path=""):
     assert isinstance(pm, PacketManager)
 
     # Check if packet_name is all, missing or for known packet
-    is_valid_packet_name = packet_name in pm.packets.keys()
+    is_valid_packet_name = name in pm.installers_by_tags.keys()
 
     if not is_valid_packet_name:
-        print("Packet with name '{}' is not found".format(packet_name))  # don't know what to do
+        print("Packet with name '{}' is not found".format(name))  # don't know what to do
         raise click.Abort()
 
     # Ok, looks like we are going to install something
@@ -49,7 +49,10 @@ def install(ctx, ectx, dep_mode, packet_name, install_path=""):
         raise click.Abort()
 
     # Install packets
-    _install_with_deps(ectx, packet_name, pm.packets[packet_name].required_deps, mode=dep_mode)
+    # set the tag we want to install
+    tag_name, installer = pm.installers_by_tags[name]
+    installer.selected_tag = tag_name
+    _install_with_deps(ectx, installer.name, installer.required_deps, mode=dep_mode)
 
     # Update environment scripts
     mprint("Updating environment script files...\n")
@@ -128,13 +131,13 @@ def _install_with_deps(ectx, packet_name, dep_names, mode):
     # Select packets to install. mode tells what we should do with dependencies
     if mode == 'missing':
         # select only missing packets
-        install_packets = [ectx.pm.packets[name] for name in desired_names if name in missing_packets]
+        install_packets = [ectx.pm.installers_by_name[name] for name in desired_names if name in missing_packets]
     elif mode == 'single':
         # single = we only one packet
-        install_packets = [ectx.pm.packets[packet_name]]
+        install_packets = [ectx.pm.installers_by_name[packet_name]]
     elif mode == 'all':
         # all - we just overwrite everything
-        install_packets = [ectx.pm.packets[name] for name in desired_names]
+        install_packets = [ectx.pm.installers_by_name[name] for name in desired_names]
     else:
         raise NotImplementedError("installation dependencies mode is not in [missing, single, all]")
 
@@ -150,7 +153,7 @@ def _install_with_deps(ectx, packet_name, dep_names, mode):
         mprint("   <blue>{}</blue> : {}", packet.name, packet.install_path)
 
     # Set environment before build
-    _update_python_env(ectx,  ectx.pm.packets, mode)  # set environment spitting on existing missing
+    _update_python_env(ectx,  ectx.pm.installers_by_name, mode)  # set environment spitting on existing missing
 
     #
     for packet in install_packets:

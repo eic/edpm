@@ -10,16 +10,15 @@ def import_all_submodules():
     for (module_loader, name, ispkg) in pkgutil.iter_modules([ejpm.packets.__path__[0]]):
         importlib.import_module('.' + name, __package__)
 
-
-class PacketManager:
+class PacketManager(object):
 
     def __init__(self):
         # We need to import submodules at least once to get __submodules__() function work later
         import_all_submodules()
 
         # But now we just import and create them manually
-        self.packets = {}
-        self.packets_tags = {}
+        self.installers_by_name = {}
+        self.installers_by_tags = {}
         self.env_generators = {}
 
         # Create all subclasses of PacketInstallationInstruction and add here
@@ -31,11 +30,20 @@ class PacketManager:
                 self.add_env_generator(installer.name, installer.gen_env)
 
     def add_installer(self, installer):
-        self.packets[installer.name] = installer
-        self.packets_tags[installer.name] = installer
+        self.installers_by_name[installer.name] = installer
+
+        # default tag is installer name itself
+        self.installers_by_tags[installer.name] = ('', installer)
         if hasattr(installer, 'tags'):
-            for tag in installer.tags:
-                self.packets_tags[tag] = installer
+            # installer has tags
+            # get name of the default tag
+            default_tag = installer.default_tag if hasattr(installer, 'default_tag') else ''
+            tag_names = [name for name in installer.tags.keys() if name != default_tag]
+
+            for tag_name in tag_names:
+                # 'full name' is <app name>-<tag name>
+                tag_full_name = "{}-{}".format(installer.name, tag_name)
+                self.installers_by_tags[tag_full_name] = (tag_name, installer)
 
 
     def add_env_generator(self, name, env_gen):

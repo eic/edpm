@@ -28,24 +28,17 @@ class ClhepInstallation(PacketInstallationInstruction):
         Installs Genfit track fitting framework
         """
 
-        # Set tags/versions/flawours known to the installer.
-        self.tags = {
-            'master': {'branch': 'master'}
-        }
-
-        self.default_tag = 'master'
-
         # Set initial values for parent class and self
         super(ClhepInstallation, self).__init__('clhep')
         self.build_threads = build_threads
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
 
-    def setup(self, app_path, tag_name):
+    def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # What branch will we use? CLHEP has only one=)
-        branch = self.tags[tag_name]['branch']
+        branch = 'master'
 
         #
         # use_common_dirs_scheme sets standard package variables:

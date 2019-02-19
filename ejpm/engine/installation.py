@@ -51,8 +51,9 @@ class PacketInstallationInstruction(object):
         self.install_path = ""      # The directory, where binary is installed
         self.required_deps = []     # Packets which are required for this to run
         self.optional_deps = []     # Optional packets
+        self.selected_tag = ''      # have no idea about selected tags or if there any
 
-    def setup(self, app_path, tag=None):
+    def setup(self, app_path):
         """This function is used to format and fill variables, when app_path is known download command"""
         # ... (!) inherited classes should implement its logic here
         raise NotImplementedError()
