@@ -23,32 +23,42 @@ class ClhepInstallation(PacketInstallationInstruction):
     ubuntu_required_packets = "libboost-dev"
     ubuntu_optional_packets = ""
 
-    def __init__(self, version='master', build_threads=8):
+    def __init__(self, build_threads=8):
         """
         Installs Genfit track fitting framework
         """
 
+        # Set tags/versions/flawours known to the installer.
+        self.tags = {
+            'master': {'branch': 'master'}
+        }
+
+        self.default_tag = 'master'
+
         # Set initial values for parent class and self
-        super(ClhepInstallation, self).__init__('clhep', version)
+        super(ClhepInstallation, self).__init__('clhep')
         self.build_threads = build_threads
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
 
-    def set_app_path(self, app_path):
+    def setup(self, app_path, tag_name):
         """Sets all variables like source dirs, build dirs, etc"""
+
+        # What branch will we use? CLHEP has only one=)
+        branch = self.tags[tag_name]['branch']
 
         #
         # use_common_dirs_scheme sets standard package variables:
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(app_path)
+        self.use_common_dirs_scheme(app_path, branch)
 
         #
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
         self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.cern.ch/CLHEP/CLHEP.git {source_path}"\
-            .format(branch=self.version, source_path=self.source_path)
+            .format(branch=branch, source_path=self.source_path)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075

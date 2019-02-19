@@ -28,19 +28,19 @@ class JanaInstallation(PacketInstallationInstruction):
     ubuntu_required_packets = ""
     ubuntu_optional_packets = "xerses curl"
 
-    def __init__(self, version='master', build_threads=8):
+    def __init__(self, default_tag='master', build_threads=8):
         """
 
-        :param version: Root version
+        :param default_tag: Root version
         """
 
         # Set initial values for parent class and self
-        super(JanaInstallation, self).__init__('jana', version)
+        super(JanaInstallation, self).__init__('jana', default_tag)
         self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
 
-    def set_app_path(self, app_path):
+    def setup(self, app_path, tag_name):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
@@ -55,7 +55,7 @@ class JanaInstallation(PacketInstallationInstruction):
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA2.git {source_path}"\
-            .format(branch=self.version, source_path=self.source_path)
+            .format(branch=self.selected_tag, source_path=self.source_path)
 
         #
         # scons installation command:

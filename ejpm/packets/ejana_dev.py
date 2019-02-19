@@ -28,42 +28,40 @@ class DevEjanaInstallation(PacketInstallationInstruction):
     ubuntu_required_packets = ""
     ubuntu_optional_packets = ""
 
-    def __init__(self, version='dmitry_dev', build_threads=8):
+    def __init__(self, default_tag='dmitry_dev', build_threads=8):
         """
 
-        :param version: Root version
+        :param default_tag: Root version
         """
 
         # Set initial values for parent class and self
-        super(DevEjanaInstallation, self).__init__('ejana', version)
+        super(DevEjanaInstallation, self).__init__('ejana_dev', default_tag)
         self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
         self.required_deps = ['clhep', 'root', 'rave', 'genfit', 'jana']
 
-    def set_app_path(self, app_path):
+    def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
 
-        #
-        # use_common_dirs_scheme sets standard package variables:
-        # version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
-        # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
-        # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
-        # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(app_path)
+        # For dev version we don't use common path scheme
+        self.app_path = app_path
+        self.download_path = None      # we don't use download_path at all
+
+        branch = self.selected_tag
+        # The directory with source files for current version
+        self.source_path = "{app_path}/dev".format(app_path=self.app_path)
+        self.build_path = "{app_path}/dev/.build".format(app_path=self.app_path)  # build in dev directory
+        self.install_path = "{app_path}/dev/build".format(app_path=self.app_path)
 
         #
-        # JANA download link. Clone with shallow copy
-        # TODO accept version tuple to get exact branch
+        # ejana download link
         self.clone_command = "git clone -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
-            .format(branch=self.version, source_path=self.source_path)
+            .format(branch=branch, source_path=self.source_path)
 
         #
         # scons installation command:
-        self.build_command = "scons install -j{build_threads} PREFIX={install_path} VARIANT-DIR={build_path} && scons install"\
-                         .format(build_threads=self.build_threads,
-                                 install_path=self.install_path,
-                                 build_path=self.build_path)
+        self.build_command = "scons install -j{build_threads}".format(build_threads=self.build_threads)
 
         # requirments  env var to locate
         # xerces-c     XERCESCROOT

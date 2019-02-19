@@ -19,6 +19,7 @@ class PacketManager:
 
         # But now we just import and create them manually
         self.packets = {}
+        self.packets_tags = {}
         self.env_generators = {}
 
         # Create all subclasses of PacketInstallationInstruction and add here
@@ -31,6 +32,11 @@ class PacketManager:
 
     def add_installer(self, installer):
         self.packets[installer.name] = installer
+        self.packets_tags[installer.name] = installer
+        if hasattr(installer, 'tags'):
+            for tag in installer.tags:
+                self.packets_tags[tag] = installer
+
 
     def add_env_generator(self, name, env_gen):
         self.env_generators[name] = env_gen

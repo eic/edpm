@@ -22,7 +22,7 @@ class RaveOldInstallation(PacketInstallationInstruction):
         # (!) it is called AFTER we override self.version
         super(RaveOldInstallation, self).__init__('rave_old', version_tuple)
 
-    def set_app_path(self, app_path):
+    def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -36,7 +36,7 @@ class RaveOldInstallation(PacketInstallationInstruction):
 
         # version used in a link and in the archive
         # both download link and the archive use a name like rave-0.6.25
-        link_version = "rave-{}.{}.{}".format(*self.version_tuple)
+        link_version = "rave-{}.{}.{}".format(*self.default_tag_tuple)
 
         #
         # The link to download RAVE. It is like:
@@ -50,7 +50,7 @@ class RaveOldInstallation(PacketInstallationInstruction):
                                 "&& rm -rf {version}" \
                                 "&& tar -xzf {version}.tar.gz" \
                                 "&& mv {link_version} {version}" \
-            .format(version=self.version,
+            .format(version=self.selected_tag,
                     link_version=link_version,
                     download_link=self.download_link)
 
@@ -66,7 +66,7 @@ class RaveOldInstallation(PacketInstallationInstruction):
         self.build_command = "./configure --disable-java --prefix=$RAVEPATH " \
                              '&& CXXFLAGS="-std=c++11" make -j{glb_make_options} install' \
                              "&& for f in $(ls $RAVEPATH/include/rave/*.h); do sed -i 's/RaveDllExport//g' $f; done" \
-            .format(install_path=self.install_path, glb_make_options="", version=self.version)
+            .format(install_path=self.install_path, glb_make_options="", version=self.selected_tag)
 
     def step_install(self):
         self.step_download()

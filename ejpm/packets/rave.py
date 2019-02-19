@@ -17,10 +17,10 @@ class RaveInstallation(PacketInstallationInstruction):
     PackageInstallationContext is located in installation.py and contains the next standard package variables:
     """
 
-    def __init__(self, version="master", build_threads=8):
+    def __init__(self, default_tag="master", build_threads=8):
         # Call parent constructor to fill version, app_path ... and others
         # (!) it is called AFTER we override self.version
-        super(RaveInstallation, self).__init__('rave', version)
+        super(RaveInstallation, self).__init__('rave', default_tag)
 
         self.clone_command = ""
         self.bootstrap_command = ""         # This command is called after clone command
@@ -28,7 +28,7 @@ class RaveInstallation(PacketInstallationInstruction):
         self.build_threads = build_threads
 
 
-    def set_app_path(self, app_path):
+    def setup(self, app_path, tag_name):
         """Sets all variables like source dirs, build dirs, etc"""
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -43,7 +43,7 @@ class RaveInstallation(PacketInstallationInstruction):
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/WolfgangWaltenberger/rave.git {source_path}" \
-            .format(branch=self.version, source_path=self.source_path)
+            .format(branch=self.selected_tag, source_path=self.source_path)
 
         self.bootstrap_command = './bootstrap'
 
@@ -59,7 +59,7 @@ class RaveInstallation(PacketInstallationInstruction):
                              "&& for f in $(ls $RAVEPATH/include/rave/*.h); do sed -i 's/RaveDllExport//g' $f; done" \
             .format(install_path=self.install_path,
                     glb_make_options="",
-                    version=self.version)
+                    version=self.selected_tag)
 
     def step_install(self):
         self.step_clone()

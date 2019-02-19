@@ -82,7 +82,7 @@ def _install_packet(db, packet, install_path='', replace_active=True):
         install_path = os.path.join(db.top_dir, packet.name)
 
     # set_app_path setups parameters (formats all string variables) for this particular path
-    packet.set_app_path(install_path)
+    packet.setup(install_path)
 
     # Pretty header
     mprint("<magenta>=========================================</magenta>")

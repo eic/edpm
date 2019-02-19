@@ -24,15 +24,19 @@ class RootInstallation(PacketInstallationInstruction):
         # Fill the common path pattern
         super(RootInstallation, self).__init__("root", version_tuple)
         self.build_threads = build_threads
+        self.tags = [
+            'root-v6-14',
+            'root-v6-16'
+        ]
 
-    def set_app_path(self, app_path):
+    def setup(self, app_path, tag_name):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
         # Root clone branch is like v6-14-04 so if a version is given by tuple (which is awaited at this point)
         # we format 'version' string so that we can use it as a branch name for clone command
-        if self.version_tuple:
-            self.version = 'v{}-{:02}-{:02}'.format(*self.version_tuple)  # v6-14-04
+        if self.default_tag_tuple:
+            self.version = 'v{}-{:02}-{:02}'.format(*self.default_tag_tuple)  # v6-14-04
 
         #
         # use_common_dirs_scheme sets standard package variables:

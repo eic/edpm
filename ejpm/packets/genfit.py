@@ -23,18 +23,19 @@ class GenfitInstallation(PacketInstallationInstruction):
     ubuntu_required_packets = "libboost-dev"
     ubuntu_optional_packets = ""
 
-    def __init__(self, version='master', build_threads=8):
+    def __init__(self, default_tag='master', build_threads=8):
         """
         Installs Genfit track fitting framework
         """
+        self.tags = {'default': {'branch': 'master'}}
 
         # Set initial values for parent class and self
-        super(GenfitInstallation, self).__init__('genfit', version)
+        super(GenfitInstallation, self).__init__('genfit')
         self.build_threads = build_threads
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
 
-    def set_app_path(self, app_path):
+    def setup(self, app_path, tag_name):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
@@ -48,7 +49,7 @@ class GenfitInstallation(PacketInstallationInstruction):
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/GenFit/GenFit {source_path}"\
-            .format(branch=self.version, source_path=self.source_path)
+            .format(branch=self.selected_tag, source_path=self.source_path)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075

@@ -28,20 +28,26 @@ class EjanaInstallation(PacketInstallationInstruction):
     ubuntu_required_packets = ""
     ubuntu_optional_packets = ""
 
-    def __init__(self, version='dmitry_dev', build_threads=8):
+    def __init__(self, build_threads=8):
         """
 
-        :param version: Root version
+        :param default_tag: Root version
         """
 
         # Set initial values for parent class and self
-        super(EjanaInstallation, self).__init__('ejana', version)
+        self.tags = {
+            'default': {'branch': 'master'},      # regular tag. master is considered stable now
+            'dev': {'branch': 'dmitry_dev'}       # development tag
+        }
+
+        super(EjanaInstallation, self).__init__('ejana', default_tag)
         self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
         self.required_deps = ['clhep', 'root', 'rave', 'genfit', 'jana']
+        self.tags['master', 'dev']
 
-    def set_app_path(self, app_path):
+    def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
@@ -56,7 +62,7 @@ class EjanaInstallation(PacketInstallationInstruction):
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
         self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
-            .format(branch=self.version, source_path=self.source_path)
+            .format(branch=self.selected_tag, source_path=self.source_path)
 
         #
         # scons installation command:
