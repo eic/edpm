@@ -48,4 +48,11 @@ What ejpm is not:
 
 Users are pretty much encouraged to change the code and everything is done here to be user-change-friendly
 
+1. The main description of how packages are installed is located in
+[ejpm/packets](https://gitlab.com/eic/ejpm/tree/master/ejpm/packets)
+directory
+
+2. All information of installed packages is located in db.json. Users are encouraged to and edit the file
+3. 
+
  
