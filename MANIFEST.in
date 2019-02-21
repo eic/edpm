@@ -1,2 +1,3 @@
 exclude .gitignore
 exclude run_ejpm.py
+recursive-include ejpm/ *.py
