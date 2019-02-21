@@ -1,2 +1,2 @@
-colorama
-click
+Click
+appdirs

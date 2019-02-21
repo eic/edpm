@@ -1,14 +1,12 @@
 import os
-from distutils.dir_util import mkpath
 
 from ejpm.engine.env_gen import Set, Prepend
-from ejpm.side_packages import provide_click_framework
+from side_packages import provide_click_framework
 
 provide_click_framework()
-import click
 
 from ejpm.engine.installation import PacketInstallationInstruction
-from ejpm.engine.commands import run, env, workdir, is_not_empty_dir
+from ejpm.engine.commands import run, env, workdir
 
 
 class RaveInstallation(PacketInstallationInstruction):

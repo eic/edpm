@@ -9,9 +9,6 @@ import os
 import io
 from ejpm.engine.py23 import to_unicode
 
-
-
-
 INSTALL_PATH = 'install_path'
 IS_OWNED = 'is_owned'
 IS_ACTIVE = 'is_active'

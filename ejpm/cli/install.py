@@ -1,7 +1,7 @@
 import os
 
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
-from ejpm.side_packages import provide_click_framework
+from side_packages import provide_click_framework
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.installation import PacketInstallationInstruction
@@ -153,7 +153,7 @@ def _install_with_deps(ectx, packet_name, dep_names, mode):
         mprint("   <blue>{}</blue> : {}", packet.name, packet.install_path)
 
     # Set environment before build
-    _update_python_env(ectx,  ectx.pm.installers_by_name, mode)  # set environment spitting on existing missing
+    _update_python_env(ectx, ectx.pm.installers_by_name, mode)  # set environment spitting on existing missing
 
     #
     for packet in install_packets:

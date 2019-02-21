@@ -1,5 +1,5 @@
 from ejpm.cli.ejpm_context import pass_ejpm_context
-from ejpm.side_packages import provide_click_framework
+from side_packages import provide_click_framework
 from ejpm.engine.db import PacketStateDatabase
 
 

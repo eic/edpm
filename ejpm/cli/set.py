@@ -1,11 +1,6 @@
-import os
-
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
-from ejpm.side_packages import provide_click_framework
-from ejpm.engine.db import PacketStateDatabase
+from side_packages import provide_click_framework
 from ejpm.engine.output import markup_print as mprint
-from ejpm.engine.installation import PacketInstallationInstruction
-from ejpm.packets import PacketManager
 
 provide_click_framework()
 import click

@@ -1,8 +1,4 @@
-import os
-import subprocess
-import sys
-
-from ejpm.side_packages import provide_click_framework
+from side_packages import provide_click_framework
 
 provide_click_framework()   # Try to import 'click' framework or to reference included version
 import click

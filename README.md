@@ -48,4 +48,88 @@ What ejpm is not:
 
 Users are pretty much encouraged to change the code and everything is done here to be user-change-friendly
 
+## Installation
+
+#### Regular:
+
+```bash
+pip install ejpm
+```
+
+#### Regular + JLab certs problems:
+There could be problems on JLab machines (details are in the end):
+```bash
+python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org --install ejpm
+```
+
+### Manual:
+***TL;DR;*** Get EJPM, install requirements, ready:
+```bash
+git clone https://gitlab.com/eic/ejpm.git
+pip install -r ejpm/requirements.txt
+python ejpm/run_ejpm.py
+```
+
+***'ejpm'*** **command**:
+
+Calling ```python <path to ejpm>/run_ejpm.py``` is inconvenient!
+It is easy to add alias to your .bashrc (or whatever)
+```sh
+alias ejpm='python <path to ejpm>/run_ejpm.py'
+```
+So if you just cloned it copy/paste:
+```bash
+echo "alias='python `pwd`/ejpm/run_ejpm.py'" >> ~/.bashrc
+```
+
+**requirments**:
+
+```Click``` and ```appdirs``` are the only requirements. If you have pip do: 
+
+```bash
+pip install Click appdirs
+```
+> If for some reason you don't have pip, you don't know python well enough 
+and don't want to mess with it, pips, shmips and doh...
+Just download and add to ```PYTHONPATH```: 
+[this 'click' folder](https://pypi.org/project/click/)
+and some folder with [appdirs.py](https://github.com/ActiveState/appdirs/blob/master/appdirs.py)
+
+
+  
+
+
+
+## Environment
+
+```EJPM_DATA_PATH``` - sets the path where the configuration db.json and env.sh, env.csh are located
+
+
+### JLab certificate problems
+
+If you get errors like:
+```
+Retrying (...) after connection broken by 'SSLError(SSLError(1, u'[SSL: CERTIFICATE_VERIFY_FAILED]...
+```
+
+The problem is that ```pip``` is trustworthy enough to use secure connection to get packages. 
+And JLab is helpful enough to put its root level certificates in the middle.
+
+1. The easiest solution is to continue use pip declaring PiPy sites as trusted:  
+    ```bash
+    python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org --install ejpm
+    ```
+2. Or to permanently add those sites as trusted in pip.config 
+    ```
+    [global]
+    trusted-host=
+        pypi.python.org
+        pypi.org
+        files.pythonhosted.org
+    ```
+    ([The link where to find pip.config on your system](https://pip.pypa.io/en/stable/user_guide/#config-file))
+ 3. You may want to be a hero and kill the dragon. The quest is to take [JLab certs](https://cc.jlab.org/JLabCAs). 
+ Then [Convert them to pem](https://stackoverflow.com/questions/991758/how-to-get-pem-file-from-key-and-crt-files).
+ Then [add certs to pip](https://stackoverflow.com/questions/25981703/pip-install-fails-with-connection-error-ssl-certificate-verify-failed-certi).
+ Then **check it really works** on JLab machines. And bring the dragon's head back (i.e. please, add the exact instruction to this file) 
  

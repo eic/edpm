@@ -1,7 +1,12 @@
+# Setuptools distribution folder.
+/dist/
+
+# Python egg metadata, regenerated from source files by setuptools.
+/*.egg-info
+
 # ejpm files
 
 db.json
-
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
