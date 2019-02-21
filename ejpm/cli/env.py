@@ -1,10 +1,8 @@
+import click
+
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.packets import PacketManager
-from side_packages import provide_click_framework
-
-provide_click_framework()
-import click
 
 
 @click.group(invoke_without_command=True)
@@ -30,8 +28,6 @@ def env(ctx, ectx):
 
     if ctx.invoked_subcommand is None:
         print(ectx.pm.gen_bash_env_text(db.get_active_installs()))
-
-
 
     else:
         pass

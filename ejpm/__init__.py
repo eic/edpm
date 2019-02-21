@@ -1,13 +1,9 @@
 import os
+import click
 
 from ejpm.cli.ejpm_context import pass_ejpm_context, DB_FILE_PATH
-from side_packages import provide_click_framework
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
-
-# Try to import 'click' framework or to reference included version
-provide_click_framework()   # Try to import 'click' framework or to reference included version
-import click
 
 
 def print_first_time_message():

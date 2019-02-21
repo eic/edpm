@@ -1,18 +1,12 @@
 import inspect
 import io
 import os
+import click
 import appdirs
 
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.packets import PacketManager
-from side_packages import provide_click_framework
 from ejpm.engine.output import markup_print as mprint
-
-
-# Try to import 'click' framework or to reference included version
-provide_click_framework()  # Try to import 'click' framework or to reference included version
-import click
-
 
 EJPM_HOME_PATH = 'ejpm_home_path'       # Home path of the EJPM
 EJPM_DATA_PATH = 'ejpm_data_path'       # Path where
@@ -121,11 +115,6 @@ class EjpmContext(object):
     def save_default_csh_environ(self):
         """Generates and saves csh/tcsh environment to a default file path"""
         self.save_shell_environ(self.config[ENV_CSH_PATH], 'csh')
-
-
-
-
-
 
 
 # Create a database class and @pass_db decorator so our commands could use it

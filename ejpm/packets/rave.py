@@ -1,10 +1,6 @@
 import os
 
 from ejpm.engine.env_gen import Set, Prepend
-from side_packages import provide_click_framework
-
-provide_click_framework()
-
 from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.commands import run, env, workdir
 
@@ -41,7 +37,8 @@ class RaveInstallation(PacketInstallationInstruction):
 
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/WolfgangWaltenberger/rave.git {source_path}" \
+        self.clone_command = "git clone --depth 1 -b {branch} " \
+                             "https://github.com/WolfgangWaltenberger/rave.git {source_path}" \
             .format(branch=branch, source_path=self.source_path)
 
         self.bootstrap_command = './bootstrap'
@@ -117,6 +114,6 @@ class RaveInstallation(PacketInstallationInstruction):
         # to try and build GenFit with RAVE support with these here (AND defined in the cmake commad!)
         ENV RAVE_CFLAGS "-g -O2"
         ENV RAVE_INCLUDE_DIRS $RAVEPATH/include
-        ENV RAVE_LDFLAGS "-L$INSTALL_DIR_RAVE/lib -lRaveBase -lRaveCore -lRaveVertex -lRaveFlavorTag -lRaveVertexKinematics"
-
+        ENV RAVE_LDFLAGS "-L$INSTALL_DIR_RAVE/lib -lRaveBase -lRaveCore -lRaveVertex
+                          -lRaveFlavorTag -lRaveVertexKinematics"
         """

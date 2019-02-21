@@ -1,9 +1,7 @@
-from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
-from side_packages import provide_click_framework
-from ejpm.engine.output import markup_print as mprint
-
-provide_click_framework()
 import click
+
+from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
+from ejpm.engine.output import markup_print as mprint
 
 
 # @click.group(invoke_without_command=True)

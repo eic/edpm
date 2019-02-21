@@ -96,8 +96,6 @@ Just download and add to ```PYTHONPATH```:
 and some folder with [appdirs.py](https://github.com/ActiveState/appdirs/blob/master/appdirs.py)
 
 
-  
-
 
 
 ## Environment
