@@ -59,7 +59,7 @@ pip install ejpm
 #### Regular + JLab certs problems:
 There could be problems on JLab machines (details are in the end):
 ```bash
-python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org --install ejpm
+python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org ejpm
 ```
 
 ### Manual:
@@ -100,7 +100,50 @@ and some folder with [appdirs.py](https://github.com/ActiveState/appdirs/blob/ma
 
 ## Environment
 
-```EJPM_DATA_PATH``` - sets the path where the configuration db.json and env.sh, env.csh are located
+***TL;DR;*** Just source it like:
+```bash
+source <(ejpm env)      
+# or
+source ~/.local/share/ejpm/env.sh    # or same with .csh
+```
+
+ ```EJPM_DATA_PATH```- sets the path where the configuration db.json and env.sh, env.csh are located
+
+***description:***
+
+
+Each time you make changes to packets, 
+EJPM generates `env.sh` and `env.csh` files, 
+that could be found in standard apps user directory.
+
+> XDG is the standard POSIX paths to store applications data, configs, etc. 
+EJPM uses [XDG_DATA_HOME](https://wiki.archlinux.org/index.php/XDG_Base_Directory#Specification)
+for this
+
+For linux it is:
+
+```
+~/.local/share/ejpm/env.sh      # sh version
+~/.local/share/ejpm/env.csh     # csh version
+~/.local/share/ejpm/db.json     # open it, edit it, love it
+```
+
+You can always get fresh environment with ejpm ```env``` command 
+```bash
+ejpm env
+```
+
+And source it like:
+```bash
+source <(ejpm env)
+```
+
+
+
+
+You can control where ejpm stores data by setting ```EJPM_DATA_PATH``` environment variable.
+
+
 
 
 ### JLab certificate problems
@@ -115,7 +158,7 @@ And JLab is helpful enough to put its root level certificates in the middle.
 
 1. The easiest solution is to continue use pip declaring PiPy sites as trusted:  
     ```bash
-    python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org --install ejpm
+    python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org ejpm
     ```
 2. Or to permanently add those sites as trusted in pip.config 
     ```
