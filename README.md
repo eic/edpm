@@ -11,7 +11,12 @@ The secondary goal is to help users with e^JANA plugin development cycle.
 
 
 
-### The reason
+# Motivation
+
+***TL;DR;*** Cern ROOT, Geant, and other scientific packages are crappy, not supported by major Linux distros so 
+everybody have to reinvent the wheel (and we do) to include them (and dependencies) in a software chain
+
+
 
 why ejpm is here (and a pain, it tries to resolve) - is that 
 there is no standard convention in our field of how all dependent packages are 
@@ -50,19 +55,46 @@ Users are pretty much encouraged to change the code and everything is done here 
 
 ## Installation
 
-#### Regular:
+### Regular (TL;DR;):
 
 ```bash
 pip install ejpm
 ```
 
-#### Regular + JLab certs problems:
-There could be problems on JLab machines (details are in the end):
+***JLab specific matters***    
+There could be Root Certificate related problems on JLab machines ([more details are in the end](#jlab-certificate-problems)):
 ```bash
 python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org ejpm
 ```
 
-### Manual:
+For lvl1&2 machines, there is a python installations that have ```pip``` :
+```bash
+/apps/python/     # All pythons there have pip and etc
+/apps/anaconda/   # Moreover, there is anaconda (python with all major math/physics libs) 
+``` 
+
+***But... there is no pip:***  
+Install it!
+```
+sudo easy_install pip
+```
+
+***But... there is no easy_install!***  
+Install it!
+```bash
+sudo yum install python-setuptools python-setuptools-devel   # Fedora and RHEL/CentOS 
+sudo apt-get install python-setuptools                       # Ubuntu and Debian
+# Gentoo. I should not write this for its users, right?
+```
+
+For python3 it is ```easy_install3``` and ```python3-setuptools```
+
+***I dont have sudo privileges!***  
+
+Add "--user" flag both for pip and easy_install for this. 
+[Read SO here](https://stackoverflow.com/questions/15912804/easy-install-or-pip-as-a-limited-user)
+
+### Manual/development installation:
 ***TL;DR;*** Get EJPM, install requirements, ready:
 ```bash
 git clone https://gitlab.com/eic/ejpm.git
@@ -109,18 +141,14 @@ source ~/.local/share/ejpm/env.sh    # or same with .csh
 
  ```EJPM_DATA_PATH```- sets the path where the configuration db.json and env.sh, env.csh are located
 
-***description:***
+***longer reading:***
 
 
 Each time you make changes to packets, 
 EJPM generates `env.sh` and `env.csh` files, 
 that could be found in standard apps user directory.
 
-> XDG is the standard POSIX paths to store applications data, configs, etc. 
-EJPM uses [XDG_DATA_HOME](https://wiki.archlinux.org/index.php/XDG_Base_Directory#Specification)
-for this
-
-For linux it is:
+For linux it is in XDG_DATA_HOME:
 
 ```
 ~/.local/share/ejpm/env.sh      # sh version
@@ -128,23 +156,24 @@ For linux it is:
 ~/.local/share/ejpm/db.json     # open it, edit it, love it
 ```
 
+> XDG is the standard POSIX paths to store applications data, configs, etc. 
+EJPM uses [XDG_DATA_HOME](https://wiki.archlinux.org/index.php/XDG_Base_Directory#Specification)
+to store `env.sh`, `env.csh` and `db.json` and ```db.json```
+
 You can always get fresh environment with ejpm ```env``` command 
 ```bash
 ejpm env
 ```
 
-And source it like:
+You can directly source it like:
 ```bash
 source <(ejpm env)
 ```
 
-
-
-
 You can control where ejpm stores data by setting ```EJPM_DATA_PATH``` environment variable.
 
 
-
+<br><br>
 
 ### JLab certificate problems
 
