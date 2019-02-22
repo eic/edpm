@@ -32,7 +32,7 @@ class RootInstallation(PacketInstallationInstruction):
         #
         # Root clone branch is like v6-14-04 so if a version is given by tuple (which is awaited at this point)
         # we format 'version' string so that we can use it as a branch name for clone command
-        version = 'v{}-{:02}-{:02}'.format(6, 14, 04)  # v6-14-04
+        version = 'v{}-{:02}-{:02}'.format(6, 16, 0)  # v6-14-04
 
         #
         # use_common_dirs_scheme sets standard package variables:

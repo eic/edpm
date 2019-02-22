@@ -93,6 +93,8 @@ def ejpm_cli(ctx, ectx, debug, top_dir):
 
     # user asks to set the top dir
     if top_dir:
+        if db.exists():
+            db.load()
         db.top_dir = top_dir
         db.save()
 

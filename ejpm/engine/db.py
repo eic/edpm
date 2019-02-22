@@ -26,14 +26,7 @@ class PacketStateDatabase(object):
             "packets": {
                 "root": {
                     "required": True,
-                    "installs":
-                    [
-                        {
-                            INSTALL_PATH: '/home/romanov/jleic/test/root/bin/Linux__Ubuntu18.04-x86_64-gcc7/',
-                            IS_OWNED: False,
-                            IS_ACTIVE: True
-                        }
-                    ]
+                    "installs": []
                 },
                 "clhep": {
                     "required": True,
