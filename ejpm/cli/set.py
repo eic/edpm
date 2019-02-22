@@ -1,6 +1,9 @@
+import os
+
 import click
 
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
+from ejpm.engine.db import INSTALL_PATH
 from ejpm.engine.output import markup_print as mprint
 
 
@@ -20,6 +23,8 @@ def install(ctx, ectx, packet_name, install_path):
 
     # Check that the packet name is from known packets
     ectx.ensure_packet_known(packet_name)
+
+    ectx.db.update_install(packet_name, install_path, )
 
 
     # Update environment scripts

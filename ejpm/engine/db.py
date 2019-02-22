@@ -123,10 +123,12 @@ class PacketStateDatabase(object):
         """
 
         installs = self.data['packets'][packet_name]['installs']
+        install_path = os.path.normpath(install_path)
 
         # Search for existing installation with this installation path
         existing_install = None
         for install in installs:
+            # We compare it just by == as all saved installs have gone through os.path.normpath
             if install[INSTALL_PATH] == to_unicode(install_path):
                 existing_install = install
                 break
