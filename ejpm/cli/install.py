@@ -110,6 +110,15 @@ def _install_with_deps(ectx, packet_name, dep_names, mode):
     # If we install just a single packet desired_names a single name
     desired_names = dep_names + [packet_name] if dep_names else [packet_name]
 
+    # First we want to play 'setup' function on all dependencies.
+    # This will allow us to build the right environment for non existent packets
+    # If this is just a single packet install it will do no harm
+    for name in desired_names:
+        installer = ectx.pm.installers_by_name[name]
+        # To call setup we need some installation path. Those are dependencies and we only know how to
+        # install them to top_dir. So we don't care and set simple os.path.join(...)
+        installer.setup(os.path.join(ectx.db.top_dir, installer.name))
+
     #
     # Lets see what is missing and tell it to the user
     missing_packets = []
@@ -182,14 +191,14 @@ def _update_python_env(ectx, dep_order, mode=''):
             # There is no installation data for the packet, but we assume we will install it now!
             if not inst:
                 inst = {
-                    INSTALL_PATH: os.path.join(ectx.db.top_dir, name),
+                    INSTALL_PATH: ectx.pm.installers_by_name[name].install_path,
                     IS_ACTIVE: True,
                     IS_OWNED: True
                 }
         elif mode == 'all':
             # We overwrite installation path for the packet
             inst = {
-                INSTALL_PATH: os.path.join(ectx.db.top_dir, name),
+                INSTALL_PATH: ectx.pm.installers_by_name[name].install_path,
                 IS_ACTIVE: True,
                 IS_OWNED: True
             }

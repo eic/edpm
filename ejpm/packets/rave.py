@@ -10,6 +10,12 @@ class RaveInstallation(PacketInstallationInstruction):
 
     PackageInstallationContext is located in installation.py and contains the next standard package variables:
     """
+    fedora_required_packets = ""
+    fedora_optional_packets = ""
+    ubuntu_required_packets = "autoconf shtool automake libtool"
+    ubuntu_optional_packets = ""
+
+
 
     def __init__(self, build_threads=8):
         # Call parent constructor to fill version, app_path ... and others

@@ -71,8 +71,10 @@ class EjanaInstallation(PacketInstallationInstruction):
     def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
 
-        if self.selected_tag == 'dev':
-            return self._setup_dev(app_path)
+        #if self.selected_tag == 'dev':
+
+        # (!) at this point we alwais use dev environment
+        return self._setup_dev(app_path)
 
         # it is not a dev setup
         branch = 'master'

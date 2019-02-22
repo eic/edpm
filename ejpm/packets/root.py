@@ -52,12 +52,13 @@ class RootInstallation(PacketInstallationInstruction):
 
         #
         # ROOT packets to disable in our build (go with -D{name}=ON flag)
-        self.disable = ["mysql", "alien", "asimag", "bonjour", "builtin_afterimage", "castor", "chirp", "dcache",
-                        "fitsio", "gfal", "glite", "hdfs", "krb5", "odbc", "sapdb", "shadowpw", "srp", "xrootd"]
+        self.disable = ["mysql", "alien",  "bonjour", "builtin_afterimage", "castor", "chirp", "dcache", "fitsio",
+                        "gfal", "glite", "hdfs", "krb5", "odbc", "sapdb", "shadowpw", "srp", "xrootd", "oracle",
+                        "pgsql", "sqlite", "pythia6", "pythia8", "vdt"]
 
         #
         # ROOT packets to enable in our build (go with -D{name}=OFF flag)
-        self.enable = ["roofit", "minuit2", "python"]
+        self.enable = ["roofit", "minuit2", "python", "asimage", "builtin_tbb"]
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
