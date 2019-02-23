@@ -112,7 +112,7 @@ class PacketStateDatabase(object):
         if path in self.data['packets'][packet_name]['installs']:
             return path
 
-    def update_install(self, packet_name, install_path, is_owned, is_active):
+    def update_install(self, packet_name, install_path, is_owned="nochange", is_active="nochange"):
         """
 
         :param packet_name: Name of the packet. Like root, genfit, rave, etc
@@ -137,16 +137,19 @@ class PacketStateDatabase(object):
         if existing_install is None:
             existing_install = {}
             installs.append(existing_install)
-
-        # deselect other installations if the new one is selected
-        if is_active:
-            for install in installs:
-                install[IS_ACTIVE] = False
+            existing_install[IS_ACTIVE] = True      # It is the first installation. Should be active
+            existing_install[IS_OWNED] = False      # Nothing known about it, so guess we are not
 
         # set selected and ownership
         existing_install[INSTALL_PATH] = install_path
-        existing_install[IS_ACTIVE] = is_active
-        existing_install[IS_OWNED] = is_owned
+        if is_active != "nochange":
+            # deselect other installations if the new one is selected
+            if is_active:
+                for install in installs:
+                    install[IS_ACTIVE] = False
+            existing_install[IS_ACTIVE] = is_active
+        if is_owned != "nochange":
+            existing_install[IS_OWNED] = is_owned
 
     #@property
     #def missing(self):
