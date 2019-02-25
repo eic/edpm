@@ -12,7 +12,7 @@ with open(os.path.join(this_script_dir, "README.md"), 'r') as readme_file:
 # This call to setup() does all the work
 setup(
     name="ejpm",
-    version="0.0.1",
+    version="0.0.4",
     description="EIC Jana Package Manager",
     long_description=readme,
     long_description_content_type="text/markdown",
@@ -35,7 +35,7 @@ setup(
     ],
     packages=["ejpm"],
     include_package_data=True,
-    install_requires=["Click", "appdirs"],
+    install_requires=["click", "appdirs"],
     entry_points={
         "console_scripts": [
             "ejpm=ejpm:ejpm_cli",
