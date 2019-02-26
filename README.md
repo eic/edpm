@@ -16,16 +16,16 @@ sudo python -m pip install --trusted-host pypi.python.org --trusted-host files.p
 
 # install prerequesties
 ejpm req fedora ejana         # get list of OS packets required to build jana and deps
-sudo yum install ...          # install watever 'ejpm req' shows
+sudo yum install ...          # install whatever 'ejpm req' shows
 
-# setup installation dir and existing packets, check
+# setup installation dir and existing packets, introspect
 ejpm --top-dir=<where-to>     # Directory where packets will be installed
-ejpm install ejana --explain  # See what is to be installed
+ejpm                          # To see how ejpm is configured
+ejpm install ejana --explain  # To see what is to be installed
 ejpm set root `$ROOTSYS`      # if you have CERN.ROOT. Or skip this step
 ejpm set <packet> <path>      # set other existing packets. Or skip this step!!!
-ejpm                          # To see how ejpm is configured
 
-# Install the rest
+# Build and install the rest
 ejpm install ejana --missing  # install ejana and dependencies (like genfit, jana and rave)
 
 # Set environment
