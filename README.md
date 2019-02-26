@@ -273,7 +273,7 @@ For JLab lvl1&2 machines, there is a python installations that have ```pip``` :
 /apps/anaconda/   # Moreover, there is anaconda (python with all major math/physics libs) 
 ``` 
 
-***But ther is no 'pip' command?***  
+***But there is no 'pip' command?***  
 If ```easy_install``` installed something, but ```pip``` command is not found after, do:
 
 1. If ```--user``` flag was used, make sure ```~/.local/bin``` is in your ```$PATH``` variable
