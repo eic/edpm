@@ -1,7 +1,7 @@
 import os
 import click
 
-from ejpm.cli.ejpm_context import pass_ejpm_context, DB_FILE_PATH
+from ejpm.cli.ejpm_context import pass_ejpm_context, DB_FILE_PATH, ENV_CSH_PATH, ENV_SH_PATH
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 
@@ -121,9 +121,10 @@ def ejpm_cli(ctx, ectx, debug, top_dir):
         if ctx.invoked_subcommand is None:
             from ejpm.version import version
             mprint("<b><blue>EJPM</blue></b> v{}".format(version))
-            mprint("<b><blue>top dir :</blue></b>\n  {}".format(db.top_dir))
-            mprint("<b><blue>state db:</blue></b> (users are encouraged to inspect/edit it)\n  {}"
-                   .format(ectx.config[DB_FILE_PATH]))
+            mprint("<b><blue>top dir :</blue></b>\n  {}", db.top_dir)
+            mprint("<b><blue>state db :</blue></b>\n  {}", ectx.config[DB_FILE_PATH])
+            mprint("  (users are encouraged to inspect/edit it)")
+            mprint("<b><blue>env files :</blue></b>\n  {}\n  {}", ectx.config[ENV_SH_PATH], ectx.config[ENV_CSH_PATH])
             _print_packets_info(db)
 
 
