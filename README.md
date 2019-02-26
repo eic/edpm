@@ -5,10 +5,17 @@
 **The goal** of ejpm is to provide easy experience of:
 
 * installing e<sup>JANA</sup> reconstruction framework and supporting packages
-* uify installation in different environments: various operating systems, docker images, etc. 
+* unify installation for different environments: e.g. various operating systems, docker images, etc. 
 
 The secondary goal is to help users with e^JANA plugin development cycle.
 
+###Table of contents:
+* [Motivation](#motivation)
+* [EJPM installation](#installation)
+* [Get ejana installed](#get-ejana-installed)
+* [Manage environment](#environment)
+* [Troubleshooting](#installation-troubleshooting)
+* [Manual or devel installation](#manual-or-development-installation)
 
 
 # Motivation
@@ -25,8 +32,8 @@ OS maintainers, while others (Cern ROOT, Geant4, Rave) are usually built by user
 other packet managers and could be located anywhere. We also praise "version hell" (e.g. when GenFit doesn't compile 
 with CLHEP from ubuntu repo) and lack of software manpower (e.g. to sufficiently and continuously maintain packages 
 for major distros or even to fix some simple issues on GitHub). 
-Still we love our users and ~~know they will never install it by their own~~ try to get things easier for them!
-So here is ejpm.
+
+Still we love our users and ~~know they will never install everything on their own~~ so we try to get things easier for them!
 
 
 At this points **ejpm** tries to unify experience and make it simple to deploy eJANA for:
@@ -59,11 +66,11 @@ It also provides a possibility to fine control over dependencies
 **Design features**
 
 * Essentials:
-    * ejpm is written in pure python with minimum dependencies (python 2 and 3 compatible)
-    * it is shipped by pip (python official repo), so can be installed with just one command on most of major platforms
+    * ejpm is written in pure python (2 and 3 compatible) with minimum dependencies 
+    * it is shipped by pip (python official repo), so can be installed with one command on all major platforms
     * CLI (command line interface) - provides users with commands to manipulate packets 
     * JSON database stores the current state and packets locations
-    * It makes easy to... e.g. switch between known versions, rebuild packets, deploy missing, continue after fail, etc.
+    * It makes easy to... e.g. switch between known versions, rebuild packets, deploy missing packets, continue after fail, etc.
 
 * Under the hood:
     * Each packet has a single python file that defines how it will be installed and configured
@@ -77,13 +84,15 @@ It also provides a possibility to fine control over dependencies
 Is there something existing? What others do? - Simple bash build scripts quickly get bloated and complex. 
 Dockerfiles and similar stuff are too-tool-related. Build systems like scons or cmake also too centric on compiling 
 something rather than managing packets chains. Full featured package managers and tools like Homebrew are pretty 
-complex to tame (for dealing with just 5 deps). So ejpm is something more advanced than build scripts in pure python,
-but less cumbersome than real packet managers, being focused on our specific problems. 
+complex to tame (for dealing with just 5 deps). 
+
+So ejpm is something more advanced than build scripts, but less cumbersome than real packet managers, 
+it is in pure python, and being focused on our specific problems. 
  
 
 ***ejpm* is not**: 
 
-1. It is not a real package manager which automatically solves dependencies
+1. It is not a real package manager which automatically solves dependency trees
 2. **ejpm is not a requirment** for e<sup>JANA</sup>. It is not a part of e<sup>JANA</sup> 
     build system and one can compile and install e<sup>JANA</sup> without ejpm   
 
@@ -98,12 +107,16 @@ Users are pretty much encouraged to change the code and everything is done here 
 ***TL;DR;***
 
 ```bash
-pip install ejpm
+sudo pip install --upgrade ejpm    # system level installation
+pip install --user --upgrade ejpm  # User level. $HOME/.local/bin should be in $PATH
 ```
 
-If you have certificate  problems on JLab machines ([more details and options are here](#jlab-certificate-problems)):
+If you have certificate  problems on JLab machines: ([more options on certificates](#jlab-certificate-problems)):
 ```bash
-python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org ejpm
+# System level copy-paste:
+sudo python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org -U ejpm
+# User level copy-paste:
+python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org --user -U ejpm
 ```
 
 More on this:
@@ -130,7 +143,7 @@ source<(ejpm env)             # set environment variables
 ```
 
 
-Step by step explained instruction:
+***Step by step explained instruction**:
 
 1. Install (or check) required packages form OS:
 
@@ -139,11 +152,11 @@ Step by step explained instruction:
     ejpm req fedora ejana   # for ejana and its dependencies only
     ```
    
-    At this point only ***'ubuntu'*** and ***'fedora'*** are known words for req command. Put: 
-    * ***ubuntu*** for debian family 
-    * ***fedora*** for RHEL and CentOS systems.
+    At this point only ***'ubuntu'*** and ***'fedora'*** are known words for ```req``` command. Put: 
+    * ```ubuntu``` for debian family 
+    * ```fedora``` for RHEL and CentOS systems.
 
-    *In the future this will be updated to support macOS and to have more detailed versions*
+    > In future macOS and more detailed os-versions will be supported
 
 2. Set <b><blue>top-dir</blue></b>. This is where all missing packets will be installed.   
 
@@ -160,6 +173,7 @@ Step by step explained instruction:
    ```bash
    ejpm install ejana --missing --explain    # to see missing dependencies
    ejpm set <name> <path>                    # to set dependency path
+   ejpm set jana <path to jana2 install>     # JANA2 as an example
    ```
    
    Or you may skip this step and just get everything installed by ejpm
@@ -181,41 +195,41 @@ Step by step explained instruction:
 ```bash
 source <(ejpm env)      
 # or
-source ~/.local/share/ejpm/env.sh    # or same with .csh
+source ~/.local/share/ejpm/env.sh    # .csh for CSH/TCSH
+ejpm env                             # To generate env & regenerate env files 
 ```
 
- ```EJPM_DATA_PATH```- sets the path where the configuration db.json and env.sh, env.csh are located
+```EJPM_DATA_PATH``` - sets the path where the configuration db.json and env.sh, env.csh are located
 
 ***longer reading:***
 
 1. Dynamically source output of ```ejpm env``` command (recommended)
     
-        ```bash        
-        source <(ejpm env)                # (ejpm env csh) for CSH/TCSH
-        ```
-    2. Save output of ```ejpm env``` command to a file (can be useful)
+    ```bash        
+    source <(ejpm env)                # works on bash
+    ```
+2. Save output of ```ejpm env``` command to a file (can be useful)
     
-        ```bash
-         ejpm env sh  > your-file.sh       # get environment for bash or compatible shells
-         ejpm env csh > your-file.csh      # get environment for CSH/TCSH
-        ```
-    3. Use ejpm generated ```env.sh``` and ```env.csh``` files (lazy and convenient)
+    ```bash
+     ejpm env sh  > your-file.sh       # get environment for bash or compatible shells
+     ejpm env csh > your-file.csh      # get environment for CSH/TCSH
+    ```
+3. Use ejpm generated ```env.sh``` and ```env.csh``` files (lazy and convenient)
     
-        ```bash        
-        $HOME/.local/share/ejpm/env.sh    # bash and compatible
-        $HOME/.local/share/ejpm/env.csh   # for CSH/TCSH
-        ```
-        (!) The files are regenerated each time ```ejpm <command>``` changes something in EJPM.
-        If you change ```db.json``` by yourself, ejpm doesn't track it automatically, so call 'ejpm env'
-        to regenerate these 2 files
-    
+    ```bash        
+    $HOME/.local/share/ejpm/env.sh    # bash and compatible
+    $HOME/.local/share/ejpm/env.csh   # for CSH/TCSH
+    ```
+    (!) The files are regenerated each time ```ejpm``` changes something.
+    If you change ```db.json``` by yourself, ejpm doesn't track it automatically, so call ```ejpm env```
+    to regenerate these 2 files
 
+**Where EJPM data is stored:**
 
-Each time you make changes to packets, 
-EJPM generates `env.sh` and `env.csh` files, 
-that could be found in standard apps user directory.
-
-For linux it is in XDG_DATA_HOME:
+There are standard directories for users data for each operating system. EJPM use them to store
+db.json and generated environment files (EJPM doesnt use the files by itself).
+ 
+For linux it is XDG_DATA_HOME\*:
 
 ```
 ~/.local/share/ejpm/env.sh      # sh version
@@ -223,21 +237,10 @@ For linux it is in XDG_DATA_HOME:
 ~/.local/share/ejpm/db.json     # open it, edit it, love it
 ```
 
-> XDG is the standard POSIX paths to store applications data, configs, etc. 
-EJPM uses [XDG_DATA_HOME](https://wiki.archlinux.org/index.php/XDG_Base_Directory#Specification)
-to store `env.sh`, `env.csh` and `db.json` and ```db.json```
+> \* - XDG is the standard POSIX paths to store applications data, configs, etc. 
 
-You can always get fresh environment with ejpm ```env``` command 
-```bash
-ejpm env
-```
 
-You can directly source it like:
-```bash
-source <(ejpm env)
-```
-
-You can control where ejpm stores data by setting ```EJPM_DATA_PATH``` environment variable.
+**```EJPM_DATA_PATH```** - You can control where ejpm stores data by setting ```EJPM_DATA_PATH``` environment variable.
 
 
 <br><br>
@@ -249,7 +252,8 @@ You can control where ejpm stores data by setting ```EJPM_DATA_PATH``` environme
 ***But... there is no pip:***  
 Install it!
 ```
-sudo easy_install pip
+sudo easy_install pip       # system level
+easy_install pip --user     # user level
 ```
 
 For JLab lvl1&2 machines, there is a python installations that have ```pip``` :
@@ -258,6 +262,15 @@ For JLab lvl1&2 machines, there is a python installations that have ```pip``` :
 /apps/anaconda/   # Moreover, there is anaconda (python with all major math/physics libs) 
 ``` 
 
+***But ther is no 'pip' command?***  
+If ```easy_install``` installed something, but ```pip``` command is not found after, do:
+
+1. If ```--user``` flag was used, make sure ```~/.local/bin``` is in your ```$PATH``` variable
+2. you can fallback to ```python -m pip``` instead of using ```pip``` command:
+    ```bash
+    python -m pip install --user --upgrade ejpm
+    ``` 
+ 
 
 
 ***But... there is no easy_install!***  
