@@ -1,23 +1,23 @@
 """
-https://github.com/JeffersonLab/JANA.git
-export BMS_OSNAME=`./SBMS/osrelease.pl`
+This file provides information of how to build and configure JANA2 packet:
+https://github.com/JeffersonLab/JANA2
 
 """
 
 import os
 
+from ejpm.engine.commands import run, workdir
 from ejpm.engine.env_gen import Prepend, Set, Append
 from ejpm.engine.installation import PacketInstallationInstruction
-from ejpm.engine.commands import run, env, workdir
 
 
 class JanaInstallation(PacketInstallationInstruction):
-    """Provides data for building and installing JANA framework
+    """Provides data for building and installing JANA2 framework
 
-    PackageInstallationContext is located in installation.py and contains the next standard package variables:
+    PacketInstallationInstruction is located in installation.py and contains the next standard package variables:
 
     version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
-    glb_app_path = Context.work_dir                  # The directory where all other packets are installed
+    app_path     =  Context.work_dir                 # The directory where all other packets are installed
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
     install_path = {app_path}/root-{version}         # Where the binary installation is
@@ -26,7 +26,7 @@ class JanaInstallation(PacketInstallationInstruction):
     def __init__(self, build_threads=8):
         """
 
-        :param default_tag: Root version
+
         """
 
         # Set initial values for parent class and self
@@ -108,8 +108,9 @@ class JanaInstallation(PacketInstallationInstruction):
 
     @staticmethod
     def gen_env(data):
-        install_path = data['install_path']
         """Generates environments to be set"""
+
+        install_path = data['install_path']
 
         yield Set('JANA_HOME', install_path)
         yield Append('JANA_PLUGIN_PATH', '$JANA_HOME/plugins')

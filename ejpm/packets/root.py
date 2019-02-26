@@ -1,3 +1,9 @@
+"""
+This file provides information of how to build and configure CERN.ROOT:
+https://github.com/root-project/root
+
+"""
+
 import os
 from distutils.dir_util import mkpath
 

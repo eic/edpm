@@ -1,6 +1,6 @@
 """
-https://github.com/JeffersonLab/JANA.git
-export BMS_OSNAME=`./SBMS/osrelease.pl`
+This file provides information of how to build and configure CLHEP library:
+https://gitlab.cern.ch/CLHEP/CLHEP
 
 """
 

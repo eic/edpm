@@ -14,7 +14,7 @@ The secondary goal is to help users with e^JANA plugin development cycle.
 # Motivation
 
 ***TL;DR;*** Major HEP and NP scientific packages are not supported by some major distros and 
-usually are crappy in terms of dependency/version requirements. Everybody have to reinvent the wheel to include 
+usually are crappy (at least in terms of dependency requirements). Everybody have to reinvent the wheel to include 
 such packages in their software chains and make users' lives easier. And we do. 
 
 ***Longer reading***
@@ -22,10 +22,14 @@ such packages in their software chains and make users' lives easier. And we do.
 **ejpm** is here as there is no standard convention in HEP and NP of how to distribute and install software packages 
 with its dependencies. Some packages (like eigen, xerces, etc.) are usually supported by 
 OS maintainers, while others (Cern ROOT, Geant4, Rave) are usually built by users or 
-other packet managers and could be located anywhere. Here comes "version hell" and lack of software manpower (e.g. to 
-continuously maintain all required packages on distros level) 
+other packet managers and could be located anywhere. We also praise "version hell" (e.g. when GenFit doesn't compile 
+with CLHEP from ubuntu repo) and lack of software manpower (e.g. to sufficiently and continuously maintain packages 
+for major distros or even to fix some simple issues on GitHub). 
+Still we love our users and ~~know they will never install it by their own~~ try to get things easier for them!
+So here is ejpm.
 
-At this points **ejpm** tries to unify experience for:
+
+At this points **ejpm** tries to unify experience and make it simple to deploy eJANA for:
 
 - Users on RHEL 7 and CentOS
 - Users on Ubutnu (and Windows with WSL)
@@ -35,6 +39,7 @@ At this points **ejpm** tries to unify experience for:
 It should be as easy as:
 
 ```bash
+> ejpm req fedora          # print all requried packets that can be installed with 'yum install...'
 > ejpm find all            # try to automatically find dependent packets* 
 > ejpm --top-dir=/opt/eic  # set where to install missing packets
 > ejpm install all         # build and install missing packets
@@ -50,11 +55,31 @@ It also provides a possibility to fine control over dependencies
 > \* - (!) 'find' and 'rebuild' commands are not yet implemented
 
 
-**Alternatives considered**  
-Is there something existing? - Simple bash build scripts get bloated and complex. Dockerfiles and similar stuff are 
-too-tool-related. Build systems like scons or cmake can be used but too build specific oriented. 
-Full featured package managers and tools like Homebrew are pretty complex to tame (for dealing with just 5 deps).
-So here is ejpm
+
+**Design features**
+
+* Essentials:
+    * ejpm is written in pure python with minimum dependencies (python 2 and 3 compatible)
+    * it is shipped by pip (python official repo), so can be installed with just one command on most of major platforms
+    * CLI (command line interface) - provides users with commands to manipulate packets 
+    * JSON database stores the current state and packets locations
+    * It makes easy to... e.g. switch between known versions, rebuild packets, deploy missing, continue after fail, etc.
+
+* Under the hood:
+    * Each packet has a single python file that defines how it will be installed and configured
+    * Each such file is easy to read and modify by ***inexperienced*** users in case they would love to
+    * Installation steps written in a style close to Dockerfile (same command names, etc) 
+
+
+
+**Alternatives**  
+
+Is there something existing? What others do? - Simple bash build scripts quickly get bloated and complex. 
+Dockerfiles and similar stuff are too-tool-related. Build systems like scons or cmake also too centric on compiling 
+something rather than managing packets chains. Full featured package managers and tools like Homebrew are pretty 
+complex to tame (for dealing with just 5 deps). So ejpm is something more advanced than build scripts in pure python,
+but less cumbersome than real packet managers, being focused on our specific problems. 
+ 
 
 ***ejpm* is not**: 
 
@@ -62,17 +87,6 @@ So here is ejpm
 2. **ejpm is not a requirment** for e<sup>JANA</sup>. It is not a part of e<sup>JANA</sup> 
     build system and one can compile and install e<sup>JANA</sup> without ejpm   
 
-**Design features**
-
-* External:
-    * ejpm is written in pure python with minimum dependencies (2 and 3 compatible)
-    * CLI (command line interface) - provides users with commands to manipulate packets 
-    * JSON database stores the current state of installation and packets locations.
-
-* Under the hood:
-    * Each packet has a single python file that defines how it will be installed and configured
-    * Each such file is easy to read of modify by users in case they would love to
-    * Installation steps written in a style close to Dockerfile (same command names, etc) 
 
 Users are pretty much encouraged to change the code and everything is done here to be user-change-friendly
 
@@ -94,7 +108,7 @@ python -m pip install --trusted-host pypi.python.org --trusted-host files.python
 
 More on this:
 
-* See [INSTALLATION TROUBLESHOOTING](#installation-trougleshooting) If you don't have pip or right python version.
+* See [INSTALLATION TROUBLESHOOTING](#installation-troubleshooting) If you don't have pip or right python version.
 * See [Jlab root certificate problems](#jlab-certificate-problems) and how to solve them
 * See [Manual or development installation](#manual-or-development-installation) to use this repo directly, develop EJPM or don't want to mess with pip at all?  
 

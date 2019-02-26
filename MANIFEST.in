@@ -1,3 +1,5 @@
 exclude .gitignore
 exclude run_ejpm.py
+
+include PYPI_README.md
 recursive-include ejpm/ *.py

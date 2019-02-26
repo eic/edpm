@@ -1,5 +1,6 @@
 """
-https://github.com/JeffersonLab/JANA.git
+This file provides information of how to build and configure Genfit framework:
+https://github.com/GenFit/GenFit
 
 """
 

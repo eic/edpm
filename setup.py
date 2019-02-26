@@ -7,7 +7,7 @@ from ejpm.version import version as ejpm_version
 this_script_dir = os.path.dirname(inspect.stack()[0][1])
 
 # The text of the README file
-with open(os.path.join(this_script_dir, "README.md"), 'r') as readme_file:
+with open(os.path.join(this_script_dir, "PYPI_README.md"), 'r') as readme_file:
     readme = readme_file.read()
 
 # This call to setup() does all the work

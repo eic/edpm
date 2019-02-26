@@ -16,13 +16,16 @@ The secondary goal is to help users with e^JANA plugin development cycle.
 **ejpm** is here as there is no standard convention in HEP and NP of how to distribute and install software packages 
 with its dependencies. Some packages (like eigen, xerces, etc.) are usually supported by 
 OS maintainers, while others (Cern ROOT, Geant4, Rave) are usually built by users or 
-other packet managers and could be located anywhere. Here comes "version hell" and lack of software manpower (e.g. to 
-continuously maintain all required packages on distros level) 
+other packet managers and could be located anywhere. Here comes "version hell" multiplied by lack of software manpower 
+(e.g. to continuously maintain packages on distros level or even to fix GitHub issues) 
+Still we love our users and try to get things easier for them!
+So here is ejpm.
 
-At this points **ejpm** tries to unify experience for:
+
+At this points **ejpm** tries to unify experience and make it simple to deploy eJANA for:
 
 - Users on RHEL 7 and CentOS
-- Users on Ubutnu
+- Users on Ubutnu (and Windows with WSL) \*\*
 - Docker and other containers
 
 
@@ -41,8 +44,8 @@ It also provides a possibility to fine control over dependencies
 > ejpm rebuild jana && ejpm rebuild ejana  # rebuild* packets after it 
 ```
 
-> \* - (!) 'find' and 'rebuild' commands are not yet implemented
-
+> \* - (!) 'find' and 'rebuild' commands are not yet implemented  
+> \*\* -  macOS is upcoming
 
 
 **ejpm** is not: 
@@ -54,32 +57,49 @@ It also provides a possibility to fine control over dependencies
 
 ## Get ejana installed
 
-1. Install or check OS maintained required packages:
+(or crash course to ejpm)
+
+***TL;DR;*** example for CentOS/RHEL7
+```bash
+ejpm req fedora ejana         # get list of OS packets required to build jana and deps
+sudo yum install ...          # install watever 'ejpm req' shows
+ejpm --top-dir=<where-to>     # Directory where packets will be installed
+ejpm set root `$ROOTSYS`      # if you have CERN.ROOT. Or skip this step
+ejpm install ejana --missing  # install ejana and dependencies (like genfit, jana and rave)
+source<(ejpm env)             # set environment variables
+```
+
+
+Step by step explained instruction:
+
+1. Install (or check) required packages form OS:
 
     ```bash
-    > ejpm req ubuntu         # for all packets ejpm knows to built/install
-    > ejpm req usubnu ejana   # for ejana and its dependencies only
+    ejpm req ubuntu         # for all packets that ejpm knows
+    ejpm req fedora ejana   # for ejana and its dependencies only
     ```
    
-   > At this point only ***'ubuntu'*** and ***'fedora'*** are known for req command. 
-     Put 'ubuntu' for debian family and 'fedora' for RHEL and CentOS systems.
-     In future this will be updated to support macOS and to have more details
+    At this point only ***'ubuntu'*** and ***'fedora'*** are known words for req command. Put: 
+    * ***ubuntu*** for debian family 
+    * ***fedora*** for RHEL and CentOS systems.
 
-2. Set <b><blue>top-dir</blue></b> to start. This is where all missing packets will be installed.   
+    *In the future this will be updated to support macOS and to have more detailed versions*
+
+2. Set <b><blue>top-dir</blue></b>. This is where all missing packets will be installed.   
 
     ```bash
-    > ejpm --top-dir=<where-to-install-all>
+    ejpm --top-dir=<where-to-install-all>
     ```
    
 3. You may have CERN.ROOT installed (req. version >= 6.14.00). Run this:
     ```bash
-    > ejpm set root `$ROOTSYS` 
+    ejpm set root `$ROOTSYS` 
     ```
    
    You may set paths for other installed dependencies combining:  
    ```bash
-   > ejpm install ejana --missing --explain    # to see missing dependencies
-   > ejpm set <name> <path>                    # to set dependency path
+   ejpm install ejana --missing --explain    # to see missing dependencies
+   ejpm set <name> <path>                    # to set dependency path
    ```
    
    Or you may skip this step and just get everything installed by ejpm
@@ -87,7 +107,7 @@ It also provides a possibility to fine control over dependencies
 4. Then you can install ejpm and all missing dependencies:
 
     ```bash
-    > ejpm install ejana --missing
+    ejpm install ejana --missing
     ```
 
 5. Set right environment variables. There are 3 ways for doing this this: 
@@ -95,7 +115,7 @@ It also provides a possibility to fine control over dependencies
     1. Dynamically source output of ```ejpm env``` command (recommended)
     
         ```bash        
-        source <(ejpm env)                # (ejpm env csh) for CSH/TCSH
+        source <(ejpm env)                # works for bash only
         ```
     2. Save output of ```ejpm env``` command to a file (can be useful)
     

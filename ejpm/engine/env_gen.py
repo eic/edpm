@@ -60,8 +60,8 @@ class Append(EnvironmentManipulation):
             'if ( ! $?{name} ) then\n'
             '    setenv {name} "{value}"\n'
             'else\n'
-            '    setenv {name} ${name}:"{value}"\n'
-            'fi')
+            '    setenv {name} ${{{name}}}:"{value}"\n'
+            'endif')
 
         return ret_str.format(name=self.name, value=self.value)
 
@@ -108,8 +108,8 @@ class Prepend(EnvironmentManipulation):
             'if ( ! $?{name} ) then\n'
             '    setenv {name} "{value}"\n'
             'else\n'
-            '    setenv {name} "{value}":${name}\n'
-            'fi')
+            '    setenv {name} "{value}":${{{name}}}\n'
+            'endif')
 
         return ret_str.format(name=self.name, value=self.value)
 

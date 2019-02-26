@@ -1,3 +1,10 @@
+"""
+This file provides information of how to build and configure pythia packet:
+
+TODO en this point
+
+"""
+
 import os
 import subprocess
 from ejpm.engine.commands import run, workdir, env

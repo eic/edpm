@@ -1,3 +1,9 @@
+"""
+This file provides information of how to build and configure Rave vertex finding packet:
+https://github.com/WolfgangWaltenberger/rave
+
+"""
+
 import os
 
 from ejpm.engine.env_gen import Set, Prepend
@@ -8,7 +14,7 @@ from ejpm.engine.commands import run, env, workdir
 class RaveInstallation(PacketInstallationInstruction):
     """Provides data for building and installing root
 
-    PackageInstallationContext is located in installation.py and contains the next standard package variables:
+    PacketInstallationInstruction is located in installation.py and contains the next standard package variables:
     """
 
     def __init__(self, build_threads=8):
