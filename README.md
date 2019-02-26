@@ -9,6 +9,34 @@
 
 The secondary goal is to help users with e^JANA plugin development cycle.
 
+***Complete impudent TL;DR;***  
+```bash
+# install EJPM, bypassing root sertificate problems on JLab machines
+sudo python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org -U ejpm
+
+# install prerequesties
+ejpm req fedora ejana         # get list of OS packets required to build jana and deps
+sudo yum install ...          # install watever 'ejpm req' shows
+
+# setup installation dir and existing packets, check
+ejpm --top-dir=<where-to>     # Directory where packets will be installed
+ejpm install ejana --explain  # See what is to be installed
+ejpm set root `$ROOTSYS`      # if you have CERN.ROOT. Or skip this step
+ejpm set <packet> <path>      # set other existing packets. Or skip this step!!!
+ejpm                          # To see how ejpm is configured
+
+# Install the rest
+ejpm install ejana --missing  # install ejana and dependencies (like genfit, jana and rave)
+
+# Set environment
+source<(ejpm env)             # set environment variables
+ejpm env csh > your.csh       # if you are still on CSH
+
+# If that worked don't read the next...
+```
+
+
+
 ###Table of contents:
 * [Motivation](#motivation)
 * [EJPM installation](#installation)
@@ -42,26 +70,9 @@ At this points **ejpm** tries to unify experience and make it simple to deploy e
 - Users on Ubutnu (and Windows with WSL)
 - Docker and other containers
 
-
-It should be as easy as:
-
-```bash
-> ejpm req fedora          # print all requried packets that can be installed with 'yum install...'
-> ejpm find all            # try to automatically find dependent packets* 
-> ejpm --top-dir=/opt/eic  # set where to install missing packets
-> ejpm install all         # build and install missing packets
-```
-
-It also provides a possibility to fine control over dependencies
-
-```bash
-> ejpm set root /opt/root6_04_16           # manually add cern ROOT location to use
-> ejpm rebuild jana && ejpm rebuild ejana  # rebuild* packets after it 
-```
-
-> \* - (!) 'find' and 'rebuild' commands are not yet implemented
-
-
+The experience should be as easy as pointing right configuration and installing everything 
+automatically with just few commands. But also it should provide a possibility to fine control 
+over installed dependencies and help with development. 
 
 **Design features**
 
