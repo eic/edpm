@@ -23,11 +23,6 @@ class JanaInstallation(PacketInstallationInstruction):
     install_path = {app_path}/root-{version}         # Where the binary installation is
     """
 
-    fedora_required_packets = ""
-    fedora_optional_packets = "xerses curl"
-    ubuntu_required_packets = ""
-    ubuntu_optional_packets = "xerses curl"
-
     def __init__(self, build_threads=8):
         """
 
@@ -119,3 +114,20 @@ class JanaInstallation(PacketInstallationInstruction):
         yield Set('JANA_HOME', install_path)
         yield Append('JANA_PLUGIN_PATH', '$JANA_HOME/plugins')
         yield Prepend('PATH', '$JANA_HOME/bin')
+
+    #
+    # OS dependencies are a map of software packets installed by os maintainers
+    # The map should be in form:
+    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'fedora': "..."},
+    #                     'optional': {'ubuntu': "space separated packet names", 'fedora': "..."}
+    # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
+    os_dependencies = {
+        'required': {
+            'ubuntu': "scons xerses curl",
+            'fedora': "scons xerses curl"
+        },
+        'optional': {
+            'ubuntu': "",
+            'fedora': ""
+        },
+    }

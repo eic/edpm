@@ -18,10 +18,6 @@ class ClhepInstallation(PacketInstallationInstruction):
     install_path = {app_path}/root-{version}         # Where the binary installation is
     """
 
-    fedora_required_packets = "boost-devel"         # Actually boost-devel it is needed for Rave but Genfit get error
-    fedora_optional_packets = ""
-    ubuntu_required_packets = "libboost-dev"
-    ubuntu_optional_packets = ""
 
     def __init__(self, build_threads=8):
         """
@@ -130,4 +126,19 @@ class ClhepInstallation(PacketInstallationInstruction):
         if platform.system() == 'Darwin':
             yield Append('DYLD_LIBRARY_PATH', lib_path)
 
-
+    #
+    # OS dependencies are a map of software packets installed by os maintainers
+    # The map should be in form:
+    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'fedora': "..."},
+    #                     'optional': {'ubuntu': "space separated packet names", 'fedora': "..."}
+    # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
+    os_dependencies = {
+        'required': {
+            'ubuntu': "cmake",
+            'fedora': "cmake"
+        },
+        'optional': {
+            'ubuntu': "",
+            'fedora': ""
+        },
+    }

@@ -13,7 +13,7 @@ from ejpm.engine.output import markup_print as mprint
 @click.argument('install_path', nargs=1)
 @pass_ejpm_context
 @click.pass_context
-def install(ctx, ectx, packet_name, install_path):
+def set(ctx, ectx, packet_name, install_path):
     """Sets packets"""
 
     assert isinstance(ectx, EjpmContext)
@@ -24,8 +24,9 @@ def install(ctx, ectx, packet_name, install_path):
     # Check that the packet name is from known packets
     ectx.ensure_packet_known(packet_name)
 
-    ectx.db.update_install(packet_name, install_path, )
-
+    # update_install will add or update the packet install. We set it active as it make sense...
+    ectx.db.update_install(packet_name, install_path, is_active=True)
+    ectx.db.save()
 
     # Update environment scripts
     mprint("Updating environment script files...\n")

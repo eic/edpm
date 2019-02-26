@@ -22,10 +22,6 @@ class EjanaInstallation(PacketInstallationInstruction):
     install_path = {app_path}/root-{version}         # Where the binary installation is
     """
 
-    fedora_required_packets = ""
-    fedora_optional_packets = ""
-    ubuntu_required_packets = ""
-    ubuntu_optional_packets = ""
 
     def __init__(self, build_threads=8):
         """
@@ -152,3 +148,20 @@ class EjanaInstallation(PacketInstallationInstruction):
 
         yield Prepend('JANA_PLUGIN_PATH', os.path.join(path, 'plugins'))
         yield Prepend('PATH', os.path.join(path, 'bin'))
+
+    #
+    # OS dependencies are a map of software packets installed by os maintainers
+    # The map should be in form:
+    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'fedora': "..."},
+    #                     'optional': {'ubuntu': "space separated packet names", 'fedora': "..."}
+    # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
+    os_dependencies = {
+        'required': {
+            'ubuntu': "scons",
+            'fedora': "scons"
+        },
+        'optional': {
+            'ubuntu': "",
+            'fedora': ""
+        },
+    }

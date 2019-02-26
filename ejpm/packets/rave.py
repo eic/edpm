@@ -10,12 +10,6 @@ class RaveInstallation(PacketInstallationInstruction):
 
     PackageInstallationContext is located in installation.py and contains the next standard package variables:
     """
-    fedora_required_packets = ""
-    fedora_optional_packets = ""
-    ubuntu_required_packets = "autoconf shtool automake libtool"
-    ubuntu_optional_packets = ""
-
-
 
     def __init__(self, build_threads=8):
         # Call parent constructor to fill version, app_path ... and others
@@ -111,15 +105,19 @@ class RaveInstallation(PacketInstallationInstruction):
         yield Prepend('CMAKE_PREFIX_PATH', os.path.join(install_path, 'share', 'rave'))
         yield Prepend('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
 
-    def step_set_env(self):
-        """
-
-        ENV LD_LIBRARY_PATH "$RAVEPATH/lib:$LD_LIBRARY_PATH"
-
-        # May be pointless defining these. At least cmake reports that it is going
-        # to try and build GenFit with RAVE support with these here (AND defined in the cmake commad!)
-        ENV RAVE_CFLAGS "-g -O2"
-        ENV RAVE_INCLUDE_DIRS $RAVEPATH/include
-        ENV RAVE_LDFLAGS "-L$INSTALL_DIR_RAVE/lib -lRaveBase -lRaveCore -lRaveVertex
-                          -lRaveFlavorTag -lRaveVertexKinematics"
-        """
+    #
+    # OS dependencies are a map of software packets installed by os maintainers
+    # The map should be in form:
+    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'fedora': "..."},
+    #                     'optional': {'ubuntu': "space separated packet names", 'fedora': "..."}
+    # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
+    os_dependencies = {
+        'required': {
+            'ubuntu': "",
+            'fedora': "autoconf shtool automake libtool"
+        },
+        'optional': {
+            'ubuntu': "",
+            'fedora': ""
+        },
+    }

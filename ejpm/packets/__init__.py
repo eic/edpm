@@ -21,13 +21,31 @@ class PacketManager(object):
         self.installers_by_tags = {}
         self.env_generators = {}
 
+        # The next are collection of requirements for different operating systems
+        # The type is map to have requirements by packets, i.e.:
+        #     self.fedora_required_packets['ejana'] - list for ejana
+        self.os_deps_by_name = {}
+
         # Create all subclasses of PacketInstallationInstruction and add here
         for cls in PacketInstallationInstruction.__subclasses__():
             installer = cls()
             self.add_installer(installer)
+            self.add_env_generator(installer)
+            self.add_os_deps(installer)
 
-            if hasattr(installer, 'gen_env'):
-                self.add_env_generator(installer.name, installer.gen_env)
+    def add_os_deps(self, installer):
+        """Adds os dependencies to global os_dependencies_by_name map"""
+
+        # First, we add default structure with empty deps
+        result = {'required': {'ubuntu': "", 'fedora': ""},
+                  'optional': {'ubuntu': "", 'fedora': ""}}
+
+        # Then we check if installer defines its dependencies
+        if hasattr(installer, 'os_dependencies'):
+            result.update(installer.os_dependencies)
+
+        # Set the result by installer name
+        self.os_deps_by_name[installer.name] = result
 
     def add_installer(self, installer):
         self.installers_by_name[installer.name] = installer
@@ -45,9 +63,26 @@ class PacketManager(object):
                 tag_full_name = "{}-{}".format(installer.name, tag_name)
                 self.installers_by_tags[tag_full_name] = (tag_name, installer)
 
+    def add_env_generator(self, installer):
+        """Adds installer environment generator to env_generators map"""
 
-    def add_env_generator(self, name, env_gen):
-        self.env_generators[name] = env_gen
+        if hasattr(installer, 'gen_env'):
+            self.env_generators[installer.name] = installer.gen_env
+
+    def get_installation_names(self, installer_name):
+        """
+        Returns name of the package + dependencies ejpm can install
+        so it is like: ['CLHEP', 'root', ..., 'ejana'] for installer_name=ejana
+        it is single: ['CLHEP'] for installer_name='CLHEP'
+
+        :param installer_name: name of packet like 'ejana'
+        :return: list with dependencies names and installer name itself
+        """
+
+        deps = self.installers_by_name[installer_name].required_deps
+
+        # If we install just a single packet desired_names a single name
+        return deps + [installer_name] if deps else [installer_name]
 
     def gen_shell_env_text(self, name_data, shell='bash'):
         """Generates a text that sets environment for a given shell """
@@ -63,7 +98,7 @@ class PacketManager(object):
 
             env_gen = self.env_generators[name]
 
-            output += "\n\n"
+            output += "\n"
             output += "# =============================\n"
             output += "# {}\n".format(name)
             output += "# =============================\n"
@@ -95,5 +130,7 @@ class PacketManager(object):
                 env_gens = self.env_generators[name]
                 for env_gen in env_gens(data):          # Go through 'environment generators' look engine/env_gen.py
                     env_gen.update_python_env()         # Do environment update
+
+
 
 

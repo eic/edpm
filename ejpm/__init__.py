@@ -10,17 +10,29 @@ def print_first_time_message():
     mprint("""
 The database file doesn't exist. Probably you run 'ejpm' for one of the first times.
 
+1. Install or check OS maintained required packages:
+    > ejpm req ubuntu         # for all packets ejpm knows to built/install
+    > ejpm req usubnu ejana   # for ejana and its dependencies only
+   
+   * - at this point put 'ubuntu' for debian and 'fedora' for RHEL and CentOS systems. 
+   Will be updated in future to support macOS, and to have grained versions
+
 1. Set <b><blue>top-dir</blue></b> to start. This is where all missing packets will be installed.   
 
    > ejpm --top-dir=<where-to-install-all>
    
 2. You may have CERN.ROOT installed (req. version >= 6.14.00). Run this:
 
-   > ejpm add root `$ROOTSYS`
+   > ejpm set root `$ROOTSYS`
    
-3. Then you can install all other packets (or add existing like #2):
+   You may set paths for other installed dependencies:
+   > ejpm install ejana --missing --explain    # to see missing dependencies
+   > ejpm set <name> <path>                    # to set dependency path
 
-   > ejpm install missing
+   
+3. Then you can install all missing dependencies:
+
+   > ejpm install ejana --missing
    
 
 P.S - you can read this message by adding --help-first flag
@@ -81,7 +93,7 @@ def _print_packets_info(db):
 @pass_ejpm_context
 @click.pass_context
 def ejpm_cli(ctx, ectx, debug, top_dir):
-    """EJPM stands for
+    """EJPM stands for EIC Jana Packet Manager
     """
 
     # Run on-start and set on-close routines
@@ -107,7 +119,7 @@ def ejpm_cli(ctx, ectx, debug, top_dir):
 
         # if there is no commands and we loaded the DB lets print some info:
         if ctx.invoked_subcommand is None:
-            from ejpm.__version__ import __version__
+            from ejpm.version import __version__
             mprint("<b><blue>EJPM</blue></b> v{}".format(__version__))
             mprint("<b><blue>top dir :</blue></b>\n  {}".format(db.top_dir))
             mprint("<b><blue>state db:</blue></b> (users are encouraged to inspect/edit it)\n  {}"
@@ -118,10 +130,14 @@ def ejpm_cli(ctx, ectx, debug, top_dir):
 from ejpm.cli.env import env as env_group
 from ejpm.cli.install import install as install_group
 from ejpm.cli.find import find as find_group
+from ejpm.cli.req import req as requirements_command
+from ejpm.cli.set import set as set_command
 
 ejpm_cli.add_command(install_group)
 ejpm_cli.add_command(find_group)
 ejpm_cli.add_command(env_group)
+ejpm_cli.add_command(requirements_command)
+ejpm_cli.add_command(set_command)
 
 if __name__ == '__main__':
     ejpm_cli()

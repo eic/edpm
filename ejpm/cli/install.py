@@ -7,16 +7,17 @@ from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.packets import PacketManager
 
-#@click.group(invoke_without_command=True)
+
 @click.command()
 @click.option('--path', 'install_path', default='')
 @click.option('--all', 'dep_mode', flag_value='all')
 @click.option('--missing', 'dep_mode', flag_value='missing')
 @click.option('--single', 'dep_mode', flag_value='single', default=True)
+@click.option('--explain', 'just_explain', default=False, is_flag=True)
 @click.argument('name', nargs=1)
 @pass_ejpm_context
 @click.pass_context
-def install(ctx, ectx, dep_mode, name, install_path=""):
+def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False):
     """Installs packets"""
 
     db = ectx.db
@@ -48,7 +49,7 @@ def install(ctx, ectx, dep_mode, name, install_path=""):
     # set the tag we want to install
     tag_name, installer = pm.installers_by_tags[name]
     installer.selected_tag = tag_name
-    _install_with_deps(ectx, installer.name, installer.required_deps, mode=dep_mode)
+    _install_with_deps(ectx, installer.name, mode=dep_mode, just_explain=just_explain)
 
     # Update environment scripts
     mprint("Updating environment script files...\n")
@@ -104,11 +105,10 @@ def _install_packet(db, packet, install_path='', replace_active=True):
     db.save()
 
 
-def _install_with_deps(ectx, packet_name, dep_names, mode):
+def _install_with_deps(ectx, packet_name, mode, just_explain=False):
     assert isinstance(ectx, EjpmContext)
 
-    # If we install just a single packet desired_names a single name
-    desired_names = dep_names + [packet_name] if dep_names else [packet_name]
+    desired_names = ectx.pm.get_installation_names(packet_name)
 
     # First we want to play 'setup' function on all dependencies.
     # This will allow us to build the right environment for non existent packets
@@ -157,6 +157,10 @@ def _install_with_deps(ectx, packet_name, dep_names, mode):
     for packet in install_packets:
         mprint("   <blue>{}</blue> : {}", packet.name, packet.install_path)
 
+    # It is just explanation
+    if just_explain:
+        return
+
     # Set environment before build
     _update_python_env(ectx, ectx.pm.installers_by_name, mode)  # set environment spitting on existing missing
 
@@ -172,6 +176,7 @@ def _update_python_env(ectx, dep_order, mode=''):
     assert isinstance(ectx, EjpmContext)
 
     # Pretty header
+    mprint("\n")
     mprint("<magenta>=========================================</magenta>")
     mprint("<green> SETTING ENVIRONMENT</green>")
     mprint("<magenta>=========================================</magenta>\n")
