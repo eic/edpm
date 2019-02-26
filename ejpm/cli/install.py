@@ -9,16 +9,31 @@ from ejpm.packets import PacketManager
 
 
 @click.command()
-@click.option('--path', 'install_path', default='')
-@click.option('--all', 'dep_mode', flag_value='all')
-@click.option('--missing', 'dep_mode', flag_value='missing')
-@click.option('--single', 'dep_mode', flag_value='single', default=True)
-@click.option('--explain', 'just_explain', default=False, is_flag=True)
+@click.option('--missing', 'dep_mode', flag_value='missing', help="Installs only missing dependencies", default=True)
+@click.option('--single', 'dep_mode', flag_value='single', help="Installs only this package")
+@click.option('--all', 'dep_mode', flag_value='all', help="Installs all dependencies by ejpm")
+@click.option('--path', 'install_path', default='', help="Is not implemented")
+@click.option('--explain', 'just_explain', default=False, is_flag=True,
+              help="Prints what is to be installed (but do nothing)")
 @click.argument('name', nargs=1)
 @pass_ejpm_context
 @click.pass_context
 def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False):
-    """Installs packets"""
+    """Installs packets (and all dependencies)
+
+    \b
+    Examples:
+      > ejpm install ejana --missing    # install ejana and all missing dependencies
+      > ejpm install rave --single      # install just rave package, dependencies are not checked
+      > ejpm install ejana --all        # install all ejana dependencies by ejpm
+                                        # even if user pointed some deps to external places
+
+    \b
+    --explain flag may be used to see what dependencies packet has and what is missing
+
+      > ejpm install ejana --missing --explain   # print what to be installed but not install
+
+    """
 
     db = ectx.db
     pm = ectx.pm
@@ -51,10 +66,11 @@ def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False):
     installer.selected_tag = tag_name
     _install_with_deps(ectx, installer.name, mode=dep_mode, just_explain=just_explain)
 
-    # Update environment scripts
-    mprint("Updating environment script files...\n")
-    ectx.save_default_bash_environ()
-    ectx.save_default_csh_environ()
+    # Update environment scripts if it is not just an explanation
+    if not just_explain:
+        mprint("Updating environment script files...\n")
+        ectx.save_default_bash_environ()
+        ectx.save_default_csh_environ()
 
     if ctx.invoked_subcommand is None:
         pass
@@ -126,11 +142,11 @@ def _install_with_deps(ectx, packet_name, mode, just_explain=False):
     for name in desired_names:
         data = ectx.db.get_active_install(name)
         if not data:
-            mprint("   <blue>{}</blue> - not installed", name)
+            mprint("   <blue>{:<6}</blue> : not installed", name)
             missing_packets.append(name)
         else:
             is_owned_str = '(owned)' if data['is_owned'] else ''
-            mprint("   <blue>{}</blue> - at: {} {}, ", name, data['install_path'], is_owned_str)
+            mprint("   <blue>{:<6}</blue> : {} {}", name, data['install_path'], is_owned_str)
 
     #
     # Select packets to install. mode tells what we should do with dependencies
@@ -155,7 +171,7 @@ def _install_with_deps(ectx, packet_name, mode, just_explain=False):
     # Print user what is going to be built
     mprint("\n <b>INSTALLATION ORDER</b>:")
     for packet in install_packets:
-        mprint("   <blue>{}</blue> : {}", packet.name, packet.install_path)
+        mprint("   <blue>{:<6}</blue> : {}", packet.name, packet.install_path)
 
     # It is just explanation
     if just_explain:

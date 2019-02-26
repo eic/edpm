@@ -119,8 +119,8 @@ def ejpm_cli(ctx, ectx, debug, top_dir):
 
         # if there is no commands and we loaded the DB lets print some info:
         if ctx.invoked_subcommand is None:
-            from ejpm.version import __version__
-            mprint("<b><blue>EJPM</blue></b> v{}".format(__version__))
+            from ejpm.version import version
+            mprint("<b><blue>EJPM</blue></b> v{}".format(version))
             mprint("<b><blue>top dir :</blue></b>\n  {}".format(db.top_dir))
             mprint("<b><blue>state db:</blue></b> (users are encouraged to inspect/edit it)\n  {}"
                    .format(ectx.config[DB_FILE_PATH]))
