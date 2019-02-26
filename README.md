@@ -37,7 +37,7 @@ ejpm env csh > your.csh       # if you are still on CSH
 
 
 
-###Table of contents:
+### Table of contents:
 * [Motivation](#motivation)
 * [EJPM installation](#installation)
 * [Get ejana installed](#get-ejana-installed)
