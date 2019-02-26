@@ -116,16 +116,7 @@ It also provides a possibility to fine control over dependencies
 
 ## Environment
 
-***TL;DR;*** Just source it like:
-```bash
-source <(ejpm env)      
-# or
-source ~/.local/share/ejpm/env.sh    # or same with .csh
-```
-
  ```EJPM_DATA_PATH```- sets the path where the configuration db.json and env.sh, env.csh are located
-
-***longer reading:***
 
 
 Each time you make changes to packets, 

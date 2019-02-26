@@ -1,6 +1,7 @@
 import os
 import inspect
 from setuptools import setup
+from ejpm.version import version as ejpm_version
 
 # The directory containing this file
 this_script_dir = os.path.dirname(inspect.stack()[0][1])
@@ -12,7 +13,7 @@ with open(os.path.join(this_script_dir, "README.md"), 'r') as readme_file:
 # This call to setup() does all the work
 setup(
     name="ejpm",
-    version="0.0.4",
+    version=ejpm_version,
     description="EIC Jana Package Manager",
     long_description=readme,
     long_description_content_type="text/markdown",
