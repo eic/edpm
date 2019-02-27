@@ -68,7 +68,7 @@ class RaveInstallation(PacketInstallationInstruction):
         self.step_build()
 
     def step_clone(self):
-        """Clones JANA from github mirror"""
+        """Clones RAVE from github mirror"""
 
         # Check the directory exists and not empty
         if os.path.exists(self.source_path) and os.path.isdir(self.source_path) and os.listdir(self.source_path):
