@@ -112,11 +112,17 @@ class GenfitInstallation(PacketInstallationInstruction):
         yield Set('GENFIT', path)
         yield Set('GENFIT_DIR', path)
 
+        # it could be lib or lib64. There are bugs on different platforms (RHEL&Fedora and WSL included)
+        # https://stackoverflow.com/questions/46847939/config-site-for-vendor-libs-on-fedora-x86-64
+        # https: // bugzilla.redhat.com / show_bug.cgi?id = 1510073
+
         import platform
         if platform.system() == 'Darwin':
             yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib'))
+            yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib64'))
 
         yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
+        yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib64'))
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
