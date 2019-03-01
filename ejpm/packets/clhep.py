@@ -7,7 +7,7 @@ https://gitlab.cern.ch/CLHEP/CLHEP
 import os
 
 from ejpm.engine.commands import run, workdir
-from ejpm.engine.env_gen import Set, Append
+from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.installation import PacketInstallationInstruction
 
 
@@ -118,8 +118,8 @@ class ClhepInstallation(PacketInstallationInstruction):
         yield Set('CLHEP_INCLUDE_DIR', include_path)  # or /usr/include/CLHEP/
         yield Set('CLHEP_LIB_DIR', lib_path)
 
-        yield Append('PATH', bin_path)  # to make available clhep-config and others
-        yield Append('LD_LIBRARY_PATH', lib_path)
+        yield Prepend('PATH', bin_path)  # to make available clhep-config and others
+        yield Prepend('LD_LIBRARY_PATH', lib_path)
 
         # set DYLD_LIBRARY_PATH for mac
         import platform
