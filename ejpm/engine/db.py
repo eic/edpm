@@ -21,7 +21,7 @@ class PacketStateDatabase(object):
         self.file_path = ""
 
         self.data = {
-            "file_version": 1,  # This data structure version, each time will increase by 1
+            "file_version": 2,  # This data structure version, each time will increase by 1
             "installed": {},  # Data about known installations of packets
             "packets": {
                 "root": {
@@ -45,6 +45,10 @@ class PacketStateDatabase(object):
                     "installs": []
                 },
                 "ejana": {
+                    "required": True,
+                    "installs": []
+                },
+                "geant": {
                     "required": True,
                     "installs": []
                 },
@@ -80,6 +84,7 @@ class PacketStateDatabase(object):
         # Read JSON file
         with open(self.file_path) as data_file:
             self.data = json.load(data_file)
+            self._update_schema()
 
     @property
     def packet_names(self):
@@ -162,3 +167,11 @@ class PacketStateDatabase(object):
     @top_dir.setter
     def top_dir(self, path):
         self.data["top_dir"] = path
+
+    def _update_schema(self):
+        """Do migration between different DB schema versions"""
+
+        # version 1 to 2 migration
+        if self.data['file_version'] == 1:
+            self.data['packets']['geant'] = {"installs": []}    # add geant to the installations
+            self.data['file_version'] = 2
