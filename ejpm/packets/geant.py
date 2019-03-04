@@ -6,8 +6,10 @@ https://github.com/Geant4
 """
 
 import os
+import platform
 
 from ejpm.engine.commands import run, workdir
+import ejpm.engine.env_gen as env_gen
 from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.installation import PacketInstallationInstruction
 
@@ -101,20 +103,48 @@ class GeantInstallation(PacketInstallationInstruction):
 
     @staticmethod
     def gen_env(data):
-        """Generates environments to be set"""
+        """Generates environments to be set
+
+        This function is a bit more tricky, we are going to use RawText which actually allows to:
+         1. wright a custom text for sh and csh environment scripts
+         2. and run a python command to set the environment
+
+        For bash and csh we want just to call 'source .../geant4.sh[csh]'
+        But we also want to set something for python to build Geant from scratch (when no geant4.sh[csh] yet)
+        update_python_environment - subfunction do this
+
+        """
 
         install_path = data['install_path']
         bin_path = os.path.join(install_path, 'bin')
+        lib_path = os.path.join(install_path, 'lib')        # on some platforms
+        lib64_path = os.path.join(install_path, 'lib64')    # on some platforms
+
+        def update_python_environment():
+            """Function that will update Geant environment in python
+            We need this function because we DON'T want source thisroot in python
+            """
+            env_updates = [
+                env_gen.Append('LD_LIBRARY_PATH', lib_path),
+                env_gen.Append('LD_LIBRARY_PATH', lib64_path)
+            ]
+
+            if platform.system() == 'Darwin':
+                env_updates.append(env_gen.Append('DYLD_LIBRARY_PATH', lib_path))
+                env_updates.append(env_gen.Append('DYLD_LIBRARY_PATH', lib64_path))
+
+            for updater in env_updates:
+                updater.update_python_env()
+
+        # We just call thisroot.xx in different shells
+
         yield Prepend('PATH', bin_path)  # to make available clhep-config and others
 
-        import platform
-        if platform.system() == 'Darwin':
-            yield Append('DYLD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
-            yield Append('DYLD_LIBRARY_PATH', os.path.join(install_path, 'lib64'))
-
-        yield Append('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
-        yield Append('LD_LIBRARY_PATH', os.path.join(install_path, 'lib64'))
-
+        yield env_gen.RawText(
+            "source {}".format(os.path.join(bin_path, 'geant4.sh')),
+            "source {}".format(os.path.join(bin_path, 'geant4.csh')),
+            update_python_environment
+        )
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

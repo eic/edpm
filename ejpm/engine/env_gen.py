@@ -146,7 +146,7 @@ class Set(EnvironmentManipulation):
 
 class RawText(EnvironmentManipulation):
     def __init__(self, sh_text, csh_text, python_env):
-        """
+        """ Function allows to
 
         :param sh_text: Text for Bash generated script
         :param csh_text: Text for CSH generated script

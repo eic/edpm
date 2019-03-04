@@ -118,9 +118,10 @@ class RootInstallation(PacketInstallationInstruction):
     @staticmethod
     def gen_env(data):
         install_path = data['install_path']
+
         def update_python_environment():
             """Function that will update ROOT environment in python
-            We need this function because we cannot source thisroot in python
+            We need this function because we DON'T want source thisroot in python
             """
 
             root_bin = os.path.join(install_path, 'bin')
@@ -142,13 +143,13 @@ class RootInstallation(PacketInstallationInstruction):
 
         # We just call thisroot.xx in different shells
 
-        manipulation = env_gen.RawText(
+        raw = env_gen.RawText(
             "source {}".format(os.path.join(install_path, 'bin', 'thisroot.sh')),
             "source {}".format(os.path.join(install_path, 'bin', 'thisroot.csh')),
             update_python_environment
         )
 
-        yield manipulation
+        yield raw
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
