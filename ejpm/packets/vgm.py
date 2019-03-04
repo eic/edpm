@@ -10,7 +10,7 @@ https://github.com/vmc-project/vgm
 import os
 
 from ejpm.engine.commands import run, workdir
-from ejpm.engine.env_gen import Set, Append
+from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.installation import PacketInstallationInstruction
 
 
@@ -37,7 +37,7 @@ class VgmInstallation(PacketInstallationInstruction):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # We don't care about tags and have only 1 branch name
-        branch = 'v10.4.3'
+        branch = 'v4-5'
 
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -49,7 +49,7 @@ class VgmInstallation(PacketInstallationInstruction):
         #
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/Geant4 {source_path}"\
+        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/vmc-project/vgm {source_path}"\
             .format(branch=branch, source_path=self.source_path)
 
         # cmake command:
@@ -62,11 +62,6 @@ class VgmInstallation(PacketInstallationInstruction):
                              install_path=self.install_path,  # Installation path
                              build_threads=self.build_threads)     # make global options like '-j8'. Skip now
 
-        # requirments  env var to locate
-        # xerces-c     XERCESCROOT
-        # ROOT         ROOTSYS
-        # CCDB         CCDB_HOME
-        # curl         CURL_HOME
 
     def step_install(self):
         self.step_clone()
@@ -109,23 +104,19 @@ class VgmInstallation(PacketInstallationInstruction):
 
     @staticmethod
     def gen_env(data):
-        path = data['install_path']
         """Generates environments to be set"""
 
-        yield Set('GENFIT', path)
-        yield Set('GENFIT_DIR', path)
-
-        # it could be lib or lib64. There are bugs on different platforms (RHEL&Fedora and WSL included)
-        # https://stackoverflow.com/questions/46847939/config-site-for-vendor-libs-on-fedora-x86-64
-        # https: // bugzilla.redhat.com / show_bug.cgi?id = 1510073
+        install_path = data['install_path']
+        yield Set('VGM_DIR', install_path)
 
         import platform
         if platform.system() == 'Darwin':
-            yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib'))
-            yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib64'))
+            yield Append('DYLD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
+            yield Append('DYLD_LIBRARY_PATH', os.path.join(install_path, 'lib64'))
 
-        yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
-        yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib64'))
+        yield Append('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
+        yield Append('LD_LIBRARY_PATH', os.path.join(install_path, 'lib64'))
+
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

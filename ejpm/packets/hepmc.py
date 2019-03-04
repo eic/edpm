@@ -1,6 +1,6 @@
 """
-This file provides information of how to build and configure Geant4 framework:
-https://github.com/Geant4
+This file provides information of how to build and configure HepMC framework:
+https://gitlab.cern.ch/hepmc/HepMC
 
 
 """
@@ -12,7 +12,7 @@ from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.installation import PacketInstallationInstruction
 
 
-class GeantInstallation(PacketInstallationInstruction):
+class HepMCInstallation(PacketInstallationInstruction):
     """Provides data for building and installing Geant4 framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -26,7 +26,7 @@ class GeantInstallation(PacketInstallationInstruction):
         """
 
         # Set initial values for parent class and self
-        super(GeantInstallation, self).__init__('geant')
+        super(HepMCInstallation, self).__init__('hepmc')
         self.build_threads = build_threads
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
@@ -35,36 +35,31 @@ class GeantInstallation(PacketInstallationInstruction):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # We don't care about tags and have only 1 branch name
-        branch = 'v10.4.3'
+        branch = 'HEPMC_02_06_09'
 
         #
         # use_common_dirs_scheme sets standard package variables:
         # source_path  = {app_path} / src   / {branch}       # Where the sources for the current version are located
         # build_path   = {app_path} / build / {branch}       # Where sources are built. Kind of temporary dir
-        # install_path = {app_path} / geant-{branch}         # Where the binary installation is
+        # install_path = {app_path} / {name}-{branch}         # Where the binary installation is
         self.use_common_dirs_scheme(app_path, branch)
 
         #
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/Geant4/geant4 {source_path}"\
+        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.cern.ch/hepmc/HepMC {source_path}"\
             .format(branch=branch, source_path=self.source_path)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
+        self.build_cmd = "cmake -Wno-dev -Dmomentum:STRING=GEV -Dlength:STRING=MM" \
+                         " -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(
                              source_path=self.source_path,    # cmake source
                              install_path=self.install_path,  # Installation path
                              build_threads=self.build_threads)     # make global options like '-j8'. Skip now
-
-        # requirments  env var to locate
-        # xerces-c     XERCESCROOT
-        # ROOT         ROOTSYS
-        # CCDB         CCDB_HOME
-        # curl         CURL_HOME
 
     def step_install(self):
         self.step_clone()
@@ -108,10 +103,10 @@ class GeantInstallation(PacketInstallationInstruction):
     @staticmethod
     def gen_env(data):
         """Generates environments to be set"""
-
         install_path = data['install_path']
         bin_path = os.path.join(install_path, 'bin')
         yield Prepend('PATH', bin_path)  # to make available clhep-config and others
+        yield Set('HEPMC_DIR', install_path)
 
         import platform
         if platform.system() == 'Darwin':
@@ -120,6 +115,7 @@ class GeantInstallation(PacketInstallationInstruction):
 
         yield Append('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
         yield Append('LD_LIBRARY_PATH', os.path.join(install_path, 'lib64'))
+
 
 
     #

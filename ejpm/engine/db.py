@@ -25,33 +25,35 @@ class PacketStateDatabase(object):
             "installed": {},  # Data about known installations of packets
             "packets": {
                 "root": {
-                    "required": True,
                     "installs": []
                 },
                 "clhep": {
-                    "required": True,
                     "installs": []
                 },
                 "genfit": {
-                    "required": True,
                     "installs": []
                 },
                 "rave": {
-                    "required": True,
                     "installs": []
                 },
                 "jana": {
-                    "required": True,
                     "installs": []
                 },
                 "ejana": {
-                    "required": True,
+                    "installs": []
+                },
+                "vgm": {
                     "installs": []
                 },
                 "geant": {
-                    "required": True,
                     "installs": []
                 },
+                'hepmc': {
+                    "installs": []
+                },
+                'jleicgeant': {
+                    "installs": []
+                }
             },
             "top_dir": "",
         }

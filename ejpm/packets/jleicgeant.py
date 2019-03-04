@@ -1,6 +1,6 @@
 """
 This file provides information of how to build and configure Geant4 framework:
-https://github.com/Geant4
+https://gitlab.com/jlab-eic/jleicgeant.git
 
 
 """
@@ -26,16 +26,17 @@ class GeantInstallation(PacketInstallationInstruction):
         """
 
         # Set initial values for parent class and self
-        super(GeantInstallation, self).__init__('geant')
+        super(GeantInstallation, self).__init__('jleicgeant')
         self.build_threads = build_threads
-        self.clone_command = ''             # will be set by self.set_app_path
-        self.build_cmd = ''                 # will be set by self.set_app_path
+        self.clone_command = ''             # is set during self.setup(...)
+        self.build_cmd = ''                 # is set during self.setup(...)
+        self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm']
 
     def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # We don't care about tags and have only 1 branch name
-        branch = 'v10.4.3'
+        branch = 'master'
 
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -47,7 +48,7 @@ class GeantInstallation(PacketInstallationInstruction):
         #
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/Geant4/geant4 {source_path}"\
+        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/jlab-eic/jleicgeant.git {source_path}"\
             .format(branch=branch, source_path=self.source_path)
 
         # cmake command:
@@ -109,17 +110,8 @@ class GeantInstallation(PacketInstallationInstruction):
     def gen_env(data):
         """Generates environments to be set"""
 
-        install_path = data['install_path']
-        bin_path = os.path.join(install_path, 'bin')
+        bin_path = os.path.join(data['install_path'], 'bin')
         yield Prepend('PATH', bin_path)  # to make available clhep-config and others
-
-        import platform
-        if platform.system() == 'Darwin':
-            yield Append('DYLD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
-            yield Append('DYLD_LIBRARY_PATH', os.path.join(install_path, 'lib64'))
-
-        yield Append('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
-        yield Append('LD_LIBRARY_PATH', os.path.join(install_path, 'lib64'))
 
 
     #
