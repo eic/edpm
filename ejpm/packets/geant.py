@@ -52,19 +52,13 @@ class GeantInstallation(PacketInstallationInstruction):
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
+        self.build_cmd = "cmake -DGEANT4_INSTALL_DATA=ON -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}"\
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(
                              source_path=self.source_path,    # cmake source
                              install_path=self.install_path,  # Installation path
                              build_threads=self.build_threads)     # make global options like '-j8'. Skip now
-
-        # requirments  env var to locate
-        # xerces-c     XERCESCROOT
-        # ROOT         ROOTSYS
-        # CCDB         CCDB_HOME
-        # curl         CURL_HOME
 
     def step_install(self):
         self.step_clone()
