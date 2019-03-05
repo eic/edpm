@@ -20,6 +20,9 @@ class PacketStateDatabase(object):
     def __init__(self):
         self.file_path = ""
 
+        # This field is set during runtime by packet manager knoweledge
+        self.known_packet_names = []
+
         self.data = {
             "file_version": 2,  # This data structure version, each time will increase by 1
             "installed": {},  # Data about known installations of packets
@@ -94,13 +97,23 @@ class PacketStateDatabase(object):
         return self.data['packets'].keys()
 
     def get_installs(self, packet_name):
+        """Get all installation information (like location) for packet with this name """
+
+        # If we have no record in the packet installations, but we know the name is OK
+        if packet_name not in self.data['packets'].keys() and packet_name in self.known_packet_names:
+            self.data['packets'][packet_name]['installs'] = []
+
+        # Return whatever we can (or it will raise KeyException)
         return self.data['packets'][packet_name]['installs']
 
     def get_active_install(self, packet_name):
+        """Get installation marked as 'is_active' from all installations of packet with name 'packet_name'"""
+
         installs = self.get_installs(packet_name)
 
         for install in installs:
-            if install['is_active']:
+            assert isinstance(install, dict)
+            if install[IS_ACTIVE]:
                 return install
 
         return None
@@ -116,7 +129,9 @@ class PacketStateDatabase(object):
         :param packet_name: Name of the packet like root, jana, etc
         :type path: dict or None
         """
-        if path in self.data['packets'][packet_name]['installs']:
+        path = os.path.normpath(path)
+        installs = self.get_installs(packet_name)
+        if path in installs:
             return path
 
     def update_install(self, packet_name, install_path, is_owned="nochange", is_active="nochange"):
@@ -129,13 +144,14 @@ class PacketStateDatabase(object):
         :return:
         """
 
-        installs = self.data['packets'][packet_name]['installs']
+        installs = self.get_installs(packet_name)
         install_path = os.path.normpath(install_path)
 
         # Search for existing installation with this installation path
         existing_install = None
         for install in installs:
             # We compare it just by == as all saved installs have gone through os.path.normpath
+            assert isinstance(install, dict)
             if install[INSTALL_PATH] == to_unicode(install_path):
                 existing_install = install
                 break
@@ -158,10 +174,6 @@ class PacketStateDatabase(object):
         if is_owned != "nochange":
             existing_install[IS_OWNED] = is_owned
 
-    #@property
-    #def missing(self):
-    #    return [p for p in self.data['packets'].keys() if self.data['installs']]
-
     @property
     def top_dir(self):
         return self.data["top_dir"]
@@ -175,5 +187,5 @@ class PacketStateDatabase(object):
 
         # version 1 to 2 migration
         if self.data['file_version'] == 1:
-            self.data['packets']['geant'] = {"installs": []}    # add geant to the installations
-            self.data['file_version'] = 2
+            pass    # No changes needed to update from v 1 to 2
+

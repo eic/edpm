@@ -86,7 +86,6 @@ def _print_packets_info(db):
             mprint("  {}{} {} {}".format(is_active_str, id_str, path_str, is_owned_str))
 
 
-
 @click.group(invoke_without_command=True)
 @click.option('--debug/--no-debug', default=False)
 @click.option('--top-dir', default="")
@@ -102,11 +101,16 @@ def ejpm_cli(ctx, ectx, debug, top_dir):
 
     # Package state database
     db = ectx.db
+    assert isinstance(db, PacketStateDatabase)
+
+    # At this point we already know what packets we know how to build/install
+    db.known_packet_names = ectx.pm.installers_by_name.keys()
 
     # user asks to set the top dir
     if top_dir:
         if db.exists():
             db.load()
+
         db.top_dir = os.path.abspath(os.path.normpath(top_dir))
         db.save()
 
