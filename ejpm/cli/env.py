@@ -25,7 +25,6 @@ So there are 3 ways of managing environment variables
     \b
     1. Dynamically source output of 'ejpm env' command (recommended):
      > source <(ejpm env)       # for bash
-     > source <(ejpm env csh)   # for CSH/TCSH
 
     \b
     2. Save output of 'ejpm env' command to a file (can be useful):

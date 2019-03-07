@@ -28,7 +28,6 @@ The database file doesn't exist. Probably you run 'ejpm' for one of the first ti
    You may set paths for other installed dependencies:
    > ejpm install ejana --missing --explain    # to see missing dependencies
    > ejpm set <name> <path>                    # to set dependency path
-
    
 3. Then you can install all missing dependencies:
 
@@ -137,12 +136,14 @@ from ejpm.cli.install import install as install_group
 from ejpm.cli.find import find as find_group
 from ejpm.cli.req import req as requirements_command
 from ejpm.cli.set import set as set_command
+from ejpm.cli.rm import rm as rm_command
 
 ejpm_cli.add_command(install_group)
 ejpm_cli.add_command(find_group)
 ejpm_cli.add_command(env_group)
 ejpm_cli.add_command(requirements_command)
 ejpm_cli.add_command(set_command)
+ejpm_cli.add_command(rm_command)
 
 if __name__ == '__main__':
     ejpm_cli()
