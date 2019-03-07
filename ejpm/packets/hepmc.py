@@ -47,7 +47,7 @@ class HepMCInstallation(PacketInstallationInstruction):
         #
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.cern.ch/hepmc/HepMC {source_path}"\
+        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.cern.ch/hepmc/HepMC.git {source_path}"\
             .format(branch=branch, source_path=self.source_path)
 
         # cmake command:
