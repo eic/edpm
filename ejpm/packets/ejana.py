@@ -92,7 +92,7 @@ class EjanaInstallation(PacketInstallationInstruction):
 
         #
         # scons installation command:
-        self.build_command = "scons install -j{build_threads} PREFIX={install_path} VARIANT-DIR={build_path} && scons install"\
+        self.build_command = "scons install -j{build_threads} PREFIX={install_path} VARIANT-DIR={build_path}"\
                          .format(build_threads=self.build_threads,
                                  install_path=self.install_path,
                                  build_path=self.build_path)

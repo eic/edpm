@@ -12,17 +12,23 @@ from ejpm.engine.output import markup_print as mprint
 @click.argument('args', nargs=-1, metavar='<packet-names>')
 @click.option('--optional', 'print_mode', flag_value='optional', help="Print optional packages")
 @click.option('--required', 'print_mode', flag_value='required', help="Print required packages")
-@click.option('--all', 'print_mode', flag_value='all', help="Print all packages")
+@click.option('--all', 'print_mode', flag_value='all', help="Print all packages (ready for packet manager install)")
+@click.option('--all-titles', 'print_mode', flag_value='all_titles', help="Print all packages (human readable)", default=True)
+
 @pass_ejpm_context
 @click.pass_context
 def req(ctx, ectx, os_name, args, print_mode):
-    """req - Shows required packages by operating system.
+    """req - Shows required packages that can be installed by operating system.
 
     \b
     Example:
-        req ubuntu ejana
-        req fedora ejana
-        req fedora root clhep
+      req ubuntu ejana
+      req fedora ejana
+      req fedora root clhep
+
+    By adding --optional, --required, --all flags you can use this command with packet managers:
+      req
+
 
     """
 
@@ -64,12 +70,22 @@ def _print_combined(ectx, os_name, packet_names, print_mode):
         required.extend(ectx.pm.os_deps_by_name[name]['required'][os_name].split(' ,'))
         optional.extend(ectx.pm.os_deps_by_name[name]['optional'][os_name].split(' ,'))
 
-    #remove emtpy elements and repeating elements
+    # remove emtpy elements and repeating elements
     required = list(set([r for r in required if r]))
     optional = list(set([o for o in optional if o]))
 
+    # We print titles only if --all-with-titles flag is set
+    if print_mode == 'all_titles':
+        mprint("<blue><b>REQUIRED</b></blue>:")
 
-    mprint("<blue><b>REQUIRED</b></blue>:")
-    mprint(" ".join(required))
-    mprint("<blue><b>OPTIONAL</b></blue>:")
-    mprint(" ".join(optional))
+    # We print required packets in all cases except --optinal flags
+    if print_mode != 'optional':
+        mprint(" ".join(required))
+
+    # We print titles only if --all-with-titles flag is set
+    if print_mode == 'all_titles':
+        mprint("<blue><b>OPTIONAL</b></blue>:")
+
+    # We print optional packets in all cases except --required flags
+    if print_mode != 'optional':
+        mprint(" ".join(optional))

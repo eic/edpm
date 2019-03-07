@@ -32,9 +32,8 @@ At this points **ejpm** tries to unify experience and make it simple to deploy e
 It should be as easy as:
 
 ```bash
-> ejpm find all            # try to automatically find dependent packets* 
-> ejpm --top-dir=/opt/eic  # set where to install missing packets
-> ejpm install all         # build and install missing packets
+> ejpm --top-dir=/eic/apps   # set where to install missing packets
+> ejpm install all           # build and install missing packets
 ```
 
 It also provides a possibility to fine control over dependencies
@@ -72,12 +71,18 @@ source<(ejpm env)             # set environment variables
 
 Step by step explained instruction:
 
-1. Install (or check) required packages form OS:
+1. Install (or check) prerequisites form OS:
 
     ```bash
+    # To see the prerequesties
     ejpm req ubuntu         # for all packets that ejpm knows
     ejpm req fedora ejana   # for ejana and its dependencies only
+    
+    # To put everything into packet manager 
+    apt-get -y install `ejpm req ubuntu --all`   # debian
+    yum -y install `ejpm req fedora --all`       # centos/fedora    
     ```
+    
    
     At this point only ***'ubuntu'*** and ***'fedora'*** are known words for req command. Put: 
     * ***ubuntu*** for debian family 

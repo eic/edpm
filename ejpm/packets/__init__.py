@@ -10,6 +10,7 @@ def import_all_submodules():
     for (module_loader, name, ispkg) in pkgutil.iter_modules([ejpm.packets.__path__[0]]):
         importlib.import_module('.' + name, __package__)
 
+
 class PacketManager(object):
 
     def __init__(self):
@@ -69,7 +70,7 @@ class PacketManager(object):
         if hasattr(installer, 'gen_env'):
             self.env_generators[installer.name] = installer.gen_env
 
-    def get_installation_names(self, installer_name):
+    def get_installation_names(self, installer_name, deps_only=False):
         """
         Returns name of the package + dependencies ejpm can install
         so it is like: ['CLHEP', 'root', ..., 'ejana'] for installer_name=ejana
@@ -80,6 +81,9 @@ class PacketManager(object):
         """
 
         deps = self.installers_by_name[installer_name].required_deps
+
+        if deps_only:
+            return deps
 
         # If we install just a single packet desired_names a single name
         return deps + [installer_name] if deps else [installer_name]

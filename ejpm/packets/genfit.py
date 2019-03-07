@@ -132,8 +132,8 @@ class GenfitInstallation(PacketInstallationInstruction):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "libboost-dev",
-            'fedora': "boost-devel"
+            'ubuntu': "libboost-dev libeigen3-dev",
+            'fedora': "boost-devel eigen3-devel"
         },
         'optional': {
             'ubuntu': "",

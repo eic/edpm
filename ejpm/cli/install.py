@@ -13,12 +13,12 @@ from ejpm.packets import PacketManager
 @click.option('--single', 'dep_mode', flag_value='single', help="Installs only this package")
 @click.option('--all', 'dep_mode', flag_value='all', help="Installs all dependencies by ejpm")
 @click.option('--path', 'install_path', default='', help="Is not implemented")
-@click.option('--explain', 'just_explain', default=False, is_flag=True,
-              help="Prints what is to be installed (but do nothing)")
+@click.option('--explain', 'just_explain', default=False, is_flag=True, help="Prints what is to be installed (but do nothing)")
+@click.option('--deps-only', 'deps_only', default=False, is_flag=True, help="Installs only dependencies but not the packet itself")
 @click.argument('name', nargs=1)
 @pass_ejpm_context
 @click.pass_context
-def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False):
+def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False, deps_only=False):
     """Installs packets (and all dependencies)
 
     \b
@@ -64,7 +64,7 @@ def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False):
     # set the tag we want to install
     tag_name, installer = pm.installers_by_tags[name]
     installer.selected_tag = tag_name
-    _install_with_deps(ectx, installer.name, mode=dep_mode, just_explain=just_explain)
+    _install_with_deps(ectx, installer.name, mode=dep_mode, just_explain=just_explain, deps_only=deps_only)
 
     # Update environment scripts if it is not just an explanation
     if not just_explain:
@@ -121,10 +121,10 @@ def _install_packet(db, packet, install_path='', replace_active=True):
     db.save()
 
 
-def _install_with_deps(ectx, packet_name, mode, just_explain=False):
+def _install_with_deps(ectx, packet_name, mode, just_explain=False, deps_only=False):
     assert isinstance(ectx, EjpmContext)
 
-    desired_names = ectx.pm.get_installation_names(packet_name)
+    desired_names = ectx.pm.get_installation_names(packet_name, deps_only)
 
     # First we want to play 'setup' function on all dependencies.
     # This will allow us to build the right environment for non existent packets
