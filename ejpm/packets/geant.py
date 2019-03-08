@@ -54,13 +54,28 @@ class GeantInstallation(PacketInstallationInstruction):
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -DGEANT4_INSTALL_DATA=ON -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}"\
-                         "&& cmake --build . -- -j {build_threads}" \
-                         "&& cmake --build . --target install" \
+        self.build_cmd = """
+            cmake
+                -DGEANT4_INSTALL_DATA=ON
+                -DGEANT4_BUILD_CXXSTD=11
+                -DGEANT4_USE_GDML=ON
+                -DGEANT4_USE_SYSTEM_CLHEP=ON
+                -DCLHEP_ROOT_DIR=$CLHEP
+                -DGEANT4_USE_OPENGL_X11=ON
+                -DGEANT4_USE_RAYTRACER_X11=ON
+                -DGEANT4_BUILD_MULTITHREADED=ON 
+                -DGEANT4_USE_QT=ON
+                -DCMAKE_INSTALL_PREFIX={install_path}
+                -Wno-dev
+                {source_path}
+            && cmake --build . -- -j {build_threads}
+            && cmake --build . --target install"""\
                          .format(
                              source_path=self.source_path,    # cmake source
                              install_path=self.install_path,  # Installation path
                              build_threads=self.build_threads)     # make global options like '-j8'. Skip now
+        # remove multiple spaces and \n
+        self.build_cmd = " ".join(self.build_cmd.split())
 
     def step_install(self):
         self.step_clone()
@@ -142,9 +157,8 @@ class GeantInstallation(PacketInstallationInstruction):
 
         sh_text = "source {}".format(os.path.join(bin_path, 'geant4.sh'))
 
-        # in Geant CSH script geant asks to get a path for geant bin directory
-        csh_text = "source {} {}"
-            .format(os.path.join(bin_path, 'geant4.csh'), bin_path)
+        # in Geant CSH script Geant asks to get a path for geant bin directory
+        csh_text = "source {} {}".format(os.path.join(bin_path, 'geant4.csh'), bin_path)
 
         yield env_gen.RawText(
             sh_text,
@@ -161,7 +175,9 @@ class GeantInstallation(PacketInstallationInstruction):
     os_dependencies = {
         'required': {
             'ubuntu': "",
-            'fedora': ""
+            'fedora': "assimp-devel expat-devel libX11-devel libXt-devel libXmu-devel libXrender-devel libXpm-devel"
+                      "libXft-devel libAfterImage libAfterImage-devel mesa-libGLU-devel qt5-qtdeclarative-devel"
+                      "qt5-linguist tetgen-devel xerces-c-devel xkeyboard-config qt5-qtbase-devel"
         },
         'optional': {
             'ubuntu': "",

@@ -15,7 +15,7 @@ _help_option_auto = "Removes from DB and disk if(!) the packet is owned by ejpm"
 @click.argument('packet_name', nargs=1, metavar='<packet-name>')
 @click.argument('install_paths', nargs=-1, metavar='<path>')
 @click.option('--db', 'mode', flag_value='db', help=_help_option_db)
-@click.option('--all', 'mode', flag_value='all', help=_help_option_all, default=True)
+@click.option('--all', 'mode', flag_value='all', help=_help_option_all)
 @click.option('--auto', 'mode', flag_value='auto', help=_help_option_auto, default=True)
 @pass_ejpm_context
 @click.pass_context

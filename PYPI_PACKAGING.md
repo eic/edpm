@@ -1,6 +1,7 @@
 TL;DR;   
 
 ```bash
+pip install --upgrade pip
 python3 -m pip install --user --upgrade setuptools wheel
 python3 setup.py sdist bdist_wheel
 
@@ -13,6 +14,8 @@ https://packaging.python.org/tutorials/packaging-projects/
 
 ejpm pip: https://pypi.org/project/ejpm/#history
 
+SO question for JLab certificate validation
+https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror/10668173
 
 
 

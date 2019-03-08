@@ -114,7 +114,7 @@ class ClhepInstallation(PacketInstallationInstruction):
         bin_path = os.path.join(path, 'bin')
 
         yield Set('CLHEP', path)
-        yield Set('CLHEPPATH', path)                  # Some system look for CLHEP this way
+        yield Set('CLHEP_BASE_DIR', path)                  # Some system look for CLHEP this way
         yield Set('CLHEP_INCLUDE_DIR', include_path)  # or /usr/include/CLHEP/
         yield Set('CLHEP_LIB_DIR', lib_path)
 

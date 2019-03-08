@@ -48,7 +48,7 @@ class GeantInstallation(PacketInstallationInstruction):
         #
         # JANA download link. Clone with shallow copy
         # TODO accept version tuple to get exact branch
-        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/jlab-eic/jleicgeant.git {source_path}"\
+        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/jlab-eic/g4e.git {source_path}"\
             .format(branch=branch, source_path=self.source_path)
 
         # cmake command:
