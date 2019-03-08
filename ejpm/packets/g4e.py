@@ -1,6 +1,6 @@
 """
 This file provides information of how to build and configure Geant4 framework:
-https://gitlab.com/jlab-eic/jleicgeant.git
+https://gitlab.com/jlab-eic/g4e.git
 
 
 """
@@ -26,7 +26,7 @@ class GeantInstallation(PacketInstallationInstruction):
         """
 
         # Set initial values for parent class and self
-        super(GeantInstallation, self).__init__('jleicgeant')
+        super(GeantInstallation, self).__init__('g4e')
         self.build_threads = build_threads
         self.clone_command = ''             # is set during self.setup(...)
         self.build_cmd = ''                 # is set during self.setup(...)

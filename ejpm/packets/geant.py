@@ -140,9 +140,15 @@ class GeantInstallation(PacketInstallationInstruction):
 
         yield Prepend('PATH', bin_path)  # to make available clhep-config and others
 
+        sh_text = "source {}".format(os.path.join(bin_path, 'geant4.sh'))
+
+        # in Geant CSH script geant asks to get a path for geant bin directory
+        csh_text = "source {} {}"
+            .format(os.path.join(bin_path, 'geant4.csh'), bin_path)
+
         yield env_gen.RawText(
-            "source {}".format(os.path.join(bin_path, 'geant4.sh')),
-            "source {}".format(os.path.join(bin_path, 'geant4.csh')),
+            sh_text,
+            csh_text,
             update_python_environment
         )
 
