@@ -174,7 +174,7 @@ class GeantInstallation(PacketInstallationInstruction):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "",
+            'ubuntu': "libxerces-c3-dev libexpat-dev qtbase5-dev libqt5opengl5-dev libxmu-dev libx11-dev",
             'fedora': "assimp-devel expat-devel libX11-devel libXt-devel libXmu-devel libXrender-devel libXpm-devel"
                       "libXft-devel libAfterImage libAfterImage-devel mesa-libGLU-devel qt5-qtdeclarative-devel"
                       "qt5-linguist tetgen-devel xerces-c-devel xkeyboard-config qt5-qtbase-devel"
