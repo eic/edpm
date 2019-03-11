@@ -3,7 +3,6 @@ import os
 import click
 
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
-from ejpm.engine.db import INSTALL_PATH
 from ejpm.engine.output import markup_print as mprint
 
 
@@ -25,7 +24,8 @@ def set(ctx, ectx, packet_name, install_path):
     ectx.ensure_packet_known(packet_name)
 
     # update_install will add or update the packet install. We set it active as it make sense...
-    ectx.db.update_install(packet_name, install_path, is_active=True)
+    from ejpm.engine.db import IS_ACTIVE
+    ectx.db.update_install(packet_name, install_path, {IS_ACTIVE: True})
     ectx.db.save()
 
     # Update environment scripts

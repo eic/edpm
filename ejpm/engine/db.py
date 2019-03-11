@@ -10,6 +10,8 @@ import io
 from ejpm.engine.py23 import to_unicode
 
 INSTALL_PATH = 'install_path'
+SOURCE_PATH = 'source_path'
+BUILD_PATH = 'build_path'
 IS_OWNED = 'is_owned'
 IS_ACTIVE = 'is_active'
 
@@ -24,16 +26,19 @@ class PacketStateDatabase(object):
         self.known_packet_names = []
 
         self.data = {
-            "file_version": 2,  # This data structure version, each time will increase by 1
+            "file_version": 3,  # This data structure version, each time will increase by 1
             "packets": {},      # create_packet_minimal_data() is used to create data inside this field
             "top_dir": "",      # The directory where everything is installed
+            "packet_stack_name": "default"
         }
 
         self.verbose = False
+        self.is_loaded = False
 
     @staticmethod
     def create_packet_minimal_data():
         return {"installs": []}
+    
     def exists(self):
         """Returns True if db file exists
 
@@ -54,6 +59,8 @@ class PacketStateDatabase(object):
                               separators=(',', ': '), ensure_ascii=False)
             outfile.write(to_unicode(str_))
 
+        self.is_loaded = True
+
     def load(self):
         """Loads self.data from a file with self.file_path"""
 
@@ -61,6 +68,8 @@ class PacketStateDatabase(object):
         with open(self.file_path) as data_file:
             self.data = json.load(data_file)
             self._update_schema()
+
+        self.is_loaded = True
 
     @property
     def packet_names(self):
@@ -114,7 +123,7 @@ class PacketStateDatabase(object):
                 return install
         return None
 
-    def update_install(self, packet_name, install_path, is_owned="nochange", is_active="nochange"):
+    def update_install(self, packet_name, install_path, updating_data):
         """
         :param packet_name: Name of the packet. Like root, genfit, rave, etc
         :param install_path: Path of the installation
@@ -123,7 +132,7 @@ class PacketStateDatabase(object):
         :return:
         """
 
-        installs = self.get_installs(packet_name)
+        # normalize the path
         install_path = os.path.normpath(install_path)
 
         # Search for existing installation with this installation path
@@ -132,20 +141,15 @@ class PacketStateDatabase(object):
         # If we didn't find an install, lets add a new one
         if existing_install is None:
             existing_install = {}
+            installs = self.get_installs(packet_name)
             installs.append(existing_install)
             existing_install[IS_ACTIVE] = True      # It is the first installation. Should be active
             existing_install[IS_OWNED] = False      # Nothing known about it, so guess we are not
 
         # set selected and ownership
         existing_install[INSTALL_PATH] = install_path
-        if is_active != "nochange":
-            # deselect other installations if the new one is selected
-            if is_active:
-                for install in installs:
-                    install[IS_ACTIVE] = False
-            existing_install[IS_ACTIVE] = is_active
-        if is_owned != "nochange":
-            existing_install[IS_OWNED] = is_owned
+        existing_install.update(updating_data)
+        return existing_install
 
     def remove_install(self, packet_name, install_path):
         """

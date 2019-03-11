@@ -37,7 +37,7 @@ class GeantInstallation(PacketInstallationInstruction):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # We don't care about tags and have only 1 branch name
-        branch = 'v10.4.3'
+        branch = 'v10.5.0'
 
         #
         # use_common_dirs_scheme sets standard package variables:

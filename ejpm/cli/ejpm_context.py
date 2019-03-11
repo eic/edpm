@@ -3,9 +3,10 @@ import io
 import os
 import click
 import appdirs
+import shutil
 
 from ejpm.engine.db import PacketStateDatabase
-from ejpm.packets import PacketManager
+from ejpm.engine.packet_stack import PacketManager
 from ejpm.engine.output import markup_print as mprint
 
 EJPM_HOME_PATH = 'ejpm_home_path'       # Home path of the EJPM
@@ -20,13 +21,17 @@ class EjpmContext(object):
 
     def __init__(self):
         self.db = PacketStateDatabase()
-        self.pm = PacketManager()
         self.config = {}
 
         # EJPM home path
         # call 3 times dirname as we have <db path>/ejpm/cli
         ejpm_home_path = os.path.dirname(os.path.dirname(os.path.dirname(inspect.stack()[0][1])))
         self.config[EJPM_HOME_PATH] = ejpm_home_path
+        print(ejpm_home_path)
+
+        ejpm_source_stack_path = os.path.join(ejpm_home_path, 'ejpm', 'packets')
+        ejpm_source_stack_package = 'ejpm.packets'
+
 
         #
         # EJPM data path. It is where db.json and environment files are located
@@ -46,6 +51,13 @@ class EjpmContext(object):
         self.config[EJPM_DATA_PATH] = ejpm_data_path
 
         #
+        # Setup default installers files
+        ejpm_default_stack_name = 'ejpm_stack_default'
+        ejpm_default_stack_path = os.path.join(ejpm_data_path, ejpm_default_stack_name)
+        if not os.path.isdir(ejpm_default_stack_path):
+            shutil.copytree(ejpm_source_stack_path, ejpm_default_stack_path)
+
+        #
         # Database path
         self.db.file_path = os.path.join(ejpm_data_path, "db.json")
         self.config[DB_FILE_PATH] = self.db.file_path
@@ -54,6 +66,13 @@ class EjpmContext(object):
         # environment script paths
         self.config[ENV_SH_PATH] = os.path.join(ejpm_data_path, "env.sh")
         self.config[ENV_CSH_PATH] = os.path.join(ejpm_data_path, "env.csh")
+
+    def construct_packet_manager(self):
+        self.pm = PacketManager()
+
+    def load_db_if_exists(self):
+        if self.db.exists():
+            self.db.load()
 
     def ensure_db_exists(self):
         """Check if DB exist, create it or aborts everything

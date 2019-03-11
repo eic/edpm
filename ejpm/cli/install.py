@@ -5,7 +5,7 @@ from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.installation import PacketInstallationInstruction
-from ejpm.packets import PacketManager
+from ejpm.engine.packet_stack import PacketManager
 
 
 @click.command()
@@ -42,9 +42,7 @@ def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False, deps
     assert isinstance(pm, PacketManager)
 
     # Check if packet_name is all, missing or for known packet
-    is_valid_packet_name = name in pm.installers_by_tags.keys()
-
-    if not is_valid_packet_name:
+    if not ectx.ensure_packet_known(name):
         print("Packet with name '{}' is not found".format(name))  # don't know what to do
         raise click.Abort()
 
@@ -105,7 +103,7 @@ def _install_packet(db, packet, install_path='', replace_active=True):
     mprint("<green> INSTALLING</green> : <blue>{}</blue>", packet.name)
     mprint("<magenta>=========================================</magenta>\n")
 
-    # (!) here we actually install thie package
+    # (!) here we actually install the packet
     try:
         packet.step_install()
     except OSError:
@@ -117,7 +115,15 @@ def _install_packet(db, packet, install_path='', replace_active=True):
 
     # Add to DB that we installed a packet
     mprint("Adding path to database...\n   This {} installation is set as <blue>selected</blue>", packet.name)
-    db.update_install(packet.name, packet.install_path, is_owned=True, is_active=True)
+
+    from ejpm.engine.db import IS_OWNED, IS_ACTIVE, SOURCE_PATH, BUILD_PATH
+    updating_data = {
+        IS_OWNED: True,
+        IS_ACTIVE: True,
+        SOURCE_PATH: packet.source_path,
+        BUILD_PATH: packet.build_path
+    }
+    db.update_install(packet.name, packet.install_path, updating_data)
     db.save()
 
 

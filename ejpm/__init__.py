@@ -102,23 +102,26 @@ def ejpm_cli(ctx, ectx, debug, top_dir):
     db = ectx.db
     assert isinstance(db, PacketStateDatabase)
 
-    # At this point we already know what packets we know how to build/install
-    db.known_packet_names = ectx.pm.installers_by_name.keys()
+    ectx.load_db_if_exists()
 
     # user asks to set the top dir
     if top_dir:
-        if db.exists():
-            db.load()
-
         db.top_dir = os.path.abspath(os.path.normpath(top_dir))
         db.save()
 
     # check if DB file already exists
     if not db.exists():
         print_first_time_message()
+        ectx.construct_packet_manager()
     else:
         # load the database state
         db.load()
+        ectx.construct_packet_manager()
+
+        # At this point we already know what packets we know how to build/install
+        db.known_packet_names = ectx.pm.installers_by_name.keys()
+
+
 
         # if there is no commands and we loaded the DB lets print some info:
         if ctx.invoked_subcommand is None:

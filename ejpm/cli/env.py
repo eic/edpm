@@ -1,8 +1,6 @@
 import click
 
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext, ENV_SH_PATH, ENV_CSH_PATH
-from ejpm.engine.db import PacketStateDatabase
-from ejpm.packets import PacketManager
 
 
 @click.command()

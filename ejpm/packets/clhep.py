@@ -12,17 +12,10 @@ from ejpm.engine.installation import PacketInstallationInstruction
 
 
 class ClhepInstallation(PacketInstallationInstruction):
-    """Provides data for building and installing Genfit framework
-    source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
-    build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
-    install_path = {app_path}/root-{version}         # Where the binary installation is
+    """Provides data for building and installing CLHEP framework
     """
 
-
     def __init__(self, build_threads=8):
-        """
-        Installs Genfit track fitting framework
-        """
 
         # Set initial values for parent class and self
         super(ClhepInstallation, self).__init__('clhep')
