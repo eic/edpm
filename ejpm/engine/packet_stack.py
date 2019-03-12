@@ -6,7 +6,7 @@ import sys
 from ejpm.engine.installation import PacketInstallationInstruction
 
 
-def import_all_submodules(modules_dir):
+def import_all_submodules(modules_dir, package_name):
     for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
         print("module_loader {}, name {}, ispkg {}".format(module_loader, name, ispkg))
 
@@ -20,6 +20,9 @@ class PacketManager(object):
 
     def __init__(self, modules_dir=""):
         # We need to import submodules at least once to get __submodules__() function work later
+        if not modules_dir:
+            modules_dir = ejpm.packets.__path__[0]
+
         import_all_submodules(modules_dir)
 
         # But now we just import and create them manually
