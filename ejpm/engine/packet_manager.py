@@ -8,13 +8,13 @@ from ejpm.engine.installation import PacketInstallationInstruction
 
 
 def import_all_submodules(modules_dir, package_name):
-    for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
-        print("module_loader {}, name {}, ispkg {}".format(module_loader, name, ispkg))
+    # >oO debug   for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
+    # >oO debug       print("module_loader {}, name {}, ispkg {}".format(module_loader, name, ispkg))
 
     #parent_module =  imp.find_module('packets', path)
     for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
         module = importlib.import_module('.' + name, package_name)
-        print(module)
+        # >oO debug   print(module)
 
 
 class PacketManager(object):

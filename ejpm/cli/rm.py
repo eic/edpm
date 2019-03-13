@@ -1,7 +1,6 @@
 import click
 
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
-from ejpm.engine.db import INSTALL_PATH, IS_ACTIVE, IS_OWNED
 from ejpm.engine.output import markup_print as mprint
 
 
@@ -21,14 +20,14 @@ _help_option_auto = "Removes from DB and disk if(!) the packet is owned by ejpm"
 @click.pass_context
 def rm(ctx, ectx, packet_name, install_paths, mode):
     """Removes a packet.
-    By default deletes DB record and disk folder if the packet is 'owned' by ejpm.
+    By default deletes record from ejpm DB and the disk folders if the packet is 'owned' by ejpm.
 
     Usage:
         ejpm rm <packet-name>         # removes active install of the packet
         ejpm rm <packet-name> <path>  # removes the install with the path
 
     """
-
+    from ejpm.engine.db import INSTALL_PATH, IS_ACTIVE, IS_OWNED, SOURCE_PATH, BUILD_PATH
     assert isinstance(ectx, EjpmContext)
 
     # We need DB ready for this cli command
@@ -76,7 +75,15 @@ def rm(ctx, ectx, packet_name, install_paths, mode):
     if remove_folder:
         mprint("...trying to remove the folder from disk...\n")
         from ejpm.engine.commands import run
+
         run('rm -rf "{}"'.format(install_data[INSTALL_PATH]))
+
+        if SOURCE_PATH in install_data:
+            run('rm -rf "{}"'.format(install_data[SOURCE_PATH]))
+
+        if BUILD_PATH in install_data:
+            run('rm -rf "{}"'.format(install_data[BUILD_PATH]))
+
 
 
 

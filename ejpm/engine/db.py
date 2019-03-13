@@ -125,10 +125,10 @@ class PacketStateDatabase(object):
 
     def update_install(self, packet_name, install_path, updating_data):
         """
+        :param updating_data: A dict with data to update
+        :type updating_data: dict
         :param packet_name: Name of the packet. Like root, genfit, rave, etc
         :param install_path: Path of the installation
-        :param is_owned: Is owned and managed by EJPM
-        :param is_active: Is active. Means is used to build other packets, etc
         :return:
         """
 
@@ -145,6 +145,13 @@ class PacketStateDatabase(object):
             installs.append(existing_install)
             existing_install[IS_ACTIVE] = True      # It is the first installation. Should be active
             existing_install[IS_OWNED] = False      # Nothing known about it, so guess we are not
+
+        # if updating_data has IS_ACTIVE flag set to True, We have to uncheck all other our packets
+        if updating_data.get(IS_ACTIVE, False):
+            for install in self.get_installs(packet_name):
+                # We compare it just by == as all saved installs have gone through os.path.normpath
+                assert isinstance(install, dict)
+                install[IS_ACTIVE] = False
 
         # set selected and ownership
         existing_install[INSTALL_PATH] = install_path
