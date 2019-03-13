@@ -42,9 +42,7 @@ def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False, deps
     assert isinstance(pm, PacketManager)
 
     # Check if packet_name is all, missing or for known packet
-    if not ectx.ensure_packet_known(name):
-        print("Packet with name '{}' is not found".format(name))  # don't know what to do
-        raise click.Abort()
+    ectx.ensure_packet_known(name)
 
     # Ok, looks like we are going to install something
 
@@ -60,8 +58,7 @@ def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False, deps
 
     # Install packets
     # set the tag we want to install
-    tag_name, installer = pm.installers_by_tags[name]
-    installer.selected_tag = tag_name
+    installer = pm.installers_by_name[name]
     _install_with_deps(ectx, installer.name, mode=dep_mode, just_explain=just_explain, deps_only=deps_only)
 
     # Update environment scripts if it is not just an explanation

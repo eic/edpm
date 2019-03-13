@@ -5,9 +5,11 @@ import click
 import appdirs
 import shutil
 
+
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.packet_manager import PacketManager
 from ejpm.engine.output import markup_print as mprint
+from ejpm.engine.py23 import to_unicode
 
 EJPM_HOME_PATH = 'ejpm_home_path'       # Home path of the EJPM
 EJPM_DATA_PATH = 'ejpm_data_path'       # Path where
@@ -61,7 +63,8 @@ class EjpmContext(object):
         """
 
         # Check if packet_name is all, missing or for known packet
-        is_valid_packet_name = packet_name in self.pm.installers_by_name.keys()
+        names = [to_unicode(n) for n in self.pm.installers_by_name.keys()]
+        is_valid_packet_name = to_unicode(packet_name) in names
 
         if not is_valid_packet_name:
             print("Packet with name '{}' is not found".format(packet_name))  # don't know what to do

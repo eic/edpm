@@ -35,7 +35,6 @@ class JanaInstallation(PacketInstallationInstruction):
     def __init__(self, build_threads=8):
         """
 
-
         """
 
         # Set initial values for parent class and self
