@@ -97,12 +97,6 @@ class EjanaInstallation(PacketInstallationInstruction):
                                  install_path=self.install_path,
                                  build_path=self.build_path)
 
-        # requirments  env var to locate
-        # xerces-c     XERCESCROOT
-        # ROOT         ROOTSYS
-        # CCDB         CCDB_HOME
-        # curl         CURL_HOME
-
     def step_install(self):
         self.step_clone()
         self.step_build()

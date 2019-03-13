@@ -16,12 +16,21 @@ class JanaInstallation(PacketInstallationInstruction):
 
     PacketInstallationInstruction is located in installation.py and contains the next standard package variables:
 
-    version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
-    app_path     =  Context.work_dir                 # The directory where all other packets are installed
+
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
     install_path = {app_path}/root-{version}         # Where the binary installation is
     """
+
+    class DefaultConfig(object):
+        download_path = ""     # where we download the source or clone git
+        source_path = ""       # The directory with source files for current version
+        build_path = ""        # The directory for cmake/scons build
+        install_path = ""      # The directory, where binary is installed
+        required_deps = []     # Packets which are required for this to run
+        optional_deps = []     # Optional packets
+
+
 
     def __init__(self, build_threads=8):
         """
@@ -60,12 +69,6 @@ class JanaInstallation(PacketInstallationInstruction):
                          .format(build_threads=self.build_threads,
                                  install_path=self.install_path,
                                  build_path=self.build_path)
-
-        # requirments  env var to locate
-        # xerces-c     XERCESCROOT
-        # ROOT         ROOTSYS
-        # CCDB         CCDB_HOME
-        # curl         CURL_HOME
 
     def step_install(self):
         self.step_clone()
@@ -124,8 +127,8 @@ class JanaInstallation(PacketInstallationInstruction):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "scons xerses curl",
-            'fedora': "scons xerses curl"
+            'ubuntu': "scons libxerces-c-dev curl",
+            'fedora': "scons xerces curl"
         },
         'optional': {
             'ubuntu': "",

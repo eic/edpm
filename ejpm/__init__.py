@@ -1,7 +1,7 @@
 import os
 import click
 
-from ejpm.cli.ejpm_context import pass_ejpm_context, DB_FILE_PATH, ENV_CSH_PATH, ENV_SH_PATH
+from ejpm.cli.ejpm_context import pass_ejpm_context, DB_FILE_PATH, ENV_CSH_PATH, ENV_SH_PATH, EjpmContext
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 
@@ -91,47 +91,35 @@ def _print_packets_info(db):
 @pass_ejpm_context
 @click.pass_context
 def ejpm_cli(ctx, ectx, debug, top_dir):
-    """EJPM stands for EIC Jana Packet Manager
-    """
+    """EJPM stands for EIC Jana Packet Manager"""
+
+    assert isinstance(ectx, EjpmContext)    # Type check for ectx
 
     # Run on-start and set on-close routines
     _on_start()                     # Run initialization stuff
     ctx.call_on_close(_on_close)    # Add _on_close function that will restore working directory
 
-    # Package state database
-    db = ectx.db
-    assert isinstance(db, PacketStateDatabase)
-
-    ectx.load_db_if_exists()
+    # Load db and modules from disk
+    db_existed = ectx.load_shmoad_ugly_toad()    # False => Couldn't load and used default
 
     # user asks to set the top dir
     if top_dir:
-        db.top_dir = os.path.abspath(os.path.normpath(top_dir))
-        db.save()
+        ectx.db.top_dir = os.path.abspath(os.path.normpath(top_dir))
+        ectx.db.save()
 
     # check if DB file already exists
-    if not db.exists():
+    if not db_existed:
         print_first_time_message()
-        ectx.construct_packet_manager()
     else:
-        # load the database state
-        db.load()
-        ectx.construct_packet_manager()
-
-        # At this point we already know what packets we know how to build/install
-        db.known_packet_names = ectx.pm.installers_by_name.keys()
-
-
-
         # if there is no commands and we loaded the DB lets print some info:
         if ctx.invoked_subcommand is None:
             from ejpm.version import version
             mprint("<b><blue>EJPM</blue></b> v{}".format(version))
-            mprint("<b><blue>top dir :</blue></b>\n  {}", db.top_dir)
+            mprint("<b><blue>top dir :</blue></b>\n  {}", ectx.db.top_dir)
             mprint("<b><blue>state db :</blue></b>\n  {}", ectx.config[DB_FILE_PATH])
             mprint("  (users are encouraged to inspect/edit it)")
             mprint("<b><blue>env files :</blue></b>\n  {}\n  {}", ectx.config[ENV_SH_PATH], ectx.config[ENV_CSH_PATH])
-            _print_packets_info(db)
+            _print_packets_info(ectx.db)
 
 
 from ejpm.cli.env import env as env_group

@@ -5,7 +5,7 @@ from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.installation import PacketInstallationInstruction
-from ejpm.engine.packet_stack import PacketManager
+from ejpm.engine.packet_manager import PacketManager
 
 
 @click.command()

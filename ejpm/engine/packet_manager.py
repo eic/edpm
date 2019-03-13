@@ -22,15 +22,7 @@ class PacketManager(object):
     class Config(object):
         dir = ""
 
-    def __init__(self, modules_dir="", package_name=""):
-        # We need to import submodules at least once to get __submodules__() function work later
-        if not modules_dir:
-            modules_dir = ejpm.packets.__path__[0]
-        if not package_name:
-            package_name = ejpm.packets.__name__
-
-        import_all_submodules(modules_dir, package_name)
-
+    def __init__(self):
         # But now we just import and create them manually
         self.installers_by_name = {}
         self.env_generators = {}
@@ -39,6 +31,16 @@ class PacketManager(object):
         # The type is map to have requirements by packets, i.e.:
         #     self.fedora_required_packets['ejana'] - list for ejana
         self.os_deps_by_name = {}
+
+    def load_installers(self, modules_dir="", package_name=""):
+
+        if not modules_dir:
+            modules_dir = ejpm.packets.__path__[0]
+        if not package_name:
+            package_name = ejpm.packets.__name__
+
+        # We need to import submodules at least once to get __submodules__() function work later
+        import_all_submodules(modules_dir, package_name)
 
         # Create all subclasses of PacketInstallationInstruction and add here
         for cls in PacketInstallationInstruction.__subclasses__():

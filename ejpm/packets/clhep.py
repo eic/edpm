@@ -48,15 +48,9 @@ class ClhepInstallation(PacketInstallationInstruction):
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(
-                             source_path=self.source_path,    # cmake source
-                             install_path=self.install_path,  # Installation path
-                             build_threads=self.build_threads)     # make global options like '-j8'. Skip now
-
-        # requirments  env var to locate
-        # xerces-c     XERCESCROOT
-        # ROOT         ROOTSYS
-        # CCDB         CCDB_HOME
-        # curl         CURL_HOME
+                             source_path=self.source_path,       # cmake source
+                             install_path=self.install_path,     # Installation path
+                             build_threads=self.build_threads)   # make global options like '-j8'. Skip now
 
     def step_install(self):
         self.step_clone()

@@ -61,12 +61,6 @@ class GeantInstallation(PacketInstallationInstruction):
                              install_path=self.install_path,  # Installation path
                              build_threads=self.build_threads)     # make global options like '-j8'. Skip now
 
-        # requirments  env var to locate
-        # xerces-c     XERCESCROOT
-        # ROOT         ROOTSYS
-        # CCDB         CCDB_HOME
-        # curl         CURL_HOME
-
     def step_install(self):
         self.step_clone()
         self.step_build()
