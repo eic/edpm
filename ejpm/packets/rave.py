@@ -61,7 +61,7 @@ class RaveInstallation(PacketInstallationInstruction):
                              "&& for f in $(ls $RAVEPATH/include/rave/*.h); do sed -i 's/RaveDllExport//g' $f; done" \
             .format(install_path=self.install_path,
                     glb_make_options="",
-                    version=self.selected_tag)
+                    version=branch)
 
     def step_install(self):
         self.step_clone()

@@ -9,6 +9,20 @@ python3 -m pip install -r requirements.txt --user
 python3 -m twine upload dist/*
 ```
 
+in virtual env:
+``` 
+pip install --upgrade pip
+pip install --upgrade setuptools wheel twine
+
+#if bug with setuptools
+pip install --upgrade --force-reinstall setuptools
+
+python setup.py sdist bdist_wheel
+
+python -m twine upload dist/*
+```
+
+
 A tutorial:
 https://packaging.python.org/tutorials/packaging-projects/
 

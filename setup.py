@@ -26,7 +26,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
 
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 2",
@@ -36,6 +36,7 @@ setup(
     ],
     packages=["ejpm"],
     include_package_data=True,
+    setup_requires=["click", "appdirs"],
     install_requires=["click", "appdirs"],
     entry_points={
         "console_scripts": [
