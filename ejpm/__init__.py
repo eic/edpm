@@ -102,7 +102,7 @@ from ejpm.cli.find import find as find_group
 from ejpm.cli.req import req as requirements_command
 from ejpm.cli.set import set as set_command
 from ejpm.cli.rm import rm as rm_command
-from ejpm.cli.cd import cd as cd_command
+from ejpm.cli.pwd import pwd as pwd_command
 
 ejpm_cli.add_command(install_group)
 ejpm_cli.add_command(find_group)
@@ -110,7 +110,7 @@ ejpm_cli.add_command(env_group)
 ejpm_cli.add_command(requirements_command)
 ejpm_cli.add_command(set_command)
 ejpm_cli.add_command(rm_command)
-ejpm_cli.add_command(cd_command)
+ejpm_cli.add_command(pwd_command)
 
 if __name__ == '__main__':
     ejpm_cli()
