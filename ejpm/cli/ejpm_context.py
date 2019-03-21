@@ -27,6 +27,20 @@ class EjpmContext(object):
         self.config = {}
         self._set_paths()
 
+        # Current working directory management
+        self._initial_cwd = os.getcwd()     # Save CWD (we are pretty sure this class is created before any action)
+        self.must_restore_cwd = True        # Commands may change this to restore CDW in the end or not
+
+    def __del__(self):
+        """"We assume this func happens in the end of app lifecycle"""
+
+        if not self.must_restore_cwd:
+            return
+
+        # Restore the initial working directory if needed
+        if self._initial_cwd and self._initial_cwd != os.getcwd():
+            os.chdir(self._initial_cwd)
+
     def load_shmoad_ugly_toad(self):
         """Load the state from disk. DB and packet installers"""
 
@@ -114,7 +128,6 @@ class EjpmContext(object):
         # call 3 times dirname as we have <db path>/ejpm/cli
         ejpm_home_path = os.path.dirname(os.path.dirname(os.path.dirname(inspect.stack()[0][1])))
         self.config[EJPM_HOME_PATH] = ejpm_home_path
-        print(ejpm_home_path)
 
         ejpm_source_stack_path = os.path.join(ejpm_home_path, 'ejpm', 'packets')
         ejpm_source_stack_package = 'ejpm.packets'

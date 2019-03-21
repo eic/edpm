@@ -43,28 +43,6 @@ P.S - you can read this message by adding --help-first flag
 
 _starting_workdir = ""
 
-
-def _on_start():
-    """Steps required in the beginning to run the app"""
-
-    # add ansimarkup to python search path
-    # ansimarkup allows to print console messages like <red>text</red>
-    #add_ansimarkup_path()
-
-    # Save the initial working directory
-    # It is going to be restored in _on_close function
-    global _starting_workdir
-    _starting_workdir = os.getcwd()
-
-
-def _on_close():
-    """Finalizing function that is called after all commands"""
-
-    # Restore the initial working directory if needed
-    if _starting_workdir and _starting_workdir != os.getcwd():
-        os.chdir(_starting_workdir)
-
-
 def _print_packets_info(db):
     """Prints known installations of packets and what packet is selected"""
 
@@ -95,10 +73,6 @@ def ejpm_cli(ctx, ectx, debug, top_dir):
 
     assert isinstance(ectx, EjpmContext)    # Type check for ectx
 
-    # Run on-start and set on-close routines
-    _on_start()                     # Run initialization stuff
-    ctx.call_on_close(_on_close)    # Add _on_close function that will restore working directory
-
     # Load db and modules from disk
     db_existed = ectx.load_shmoad_ugly_toad()    # False => Couldn't load and used default
 
@@ -128,6 +102,7 @@ from ejpm.cli.find import find as find_group
 from ejpm.cli.req import req as requirements_command
 from ejpm.cli.set import set as set_command
 from ejpm.cli.rm import rm as rm_command
+from ejpm.cli.cd import cd as cd_command
 
 ejpm_cli.add_command(install_group)
 ejpm_cli.add_command(find_group)
@@ -135,6 +110,7 @@ ejpm_cli.add_command(env_group)
 ejpm_cli.add_command(requirements_command)
 ejpm_cli.add_command(set_command)
 ejpm_cli.add_command(rm_command)
+ejpm_cli.add_command(cd_command)
 
 if __name__ == '__main__':
     ejpm_cli()
