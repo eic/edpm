@@ -44,40 +44,77 @@ class PacketInstallationInstruction(object):
 
         #
         # Next variables are set by ancestors
-        self.app_path = ""          # installation path of this packet, all other pathes relative to this
-        self.download_path = ""     # where we download the source or clone git
-        self.source_path = ""       # The directory with source files for current version
-        self.build_path = ""        # The directory for cmake/scons build
-        self.install_path = ""      # The directory, where binary is installed
-        self.required_deps = []     # Packets which are required for this to run
-        self.optional_deps = []     # Optional packets
+        self.config = {
+            "app_path"      : "",   # installation path of this packet, all other pathes relative to this
+            "download_path" : "",   # where we download the source or clone git
+            "source_path"   : "",   # The directory with source files for current version
+            "build_path"    : "",   # The directory for cmake/scons build
+            "install_path"  : "",   # The directory, where binary is installed
+            "required_deps" : [],   # Packets which are required for this to run
+            "optional_deps" : [],   # Optional packets
+        }
 
     def setup(self, app_path):
         """This function is used to format and fill variables, when app_path is known download command"""
         # ... (!) inherited classes should implement its logic here
         raise NotImplementedError()
 
-    def use_common_dirs_scheme(self, app_path, suffix):
+    def use_common_dirs_scheme(self, app_path, install_name):
         """Function sets common directory scheme. It is the same for many packets:
         """
 
-        self.app_path = app_path
+        self.config["app_path"] = app_path
 
         # where we download the source or clone git
-        self.download_path = "{app_path}/src".format(app_path=self.app_path)
+        self.config["download_path"] = "{app_path}/src".format(app_path=self.app_path)
 
         # The directory with source files for current version
-        self.source_path = "{app_path}/src/{suffix}".format(app_path=self.app_path, suffix=suffix)
+        self.config["source_path"] = "{app_path}/src/{suffix}".format(app_path=self.app_path, suffix=install_name)
 
         # The directory for cmake build
-        self.build_path = "{app_path}/build/{suffix}".format(app_path=self.app_path, suffix=suffix)
+        self.config["build_path"] = "{app_path}/build/{suffix}".format(app_path=self.app_path, suffix=install_name)
 
         # The directory, where binary is installed
-        self.install_path = "{app_path}/{app_name}-{suffix}" \
-            .format(app_path=self.app_path, app_name=self.name, suffix=suffix)
+        self.config["install_path"] = "{app_path}/{app_name}-{suffix}" \
+            .format(app_path=self.app_path, app_name=self.name, suffix=install_name)
 
     def step_install(self):
         """Installs application"""
         raise NotImplementedError()
 
+    @property
+    def app_path(self):
+        return self.config["app_path"]
+
+    @property
+    def download_path(self):
+        return self.config["download_path"]
+
+    @property
+    def source_path(self):
+        return self.config["source_path"]
+
+    @property
+    def build_path(self):
+        return self.config["build_path"]
+
+    @property
+    def install_path(self):
+        return self.config["install_path"]
+
+    @property
+    def required_deps(self):
+        return self.config["required_deps"]
+
+    @required_deps.setter
+    def required_deps(self, value):
+        self.config["required_deps"] = value
+
+    @property
+    def optional_deps(self):
+        return self.config["optional_deps"]
+
+    @optional_deps.setter
+    def optional_deps(self, value):
+        self.config["optional_deps"] = value
 
