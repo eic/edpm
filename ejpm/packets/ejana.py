@@ -30,11 +30,6 @@ class EjanaInstallation(PacketInstallationInstruction):
         :param default_tag: Root version
         """
 
-        # Set initial values for parent class and self
-        self.tags = {
-            'default': {'branch': 'master'},      # regular tag. master is considered stable now
-            'dev': {'branch': 'dmitry_dev'}       # development tag
-        }
 
         super(EjanaInstallation, self).__init__('ejana')
         self.build_threads = build_threads
@@ -47,14 +42,13 @@ class EjanaInstallation(PacketInstallationInstruction):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # For dev version we don't use common path scheme
-        self.app_path = app_path
-        self.download_path = None      # we don't use download_path at all
+        self.config['app_path'] = app_path
 
-        branch = self.tags['dev']['branch']
+        branch = 'master'
         # The directory with source files for current version
-        self.source_path = "{app_path}/dev".format(app_path=self.app_path)
-        self.build_path = "{app_path}/dev/.build".format(app_path=self.app_path)  # build in dev directory
-        self.install_path = "{app_path}/dev/build".format(app_path=self.app_path)
+        self.config['source_path'] = "{app_path}/dev".format(app_path=self.app_path)
+        self.config['build_path'] = "{app_path}/dev/.build".format(app_path=self.app_path)  # build in dev directory
+        self.config['install_path'] = "{app_path}/dev/build".format(app_path=self.app_path)
 
         #
         # ejana download link
