@@ -33,7 +33,7 @@ It should be as easy as:
 
 ```bash
 > ejpm --top-dir=/eic/apps   # set where to install missing packets
-> ejpm install all           # build and install missing packets
+> ejpm install ejana         # build and install ejana and its dependencies
 ```
 
 It also provides a possibility to fine control over dependencies
@@ -49,7 +49,8 @@ It also provides a possibility to fine control over dependencies
 
 **ejpm** is not: 
 
-1. It is not a real package manager, which automatically solves dependencies
+1. It is not a **real** package manager, which automatically solves dependencies, 
+download binaries (checking their GPG keys), finds fastest mirrors, manage... etc. 
 2. **ejpm is not a requirment** for e<sup>JANA</sup>. It is not a part of e<sup>JANA</sup> 
     build system and one can compile and install e<sup>JANA</sup> without ejpm   
 

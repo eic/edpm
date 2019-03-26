@@ -22,6 +22,10 @@ class RootInstallation(PacketInstallationInstruction):
 
     """
 
+    class DefaultConfigFields(object):
+        pass
+
+
     def __init__(self, build_threads=8):
         """
         :param version: Root version
@@ -58,24 +62,17 @@ class RootInstallation(PacketInstallationInstruction):
 
         #
         # ROOT packets to disable in our build (go with -D{name}=ON flag)
-        self.disable = ["mysql", "alien",  "bonjour", "builtin_afterimage", "castor", "chirp", "dcache", "fitsio",
-                        "gfal", "glite", "hdfs", "krb5", "odbc", "sapdb", "shadowpw", "srp", "xrootd", "oracle",
-                        "pgsql", "sqlite", "pythia6", "pythia8", "vdt"]
-
-        #
-        # ROOT packets to enable in our build (go with -D{name}=OFF flag)
-        self.enable = ["roofit", "minuit2", "python", "asimage", "builtin_tbb"]
-
-        # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {enable} {disable} {source_path}" \
+        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} " \
+                         " -Dgdml=ON" \
+		                 " -Dminuit2=ON" \
+                         " -Dpython3=ON" \
+                         " {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
-            .format(enable=" ".join(["-D{}=ON".format(s) for s in self.enable]),  # enabled packets
-                    disable=" ".join(["-D{}=OFF".format(s) for s in self.disable]),  # disabled packets
-                    source_path=self.source_path,  # cmake source
-                    install_path=self.install_path,  # Installation path
-                    build_threads=self.build_threads)  # make global options like '-j8'. Skip now
+            .format(source_path=self.source_path,       # cmake source
+                    install_path=self.install_path,     # Installation path
+                    build_threads=self.build_threads)   # make global options like '-j8'. Skip now
 
     def step_install(self):
         self.step_clone_root()
