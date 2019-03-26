@@ -27,20 +27,6 @@ class EjpmContext(object):
         self.config = {}
         self._set_paths()
 
-        # Current working directory management
-        self._initial_cwd = os.getcwd()     # Save CWD (we are pretty sure this class is created before any action)
-        self.must_restore_cwd = True        # Commands may change this to restore CDW in the end or not
-
-    def __del__(self):
-        """"We assume this func happens in the end of app lifecycle"""
-
-        if not self.must_restore_cwd:
-            return
-
-        # Restore the initial working directory if needed
-        if self._initial_cwd and self._initial_cwd != os.getcwd():
-            os.chdir(self._initial_cwd)
-
     def load_shmoad_ugly_toad(self):
         """Load the state from disk. DB and packet installers"""
 

@@ -103,8 +103,8 @@ def _install_packet(db, packet, install_path='', replace_active=True):
     # (!) here we actually install the packet
     try:
         packet.step_install()
-    except OSError:
-        mprint("<red>Installation stopped because of the error</red>")
+    except OSError as err:
+        mprint("<red>Installation stopped because of the error</red> : {}", err)
         exit(1)
 
     # if we are here, the packet is installed
