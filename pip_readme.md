@@ -22,7 +22,7 @@ Still we love our users and try to get things easier for them!
 So here is ejpm.
 
 
-At this points **ejpm** tries to unify experience and make it simple to deploy eJANA for:
+At this points **ejpm** tries to unify experience and make it simple to deploy e^JANA for:
 
 - Users on RHEL 7 and CentOS
 - Users on Ubutnu (and Windows with WSL) \*\*
@@ -36,7 +36,7 @@ It should be as easy as:
 > ejpm install ejana         # build and install ejana and its dependencies
 ```
 
-It also provides a possibility to fine control over dependencies
+It also provides a possibility to adopt existing installations and have a fine control over dependencies
 
 ```bash
 > ejpm set root /opt/root6_04_16           # manually add cern ROOT location to use
@@ -50,7 +50,7 @@ It also provides a possibility to fine control over dependencies
 **ejpm** is not: 
 
 1. It is not a **real** package manager, which automatically solves dependencies, 
-download binaries (checking their GPG keys), finds fastest mirrors, manage... etc. 
+download binaries (working with GPG keys, etc.), finds fastest mirrors, manage... etc. 
 2. **ejpm is not a requirment** for e<sup>JANA</sup>. It is not a part of e<sup>JANA</sup> 
     build system and one can compile and install e<sup>JANA</sup> without ejpm   
 
@@ -72,7 +72,7 @@ source<(ejpm env)             # set environment variables
 
 Step by step explained instruction:
 
-1. Install (or check) prerequisites form OS:
+1. **Install prerequisites** utilizing OS packet manager:
 
     ```bash
     # To see the prerequesties
@@ -84,20 +84,19 @@ Step by step explained instruction:
     yum -y install `ejpm req fedora --all`       # centos/fedora    
     ```
     
-   
     At this point only ***'ubuntu'*** and ***'fedora'*** are known words for req command. Put: 
     * ***ubuntu*** for debian family 
     * ***fedora*** for RHEL and CentOS systems.
 
     *In the future this will be updated to support macOS and to have more detailed versions*
 
-2. Set <b><blue>top-dir</blue></b>. This is where all missing packets will be installed.   
+2. **Set top-dir**. This is where all missing packets will be installed.   
 
     ```bash
     ejpm --top-dir=<where-to-install-all>
     ```
    
-3. You may have CERN.ROOT installed (req. version >= 6.14.00). Run this:
+3. **Register installed packets**. You may have CERN.ROOT installed (req. version >= 6.14.00). Run this:
     ```bash
     ejpm set root `$ROOTSYS` 
     ```
@@ -110,13 +109,13 @@ Step by step explained instruction:
    
    Or you may skip this step and just get everything installed by ejpm
    
-4. Then you can install ejpm and all missing dependencies:
+4. **Install ejana** and all missing dependencies:
 
     ```bash
-    ejpm install ejana --missing
+    ejpm install ejana
     ```
 
-5. Set right environment variables. There are 3 ways for doing this this: 
+5. **Set environment**. There are 3 ways for doing this this: 
     
     1. Dynamically source output of ```ejpm env``` command (recommended)
     
@@ -168,7 +167,7 @@ ejpm env
 
 You can directly source it like:
 ```bash
-source <(ejpm env)
+source<(ejpm env)
 ```
 
 You can control where ejpm stores data by setting ```EJPM_DATA_PATH``` environment variable.
