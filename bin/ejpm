@@ -1,0 +1,15 @@
+#!/usr/bin/env python2.6
+import sys
+import os
+import inspect
+
+if __name__ == '__main__':
+
+    # make sure this command will work with ejpm in this dir
+    ejpm_top_dir = os.path.dirname(os.path.dirname(inspect.stack()[0][1]))
+    sys.path.insert(0, ejpm_top_dir)
+
+    import ejpm
+
+    # Run ejpm cli
+    ejpm.ejpm_cli()

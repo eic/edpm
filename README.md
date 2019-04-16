@@ -9,10 +9,33 @@
 
 The secondary goal is to help users with e^JANA plugin development cycle.
 
-***Complete impudent TL;DR;***  
+### Table of contents:
+* [Motivation](#motivation)
+* [EJPM installation](#installation)
+* [Get ejana installed](#get-ejana-installed)
+* [Manage environment](#environment)
+* [Troubleshooting](#installation-troubleshooting)
+* [Manual or devel installation](#manual-or-development-installation)
+
+
+***Cheat sheet:***
+
+Install ejpm:
 ```bash
-# install EJPM, bypassing root sertificate problems on JLab machines
+# install EJPM (bypassing root sertificate problems on JLab machines)
 sudo python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org -U ejpm
+
+# OR without sudo: add --user flag and ensure ~/.local/bin is in your PATH
+python -m pip install --user --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org -U ejpm
+
+# OR clone and add ejpm/bin to your PATH
+git clone https://gitlab.com/eic/ejpm.git
+export PATH=`pwd`/ejpm/bin:$PATH
+```
+
+Install everything else
+
+```bash
 
 # install prerequesties
 ejpm req fedora ejana         # get list of OS packets required to build jana and deps
@@ -26,7 +49,8 @@ ejpm set root `$ROOTSYS`      # if you have CERN.ROOT. Or skip this step
 ejpm set <packet> <path>      # set other existing packets. Or skip this step!!!
 
 # Build and install the rest
-ejpm install ejana --missing  # install ejana and dependencies (like genfit, jana and rave)
+ejpm install ejana            # install ejana and dependencies (like genfit, jana and rave)
+ejpm install g4e              # install Geant-4-Eic and dependencies (Geant4, etc)
 
 # Set environment
 source<(ejpm env)             # set environment variables
@@ -35,15 +59,6 @@ ejpm env csh > your.csh       # if you are still on CSH
 # If that worked don't read the next...
 ```
 
-
-
-### Table of contents:
-* [Motivation](#motivation)
-* [EJPM installation](#installation)
-* [Get ejana installed](#get-ejana-installed)
-* [Manage environment](#environment)
-* [Troubleshooting](#installation-troubleshooting)
-* [Manual or devel installation](#manual-or-development-installation)
 
 
 # Motivation
@@ -154,7 +169,7 @@ source<(ejpm env)             # set environment variables
 ```
 
 
-***Step by step explained instruction**:
+**Step by step explained instruction**:
 
 1. Install (or check) required packages form OS:
 
@@ -192,7 +207,7 @@ source<(ejpm env)             # set environment variables
 4. Then you can install ejpm and all missing dependencies:
 
     ```bash
-    ejpm install ejana --missing
+    ejpm install ejana
     ```
 
 5. Set right environment variables (right in the next section)
