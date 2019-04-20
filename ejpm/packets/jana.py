@@ -126,7 +126,7 @@ class JanaInstallation(PacketInstallationInstruction):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "scons libxerces-c-dev curl",
+            'ubuntu': "scons libxerces-c-dev curl python3-dev",
             'fedora': "scons xerces curl"
         },
         'optional': {
