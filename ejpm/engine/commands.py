@@ -55,7 +55,7 @@ class WorkDirCommand(Command):
 
     def execute(self):
         """change directory according to path"""
-        click.secho("WORKDIR:", fg='blue', bold=True, nl=False)
+        click.secho("WORKDIR: ", fg='blue', bold=True, nl=False)
         click.echo(self.path)
         click.echo()
 
@@ -74,7 +74,7 @@ class EnvironmentCommand(Command):
     def execute(self):
         """ Set environment variable"""
 
-        click.secho("ENV:", fg='blue', bold=True, nl=False)
+        click.secho("ENV: ", fg='blue', bold=True, nl=False)
         click.echo("%s = %s" % (self.name, self.value))
         click.echo()
         os.environ[self.name] = self.value
