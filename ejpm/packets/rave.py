@@ -57,10 +57,10 @@ class RaveInstallation(PacketInstallationInstruction):
         self.build_command = './configure --disable-java --prefix=$RAVEPATH ' \
                              ' LDFLAGS="-L{{clhep_lib_dir}}" ' \
                              ' CXXFLAGS="-std=c++11 -I{{clhep_include_dir}}" ' \
-                             '&&   make -j{glb_make_options} install' \
+                             '&&   make -j{build_threads} install' \
                              "&& for f in $(ls $RAVEPATH/include/rave/*.h); do sed -i 's/RaveDllExport//g' $f; done" \
             .format(install_path=self.install_path,
-                    glb_make_options="",
+                    build_threads=4,
                     version=branch)
 
     def step_install(self):
@@ -119,7 +119,7 @@ class RaveInstallation(PacketInstallationInstruction):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "",
+            'ubuntu': "autoconf shtool automake libtool",
             'fedora': "autoconf shtool automake libtool"
         },
         'optional': {
