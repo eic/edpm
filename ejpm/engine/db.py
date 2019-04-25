@@ -29,7 +29,10 @@ class PacketStateDatabase(object):
             "file_version": 3,  # This data structure version, each time will increase by 1
             "packets": {},      # create_packet_minimal_data() is used to create data inside this field
             "top_dir": "",      # The directory where everything is installed
-            "packet_stack_name": "default"
+            "packet_stack_name": "default",
+            "global_build_config": {
+                "build_threads": 4
+            }
         }
 
         self.verbose = False
@@ -77,6 +80,16 @@ class PacketStateDatabase(object):
         return self.data['packets'].keys()
 
     def get_installs(self, packet_name):
+        """Get all installation information (like location) for packet with this name """
+
+        # If we have no record in the packet installations, but we know the name is OK
+        if packet_name not in self.data['packets'].keys() and packet_name in self.known_packet_names:
+            self.data['packets'][packet_name] = {"installs": []}
+
+        # Return whatever we can (or it will raise KeyException)
+        return self.data['packets'][packet_name]['installs']
+
+    def get_config(self, packet_name):
         """Get all installation information (like location) for packet with this name """
 
         # If we have no record in the packet installations, but we know the name is OK
@@ -202,6 +215,16 @@ class PacketStateDatabase(object):
                     packet.pop('required', None)
 
             # finally change the version
-            self.data['file_version'] = 2   # No changes needed to update from v 1 to 2
-            pass
+            self.data['file_version'] = 2
 
+
+        # version 2 to 3 migration
+        if self.data['file_version'] == 2:
+
+            self.data['global_build_config'] = {'build_threads': 4}
+
+            for packet in self.data['packets'].values():
+                packet['build_config'] = {}
+
+            # finally change the version
+            self.data['file_version'] = 3
