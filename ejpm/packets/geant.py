@@ -169,18 +169,18 @@ class GeantInstallation(PacketInstallationInstruction):
     #
     # OS dependencies are a map of software packets installed by os maintainers
     # The map should be in form:
-    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'fedora': "..."},
-    #                     'optional': {'ubuntu': "space separated packet names", 'fedora': "..."}
+    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'centos': "..."},
+    #                     'optional': {'ubuntu': "space separated packet names", 'centos': "..."}
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
             'ubuntu': "libxerces-c3-dev libexpat-dev qtbase5-dev libqt5opengl5-dev libxmu-dev libx11-dev",
-            'fedora': "assimp-devel expat-devel libX11-devel libXt-devel libXmu-devel libXrender-devel libXpm-devel"
+            'centos': "assimp-devel expat-devel libX11-devel libXt-devel libXmu-devel libXrender-devel libXpm-devel"
                       "libXft-devel libAfterImage libAfterImage-devel mesa-libGLU-devel qt5-qtdeclarative-devel"
                       "qt5-linguist tetgen-devel xerces-c-devel xkeyboard-config qt5-qtbase-devel"
         },
         'optional': {
             'ubuntu': "",
-            'fedora': ""
+            'centos': ""
         },
     }

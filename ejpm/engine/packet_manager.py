@@ -29,7 +29,7 @@ class PacketManager(object):
 
         # The next are collection of requirements for different operating systems
         # The type is map to have requirements by packets, i.e.:
-        #     self.fedora_required_packets['ejana'] - list for ejana
+        #     self.centos_required_packets['ejana'] - list for ejana
         self.os_deps_by_name = {}
 
     def load_installers(self, modules_dir="", package_name=""):
@@ -60,8 +60,8 @@ class PacketManager(object):
         """Adds os dependencies to global os_dependencies_by_name map"""
 
         # First, we add default structure with empty deps
-        result = {'required': {'ubuntu': "", 'fedora': ""},
-                  'optional': {'ubuntu': "", 'fedora': ""}}
+        result = {'required': {'ubuntu': "", 'centos': ""},
+                  'optional': {'ubuntu': "", 'centos': ""}}
 
         # Then we check if installer defines its dependencies
         if hasattr(installer, 'os_dependencies'):

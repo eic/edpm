@@ -24,7 +24,7 @@ def pwd(ctx, ectx, packet_names):
         ejpm cd <packet-name>    # cd-s to <packet-name> installation dir
 
     """
-    from ejpm.engine.db import INSTALL_PATH, IS_OWNED
+    from ejpm.engine.db import INSTALL_PATH, IS_OWNED, SOURCE_PATH, BUILD_PATH
     assert isinstance(ectx, EjpmContext)
 
     # We need DB ready for this cli command
@@ -33,6 +33,8 @@ def pwd(ctx, ectx, packet_names):
     # Check that the packet name is from known packets
     if not packet_names:
         pwd_path = ectx.db.top_dir
+        mprint(pwd_path)
+
     else:
         # Get installation data for the active install
         packet_name = packet_names[0]
@@ -45,13 +47,21 @@ def pwd(ctx, ectx, packet_names):
         # If ejpm 'owns' an installation at this point we assume that parent directory usually is needed
         # Like if ejpm owns 'root' it is assumed that <top-dir>/root is needed rather than <top-dir>/root/root-v6-...
         pwd_path = install_data[INSTALL_PATH]
+        mprint("<blue><b>Install path: </b></blue>\n{}", pwd_path)
+
         if install_data[IS_OWNED]:
             pwd_path = os.path.dirname(pwd_path)
+            mprint("<blue><b>EJPM 'owned' base path: </b></blue>\n{}", pwd_path)
 
-    # change cur dir
-    ectx.must_restore_cwd = False   # Don't restore CWD on click exit
+        # Source path if known
+        if SOURCE_PATH in install_data:
+            mprint("<blue><b>Sources: </b></blue>\n{}", install_data[SOURCE_PATH])
+
+        if BUILD_PATH in install_data:
+            mprint("<blue><b>Build dir: </b></blue>\n{}", install_data[BUILD_PATH])
+
     # os.chdir(cd_path)
-    mprint(pwd_path)
+
 
 
 

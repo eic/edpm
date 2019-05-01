@@ -14,7 +14,7 @@ The database file doesn't exist. Probably you run 'ejpm' for one of the first ti
     > ejpm req ubuntu         # for all packets ejpm knows to built/install
     > ejpm req usubnu ejana   # for ejana and its dependencies only
    
-   * - at this point put 'ubuntu' for debian and 'fedora' for RHEL and CentOS systems. 
+   * - at this point put 'ubuntu' for debian and 'centos' for RHEL and CentOS systems. 
    Will be updated in future to support macOS, and to have grained versions
 
 1. Set <b><blue>top-dir</blue></b> to start. This is where all missing packets will be installed.   
@@ -103,6 +103,7 @@ from ejpm.cli.req import req as requirements_command
 from ejpm.cli.set import set as set_command
 from ejpm.cli.rm import rm as rm_command
 from ejpm.cli.pwd import pwd as pwd_command
+from ejpm.cli.clean import clean as clean_command
 
 ejpm_cli.add_command(install_group)
 ejpm_cli.add_command(find_group)
@@ -111,6 +112,7 @@ ejpm_cli.add_command(requirements_command)
 ejpm_cli.add_command(set_command)
 ejpm_cli.add_command(rm_command)
 ejpm_cli.add_command(pwd_command)
+ejpm_cli.add_command(clean_command)
 
 if __name__ == '__main__':
     ejpm_cli()

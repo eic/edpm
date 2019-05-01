@@ -151,13 +151,13 @@ class RootInstallation(PacketInstallationInstruction):
     #
     # OS dependencies are a map of software packets installed by os maintainers
     # The map should be in form:
-    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'fedora': "..."},
-    #                     'optional': {'ubuntu': "space separated packet names", 'fedora': "..."}
+    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'centos': "..."},
+    #                     'optional': {'ubuntu': "space separated packet names", 'centos': "..."}
     #                   }
     os_dependencies = {
         'required': {
             'ubuntu': "git dpkg-dev cmake g++ gcc binutils libx11-dev libxpm-dev libxft-dev libxext-dev",
-            'fedora': "git cmake gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel"
+            'centos': "git cmake gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel"
         },
         'optional': {
             'ubuntu': "gfortran libssl-dev libpcre3-dev "
@@ -167,7 +167,7 @@ class RootInstallation(PacketInstallationInstruction):
                       "libldap2-dev python-dev libxml2-dev libkrb5-dev "
                       "libgsl0-dev libqt4-dev",
 
-            'fedora': "gcc-gfortran openssl-devel pcre-devel "
+            'centos': "gcc-gfortran openssl-devel pcre-devel "
                       "mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel "
                       "fftw-devel cfitsio-devel graphviz-devel "
                       "avahi-compat-libdns_sd-devel libldap-dev python-devel "

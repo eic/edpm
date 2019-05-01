@@ -38,7 +38,7 @@ Install everything else
 ```bash
 
 # install prerequesties
-ejpm req fedora ejana         # get list of OS packets required to build jana and deps
+ejpm req centos ejana         # get list of OS packets required to build jana and deps
 sudo yum install ...          # install whatever 'ejpm req' shows
 
 # setup installation dir and existing packets, introspect
@@ -160,7 +160,7 @@ More on this:
 
 ***TL;DR;*** example for CentOS/RHEL7
 ```bash
-ejpm req fedora ejana         # get list of OS packets required to build jana and deps
+ejpm req centos ejana         # get list of OS packets required to build jana and deps
 sudo yum install ...          # install watever 'ejpm req' shows
 ejpm --top-dir=<where-to>     # Directory where packets will be installed
 ejpm set root `$ROOTSYS`      # if you have CERN.ROOT. Or skip this step
@@ -175,12 +175,12 @@ source<(ejpm env)             # set environment variables
 
     ```bash
     ejpm req ubuntu         # for all packets that ejpm knows
-    ejpm req fedora ejana   # for ejana and its dependencies only
+    ejpm req centos ejana   # for ejana and its dependencies only
     ```
    
-    At this point only ***'ubuntu'*** and ***'fedora'*** are known words for ```req``` command. Put: 
+    At this point only ***'ubuntu'*** and ***'centos'*** are known words for ```req``` command. Put: 
     * ```ubuntu``` for debian family 
-    * ```fedora``` for RHEL and CentOS systems.
+    * ```centos``` for RHEL and CentOS systems.
 
     > In future macOS and more detailed os-versions will be supported
 
@@ -302,7 +302,7 @@ If ```easy_install``` installed something, but ```pip``` command is not found af
 ***But... there is no easy_install!***  
 Install it!
 ```bash
-sudo yum install python-setuptools python-setuptools-devel   # Fedora and RHEL/CentOS 
+sudo yum install python-setuptools python-setuptools-devel   # centos and RHEL/CentOS 
 sudo apt-get install python-setuptools                       # Ubuntu and Debian
 # Gentoo. I should not write this for its users, right?
 ```

@@ -9,6 +9,28 @@
 
 The secondary goal is to help users with e^JANA plugin development cycle.
 
+***TL;DR;*** example for CentOS/RHEL7
+```bash
+
+# INSTALL PREREQUESTIES
+ejpm req centos ejana         # get list of OS packets required to build jana and deps
+sudo yum install ...          # install watever 'ejpm req' shows
+
+# or if you are a lucky bash user (yes, csh is still common in physics):
+sudo yum install $(ejpm req centos ejana) 
+
+# SETUP EJPM
+ejpm --top-dir=<where-to>   # Directory where packets will be installed
+ejpm set root `$ROOTSYS`    # (optional) if you have CERN.ROOT or other monster packets: 
+
+# INSTALL PACKETS
+ejpm install ejana          # install ejana and dependencies (like genfit, jana and rave)
+ejpm install g4e            # install 'Geant 4 EIC' and dependencies (like vgm, hepmc)
+
+# SET RIGHT ENVIRONMENT 
+source<$(ejpm env)          # set environment variables, 
+source ~/.local/share/ejpm/env.sh  # more convenient way. Use *.csh file for tcsh
+```
 
 
 ### Motivation
@@ -29,23 +51,9 @@ At this points **ejpm** tries to unify experience and make it simple to deploy e
 - Docker and other containers
 
 
-It should be as easy as:
-
-```bash
-> ejpm --top-dir=/eic/apps   # set where to install missing packets
-> ejpm install ejana         # build and install ejana and its dependencies
-```
-
-It also provides a possibility to adopt existing installations and have a fine control over dependencies
-
-```bash
-> ejpm set root /opt/root6_04_16           # manually add cern ROOT location to use
-> ejpm rebuild jana && ejpm rebuild ejana  # rebuild* packets after it 
-```
-
-> \* - (!) 'find' and 'rebuild' commands are not yet implemented  
-> \*\* -  macOS is upcoming
-
+It should be as easy as ```> ejpm install ejana``` to build and install a packet called 'ejana'
+ and its dependencies. But it should also provide a possibility to adopt existing installations
+  and have a fine control over dependencies: ```> ejpm set root /opt/root6_04_16```
 
 **ejpm** is not: 
 
@@ -57,19 +65,6 @@ download binaries (working with GPG keys, etc.), finds fastest mirrors, manage..
 
 ## Get ejana installed
 
-(or crash course to ejpm)
-
-***TL;DR;*** example for CentOS/RHEL7
-```bash
-ejpm req fedora ejana         # get list of OS packets required to build jana and deps
-sudo yum install ...          # install watever 'ejpm req' shows
-ejpm --top-dir=<where-to>     # Directory where packets will be installed
-ejpm set root `$ROOTSYS`      # if you have CERN.ROOT. Or skip this step
-ejpm install ejana --missing  # install ejana and dependencies (like genfit, jana and rave)
-source<(ejpm env)             # set environment variables
-```
-
-
 Step by step explained instruction:
 
 1. **Install prerequisites** utilizing OS packet manager:
@@ -77,16 +72,16 @@ Step by step explained instruction:
     ```bash
     # To see the prerequesties
     ejpm req ubuntu         # for all packets that ejpm knows
-    ejpm req fedora ejana   # for ejana and its dependencies only
+    ejpm req centos ejana   # for ejana and its dependencies only
     
     # To put everything into packet manager 
     apt-get -y install `ejpm req ubuntu --all`   # debian
-    yum -y install `ejpm req fedora --all`       # centos/fedora    
+    yum -y install `ejpm req centos --all`       # centos/centos    
     ```
     
-    At this point only ***'ubuntu'*** and ***'fedora'*** are known words for req command. Put: 
+    At this point only ***'ubuntu'*** and ***'centos'*** are known words for req command. Put: 
     * ***ubuntu*** for debian family 
-    * ***fedora*** for RHEL and CentOS systems.
+    * ***centos*** for RHEL and CentOS systems.
 
     *In the future this will be updated to support macOS and to have more detailed versions*
 

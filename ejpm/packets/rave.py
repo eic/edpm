@@ -114,16 +114,16 @@ class RaveInstallation(PacketInstallationInstruction):
     #
     # OS dependencies are a map of software packets installed by os maintainers
     # The map should be in form:
-    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'fedora': "..."},
-    #                     'optional': {'ubuntu': "space separated packet names", 'fedora': "..."}
+    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'centos': "..."},
+    #                     'optional': {'ubuntu': "space separated packet names", 'centos': "..."}
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
             'ubuntu': "autoconf shtool automake libtool",
-            'fedora': "autoconf shtool automake libtool"
+            'centos': "autoconf shtool automake libtool"
         },
         'optional': {
             'ubuntu': "",
-            'fedora': ""
+            'centos': ""
         },
     }

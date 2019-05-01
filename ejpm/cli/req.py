@@ -23,8 +23,8 @@ def req(ctx, ectx, os_name, args, print_mode):
     \b
     Example:
       req ubuntu ejana
-      req fedora ejana
-      req fedora root clhep
+      req centos ejana
+      req centos root clhep
 
     By adding --optional, --required, --all flags you can use this command with packet managers:
       req
@@ -37,7 +37,7 @@ def req(ctx, ectx, os_name, args, print_mode):
     # We need DB ready for this cli command
     ectx.ensure_db_exists()
 
-    # We have some args, first is os name like 'ubuntu' or 'fedora'
+    # We have some args, first is os name like 'ubuntu' or 'centos'
     known_os = ectx.pm.os_deps_by_name['ejana']['required'].keys()
 
     if os_name not in known_os:
@@ -74,18 +74,15 @@ def _print_combined(ectx, os_name, packet_names, print_mode):
     required = list(set([r for r in required if r]))
     optional = list(set([o for o in optional if o]))
 
-    # We print titles only if --all-with-titles flag is set
-    if print_mode == 'all_titles':
-        mprint("<blue><b>REQUIRED</b></blue>:")
-
-    # We print required packets in all cases except --optinal flags
-    if print_mode != 'optional':
-        mprint(" ".join(required))
-
-    # We print titles only if --all-with-titles flag is set
-    if print_mode == 'all_titles':
-        mprint("<blue><b>OPTIONAL</b></blue>:")
-
-    # We print optional packets in all cases except --required flags
-    if print_mode != 'optional':
+    if print_mode is "optional":
         mprint(" ".join(optional))
+    elif print_mode is "required":
+        mprint(" ".join(required))
+    elif print_mode is "all":
+        mprint(" ".join(optional + required))
+    else:
+        # print all with juman readable titles
+        mprint("<blue><b>REQUIRED</b></blue>:")
+        mprint(" ".join(optional))
+        mprint("<blue><b>OPTIONAL</b></blue>:")
+        mprint(" ".join(required))

@@ -106,8 +106,8 @@ class GenfitInstallation(PacketInstallationInstruction):
         yield Set('GENFIT', path)
         yield Set('GENFIT_DIR', path)
 
-        # it could be lib or lib64. There are bugs on different platforms (RHEL&Fedora and WSL included)
-        # https://stackoverflow.com/questions/46847939/config-site-for-vendor-libs-on-fedora-x86-64
+        # it could be lib or lib64. There are bugs on different platforms (RHEL&centos and WSL included)
+        # https://stackoverflow.com/questions/46847939/config-site-for-vendor-libs-on-centos-x86-64
         # https: // bugzilla.redhat.com / show_bug.cgi?id = 1510073
 
         import platform
@@ -121,16 +121,16 @@ class GenfitInstallation(PacketInstallationInstruction):
     #
     # OS dependencies are a map of software packets installed by os maintainers
     # The map should be in form:
-    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'fedora': "..."},
-    #                     'optional': {'ubuntu': "space separated packet names", 'fedora': "..."}
+    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'centos': "..."},
+    #                     'optional': {'ubuntu': "space separated packet names", 'centos': "..."}
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
             'ubuntu': "libboost-dev libeigen3-dev",
-            'fedora': "boost-devel eigen3-devel"
+            'centos': "boost-devel eigen3-devel"
         },
         'optional': {
             'ubuntu': "",
-            'fedora': ""
+            'centos': ""
         },
     }
