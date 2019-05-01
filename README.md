@@ -27,10 +27,6 @@ sudo python -m pip install --trusted-host pypi.python.org --trusted-host files.p
 
 # OR without sudo: add --user flag and ensure ~/.local/bin is in your PATH
 python -m pip install --user --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org -U ejpm
-
-# OR clone and add ejpm/bin to your PATH
-git clone https://gitlab.com/eic/ejpm.git
-export PATH=`pwd`/ejpm/bin:$PATH
 ```
 
 Install everything else
@@ -351,6 +347,10 @@ And JLab is helpful enough to put its root level certificates in the middle.
 git clone https://gitlab.com/eic/ejpm.git
 pip install -r ejpm/requirements.txt
 python ejpm/run_ejpm.py
+
+
+# OR clone and add ejpm/bin to your PATH
+export PATH=`pwd`/ejpm/bin:$PATH
 ```
 
 ***'ejpm'*** **command**:
