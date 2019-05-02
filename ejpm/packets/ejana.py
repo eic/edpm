@@ -84,12 +84,14 @@ class EjanaInstallation(PacketInstallationInstruction):
         self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
             .format(branch=self.selected_tag, source_path=self.source_path)
 
-        #
-        # scons installation command:
-        self.build_command = "scons install -j{build_threads} PREFIX={install_path} VARIANT-DIR={build_path}"\
-                         .format(build_threads=self.build_threads,
-                                 install_path=self.install_path,
-                                 build_path=self.build_path)
+        # cmake command:
+        # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
+        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
+                         "&& cmake --build . -- -j {build_threads}" \
+                         "&& cmake --build . --target install" \
+                         .format(source_path=self.source_path,      # cmake source
+                                 install_path=self.install_path,    # Installation path
+                                 build_threads=self.build_threads)  # make global options like '-j8'. Skip now
 
     def step_install(self):
         self.step_clone()
@@ -146,8 +148,8 @@ class EjanaInstallation(PacketInstallationInstruction):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "scons",
-            'centos': "scons"
+            'ubuntu': "fmt",
+            'centos': "fmt"
         },
         'optional': {
             'ubuntu': "",

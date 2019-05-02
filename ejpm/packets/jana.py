@@ -46,7 +46,7 @@ class JanaInstallation(PacketInstallationInstruction):
     def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
 
-        branch = 'master'
+        branch = 'feature_jeventsource_typesig'
 
         #
         # use_common_dirs_scheme sets standard package variables:
