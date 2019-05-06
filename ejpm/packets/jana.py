@@ -39,7 +39,7 @@ class JanaInstallation(PacketInstallationInstruction):
     def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
 
-        branch = 'feature_jeventsource_typesig'
+        branch = 'master'
 
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -55,14 +55,12 @@ class JanaInstallation(PacketInstallationInstruction):
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA2.git {source_path}"\
             .format(branch=branch, source_path=self.source_path)
 
-        # cmake command:
-        # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
-                         "&& cmake --build . -- -j {build_threads}" \
-                         "&& cmake --build . --target install" \
-                         .format(source_path=self.source_path,  # cmake source
-                                 install_path=self.install_path,  # Installation path
-                                 build_threads=self.build_threads)  # make global options like '-j8'. Skip now
+        #
+        # scons installation command:
+        self.build_command = "scons install -j{build_threads} PREFIX={install_path}"\
+                         .format(build_threads=self.build_threads,
+                                 install_path=self.install_path,
+                                 build_path=self.build_path)
 
     def step_install(self):
         self.step_clone()
@@ -88,11 +86,11 @@ class JanaInstallation(PacketInstallationInstruction):
         # Create build directory
         run('mkdir -p {}'.format(self.build_path))
 
-        # go to our build directory
-        workdir(self.build_path)
+        # go to source directory to invoke scons
+        workdir(self.source_path)
 
         # run scons && scons install
-        run(self.build_cmd)
+        run(self.build_command)
 
     def step_reinstall(self):
         """Delete everything and start over"""
