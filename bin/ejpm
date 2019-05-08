@@ -6,7 +6,14 @@ import inspect
 if __name__ == '__main__':
 
     # make sure this command will work with ejpm in this dir
-    ejpm_top_dir = os.path.dirname(os.path.dirname(inspect.stack()[0][1]))
+    ejpm_file_path = os.path.dirname(inspect.stack()[0][1])
+
+    # Fixes the case if somebody set a link like ln -s /.../bin/ejpm /usr/bin/
+    if os.path.islink(ejpm_file_path):
+        ejpm_file_path = os.path.realpath(ejpm_file_path)
+
+    ejpm_top_dir = os.path.dirname(ejpm_file_path)
+
     sys.path.insert(0, ejpm_top_dir)
 
     import ejpm
