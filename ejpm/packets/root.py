@@ -35,6 +35,14 @@ class RootInstallation(PacketInstallationInstruction):
         super(RootInstallation, self).__init__("root")
         self.build_threads = build_threads
 
+    def find_python(self):
+        from subprocess import check_output
+        out = check_output(["which", "python3"]).strip()
+
+        if not out:
+            out = check_output(["which", "python2"]).strip()
+
+        return out
 
     def setup(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -43,6 +51,11 @@ class RootInstallation(PacketInstallationInstruction):
         # Root clone branch is like v6-14-04 so if a version is given by tuple (which is awaited at this point)
         # we format 'version' string so that we can use it as a branch name for clone command
         version = 'v{}-{:02}-{:02}'.format(6, 16, 0)  # v6-14-04
+
+        # Compile with python3, then whatever python is...
+        python_path = self.find_python()
+        self.config["python_flag"] = " -DPYTHON_EXECUTABLE={} ".format(python_path) if python_path else ''
+        print("Compiling ROOT with '{}' python flag".format(self.config["python_flag"]))
 
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -66,13 +79,14 @@ class RootInstallation(PacketInstallationInstruction):
         self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} " \
                          " -Dgdml=ON" \
 		                 " -Dminuit2=ON" \
-                         " -Dpython3=ON" \
+                         " {python_flag} " \
                          " {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
             .format(source_path=self.source_path,       # cmake source
                     install_path=self.install_path,     # Installation path
-                    build_threads=self.build_threads)   # make global options like '-j8'. Skip now
+                    build_threads=self.build_threads,
+                    python_flag=self.config["python_flag"])   # make global options like '-j8'. Skip now
 
     def step_install(self):
         self.step_clone_root()
