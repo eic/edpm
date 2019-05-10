@@ -37,10 +37,13 @@ class RootInstallation(PacketInstallationInstruction):
 
     def find_python(self):
         from subprocess import check_output
-        out = check_output(["which", "python3"]).strip()
+        out = check_output(["which", "python3"]).decode('ascii').strip()
 
         if not out:
-            out = check_output(["which", "python2"]).strip()
+            out = check_output(["which", "python2"]).decode('ascii').strip()
+
+        if not out:
+            out = check_output(["which", "python"]).decode('ascii').strip()
 
         return out
 
@@ -54,7 +57,7 @@ class RootInstallation(PacketInstallationInstruction):
 
         # Compile with python3, then whatever python is...
         python_path = self.find_python()
-        self.config["python_flag"] = " -DPYTHON_EXECUTABLE={} ".format(python_path) if python_path else ''
+        self.config["python_flag"] = ' -DPYTHON_EXECUTABLE={} '.format(python_path) if python_path else ''
         print("Compiling ROOT with '{}' python flag".format(self.config["python_flag"]))
 
         #

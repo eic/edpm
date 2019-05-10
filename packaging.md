@@ -27,8 +27,12 @@ pip install --upgrade setuptools wheel twine
 pip install --upgrade --force-reinstall setuptools
 
 python setup.py sdist bdist_wheel
-
 python -m twine upload dist/*
+
+#FULL:
+
+python setup.py sdist bdist_wheel && python -m twine upload dist/*
+
 
 python -m twine upload --cert ~/JLabCA.cer dist/*
 
