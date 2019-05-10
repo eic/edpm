@@ -35,7 +35,7 @@ class EjanaInstallation(PacketInstallationInstruction):
         self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
-        self.required_deps = ['clhep', 'root', 'rave', 'genfit', 'eic-smear', 'jana']
+        self.required_deps = ['clhep', 'root', 'rave', 'genfit', 'hepmc', 'eic-smear', 'jana']
 
 
     def _setup_dev(self, app_path):
