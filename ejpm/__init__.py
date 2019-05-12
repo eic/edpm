@@ -80,6 +80,7 @@ def ejpm_cli(ctx, ectx, debug, top_dir):
     if top_dir:
         ectx.db.top_dir = os.path.abspath(os.path.normpath(top_dir))
         ectx.db.save()
+        db_existed = True
 
     # check if DB file already exists
     if not db_existed:

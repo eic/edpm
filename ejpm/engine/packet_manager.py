@@ -1,7 +1,5 @@
 import importlib
 import pkgutil
-import imp
-import sys
 import ejpm.packets
 
 from ejpm.engine.installation import PacketInstallationInstruction
@@ -11,7 +9,7 @@ def import_all_submodules(modules_dir, package_name):
     # >oO debug   for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
     # >oO debug       print("module_loader {}, name {}, ispkg {}".format(module_loader, name, ispkg))
 
-    #parent_module =  imp.find_module('packets', path)
+    # parent_module =  imp.find_module('packets', path)
     for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
         module = importlib.import_module('.' + name, package_name)
         # >oO debug   print(module)
@@ -60,8 +58,8 @@ class PacketManager(object):
         """Adds os dependencies to global os_dependencies_by_name map"""
 
         # First, we add default structure with empty deps
-        result = {'required': {'ubuntu': "", 'centos': ""},
-                  'optional': {'ubuntu': "", 'centos': ""}}
+        result = {'required': {'ubuntu': '', 'centos': ''},
+                  'optional': {'ubuntu': '', 'centos': ''}}
 
         # Then we check if installer defines its dependencies
         if hasattr(installer, 'os_dependencies'):
@@ -69,8 +67,6 @@ class PacketManager(object):
 
         # Set the result by installer name
         self.os_deps_by_name[installer.name] = result
-
-
 
     def get_installation_names(self, installer_name, deps_only=False):
         """
@@ -137,4 +133,3 @@ class PacketManager(object):
                 env_gens = self.env_generators[name]
                 for env_gen in env_gens(data):          # Go through 'environment generators' look engine/env_gen.py
                     env_gen.update_python_env()         # Do environment update
-

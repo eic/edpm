@@ -3,7 +3,6 @@ import io
 import os
 import click
 import appdirs
-import shutil
 
 
 from ejpm.engine.db import PacketStateDatabase

@@ -192,6 +192,113 @@ class RootInstallation(PacketInstallationInstruction):
         },
     }
 
+    # (!) Those are not used at the moment. But there is an idea to have minimized version of root
+    root_mini_flags = [
+        "afdsmgrd           = OFF",  # Dataset manager for PROOF-based analysis facilities
+        "afs                = OFF",  # AFS support, requires AFS libs and objects
+        "alien              = OFF",  # ON  - AliEn support, requires libgapiUI from ALICE
+        "all                = OFF",  # OFF - Enable all optional components
+        "asimage            = OFF",  # ON  - Image processing support, requires libAfterImage
+        "astiff             = OFF",  # ON  - Include tiff support in image processing
+        "bonjour            = OFF",  # ON  - Bonjour support, requires libdns_sd and/or Avahi
+        "builtin_afterimage = ON ",  # ON  - Built included libAfterImage, or use system libAfterImage
+        "builtin_fftw3      = ON",  # OFF - Built the FFTW3 library internally (downloading tarfile from the Web)
+        "builtin_ftgl       = ON ",  # ON  - Built included libFTGL, or use system libftgl
+        "builtin_freetype   = OFF",  # OFF - Built included libfreetype, or use system libfreetype
+        "builtin_glew       = ON ",  # ON  - Built included libGLEW, or use system libGLEW
+        "builtin_pcre       = OFF",  # OFF - Built included libpcre, or use system libpcre
+        "builtin_zlib       = OFF",  # OFF - Built included libz, or use system libz
+        "builtin_lzma       = OFF",  # OFF - Built included liblzma, or use system liblzma
+        "builtin_davix      = OFF",  # OFF - Built the Davix library internally (downloading tarfile from the Web)
+        "builtin_gsl        = OFF",  # OFF - Built the GSL library internally (downloading tarfile from the Web)
+        "builtin_cfitsio    = OFF",  # OFF - Built the FITSIO library internally (downloading tarfile from the Web)
+        "builtin_xrootd     = OFF",  # OFF - Built the XROOTD internally (downloading tarfile from the Web)
+        "builtin_llvm       = ON ",  # ON  - Built the LLVM internally
+        "builtin_tbb        = ON ",  # OFF - Built the TBB internally
+
+        "cxx11              = ON ",  # ON  - Build using C++11 compatible mode, requires gcc > 4.7.x or clang
+        "cxx14              = OFF",  # OFF - Build using C++14 compatible mode, requires gcc > 4.9.x or clang
+        "cxx17              = OFF",  # OFF - Build using C++17 compatible mode, requires gcc > 7.1.x or clang
+
+        "libcxx             = OFF",  # OFF - Build using libc++, requires cxx11 option
+        "castor             = OFF",  # ON  - CASTOR support, requires libshift from CASTOR >               =  1.5.2
+        "ccache             = OFF",  # OFF - Enable ccache usage for speeding up builds
+        "chirp              = OFF",  # ON  - Chirp support (Condor remote I/O), requires libchirp_client
+        "cling              = ON ",  # ON  - Enable new CLING C++ interpreter
+        # "cocoa              = *  ",  # *   - Use native Cocoa/Quartz graphics backend (MacOS X only)
+        # "davix              = *  ",  # *   - DavIx library for HTTP/WEBDAV access
+        "dcache             = OFF",  # ON  - dCache support, requires libdcap from DESY
+        "exceptions         = ON ",  # ON  - Turn on compiler exception handling capability
+        "explicit link      = *  ",  # *   - Explicitly link with all dependent libraries
+        "fail-on-missing    = ON ",  # OFF - Fail the configure step if a required external package is missing
+        "fftw3              = ON ",  # ON  - Fast Fourier Transform support, requires libfftw3
+        "fitsio             = OFF",  # ON  - Read images and data from FITS files, requires cfitsio
+
+        "gdml               = ON ",  # *   - GDML writer and reader
+        "geocad             = OFF",  # OFF - ROOT-CAD Interface
+        "genvector          = ON ",  # ON  - Build the new libGenVector library
+        "gfal               = OFF",  # ON  - GFAL support, requires libgfal
+        "glite              = OFF",  # ON  - gLite support, requires libglite-api-wrapper
+        "globus             = OFF",  # OFF - Globus authentication support, requires Globus toolkit
+        "gminimal           = OFF",  # OFF - Do not automatically search for support libraries, but include X11
+        "gnuinstall         = OFF",  # OFF - Perform installation following the GNU guidelines
+        "gsl_shared         = OFF",  # OFF - Enable linking against shared libraries for GSL (default no)
+        "gviz               = OFF",  # ON  - Graphs visualization support, requires graphviz
+        "hdfs               = OFF",  # ON  - HDFS support; requires libhdfs from HDFS >               =  0.19.1
+        "http               = ON ",  # *   - HTTP Server support
+        "imt                = ON ",  # ON  - Enable ROOT Multithreading Capabilities (default ON from version 6.10)
+        "jemalloc           = OFF",  # OFF - Using the jemalloc allocator
+        "krb5               = OFF",  # ON  - Kerberos5 support, requires Kerberos libs
+        "ldap               = OFF",  # ON  - LDAP support, requires (Open)LDAP libs
+        "mathmore           = ON ",  # ON  - Build the new libMathMore
+        "memstat            = OFF",  # *   - A memory statistics utility, helps to detect memory leaks
+        "minimal            = ON ",  # OFF - Do not automatically search for support libraries
+        "minuit2            = ON ",  # *   - Build the new libMinuit2 minimizer library
+        "monalisa           = OFF",  # ON  - Monalisa monitoring support, requires libapmoncpp
+        "mt                 = OFF",  # OFF - Multi-threading support (deprecated and unused since ROOT v6.12)
+        "mysql              = OFF",  # ON  - MySQL support, requires libmysqlclient
+        "odbc               = OFF",  # ON  - ODBC support, requires libiodbc or libodbc
+        "opengl             = OFF",  # ON  - OpenGL support, requires libGL and libGLU
+        "oracle             = OFF",  # ON  - Oracle support, requires libocci
+        "pgsql              = OFF",  # ON  - PostgreSQL support, requires libpq
+        "pythia6            = OFF",  # ON  - Pythia6 EG support, requires libPythia6
+        "pythia6_nolink     = OFF",  # OFF - Delayed linking of Pythia6 library
+        "pythia8            = OFF",  # ON  - Pythia8 EG support, requires libPythia8
+        "python             = ON ",  # ON  - Python ROOT bindings, requires python > = 2.2
+        # "qt                    ",  # NA  - Qt graphics backend, requires libqt > = 4.8
+        # "qtgsi              = *",  # *   - GSI's Qt integration, requires libqt > = 4.8
+        "roofit             = ON ",  # *   - Build the libRooFit advanced fitting package
+        "root7              = OFF",  # OFF - ROOT 7 support (read more)
+        "roottest           = OFF",  # OFF - Include roottest in the test suit, if roottest exists in root
+        "ruby               = OFF",  # OFF - Ruby ROOT bindings, requires ruby >= 1.8
+        "r                  = OFF",  # OFF - R ROOT bindings, requires R, Rcpp and RInside
+        "rfio               = OFF",  # ON  - RFIO support, requires libshift from CASTOR >= 1.5.2
+        "rpath              = OFF",  # OFF - Set run-time library load path on executables and shared libraries
+        "sapdb              = OFF",  # ON  - MaxDB/SapDB support, requires libsqlod and libsqlrte
+        "shadowpw           = OFF",  # ON  - Shadow password support
+        "shared             = OFF",  # ON  - Use shared 3rd party libraries if possible
+        "soversion          = OFF",  # OFF - Set version number in sonames (recommended)
+        "sqlite             = OFF",  # ON  - SQLite support, requires libsqlite3
+        "srp                = OFF",  # ON  - SRP support, requires SRP source tree
+        "ssl                = OFF",  # ON  - SSL encryption support, requires openssl
+        "tbb                = OFF",  # OFF - TBB multi-threading support, requires TBB
+        "table              = OFF",  # *   - Build libTable contrib library
+        "tcmalloc           = OFF",  # OFF - Using the tcmalloc allocator
+        "testing            = OFF",  # OFF - Enable test suit of ROOT with CTest
+        "thread             = ON ",  # ON  - Using thread library (cannot be disabled)
+        "tmva               = ON ",  # ON  - Build TMVA multi variate analysis library
+        "unuran             = OFF",  # *   - UNURAN - package for generating non-uniform random numbers
+        # "vc               = *  ",  # *   - Vc adds a few new types for portable and intuitive SIMD programming
+        "vdt                = ON ",  # ON  - VDT adds a set of fast and vectorisable mathematical functions
+        "winrtdebug         = OFF",  # OFF - Link against the Windows debug runtime library
+        "xft                = OFF",  # ON  - Xft support (X11 antialiased fonts)
+        "xml                = ON ",  # ON  - XML parser interface
+        "xrootd             = OFF",  # ON  - Build xrootd file server and its client (if supported)
+        "x11                = OFF",  # *   - X11 support
+
+        "runtime_cxxmodules = OFF",  # OFF - Enable runtime c++ modules
+    ]
+
 
 
 def root_find():
