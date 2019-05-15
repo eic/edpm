@@ -75,7 +75,7 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
         _print_help_no_top_path()
         raise click.Abort()
 
-    config = {'build_threads':build_threads}
+    config = {'build_threads': build_threads}
 
     # Install packets
     # set the tag we want to install
