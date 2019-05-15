@@ -38,7 +38,7 @@ def pwd(ctx, ectx, packet_names):
     else:
         # Get installation data for the active install
         packet_name = packet_names[0]
-        ectx.ensure_packet_known(packet_name)
+        ectx.ensure_installer_known(packet_name)
         install_data = ectx.db.get_active_install(packet_name)
         if not install_data:
             mprint("No active installation data found for the packet '{}'", packet_name)

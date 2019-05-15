@@ -11,7 +11,6 @@ from ejpm.engine import env_gen
 from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.commands import run, env, workdir, is_not_empty_dir
 
-
 ROOTSYS = "ROOTSYS"
 
 
@@ -24,7 +23,6 @@ class RootInstallation(PacketInstallationInstruction):
 
     class DefaultConfigFields(object):
         pass
-
 
     def __init__(self, build_threads=8):
         """
@@ -47,7 +45,7 @@ class RootInstallation(PacketInstallationInstruction):
 
         return out
 
-    def setup(self, app_path):
+    def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
@@ -66,7 +64,7 @@ class RootInstallation(PacketInstallationInstruction):
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(app_path, version)
+        self.use_common_dirs_scheme(self.app_path, version)
 
         #
         # Root download link. We will use github root mirror:
@@ -81,15 +79,15 @@ class RootInstallation(PacketInstallationInstruction):
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} " \
                          " -Dgdml=ON" \
-		                 " -Dminuit2=ON" \
-                         " {python_flag} " \
+                         " -Dminuit2=ON" \
+                         " {python_flag}" \
                          " {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
-            .format(source_path=self.source_path,       # cmake source
-                    install_path=self.install_path,     # Installation path
+            .format(source_path=self.source_path,  # cmake source
+                    install_path=self.install_path,  # Installation path
                     build_threads=self.build_threads,
-                    python_flag=self.config["python_flag"])   # make global options like '-j8'. Skip now
+                    python_flag=self.config["python_flag"])  # make global options like '-j8'. Skip now
 
     def step_install(self):
         self.step_clone_root()
@@ -100,10 +98,10 @@ class RootInstallation(PacketInstallationInstruction):
 
         # Check the directory exists and not empty
         if is_not_empty_dir(self.source_path):
-            return                                      # The directory exists and is not empty. Assume it cloned
+            return  # The directory exists and is not empty. Assume it cloned
 
-        mkpath(self.source_path)     # Create the directory and any missing ancestor directories if not there
-        run(self.clone_command)      # Execute git clone command
+        mkpath(self.source_path)  # Create the directory and any missing ancestor directories if not there
+        run(self.clone_command)  # Execute git clone command
 
     def step_build_root(self):
         """Builds root from the ground"""
@@ -140,7 +138,7 @@ class RootInstallation(PacketInstallationInstruction):
 
             root_bin = os.path.join(install_path, 'bin')
             root_lib = os.path.join(install_path, 'lib')
-            root_jup = os.path.join(install_path, 'etc','notebook')
+            root_jup = os.path.join(install_path, 'etc', 'notebook')
 
             env_updates = [
                 env_gen.Set('ROOTSYS', install_path),
@@ -298,7 +296,6 @@ class RootInstallation(PacketInstallationInstruction):
 
         "runtime_cxxmodules = OFF",  # OFF - Enable runtime c++ modules
     ]
-
 
 
 def root_find():

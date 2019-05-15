@@ -51,7 +51,7 @@ def req(ctx, ectx, os_name, args, print_mode):
     if args:
         names = []
         for packet_name in args:                                    # get all dependencies
-            ectx.ensure_packet_known(packet_name)
+            ectx.ensure_installer_known(packet_name)
             names += ectx.pm.get_installation_names(packet_name)    # this func returns name + its_deps
 
         names = list(set(names))                                    # remove repeating names

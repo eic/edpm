@@ -27,7 +27,7 @@ class RaveInstallation(PacketInstallationInstruction):
         self.build_command = ""
         self.build_threads = build_threads
 
-    def setup(self, app_path):
+    def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
         branch = 'master'
@@ -37,7 +37,7 @@ class RaveInstallation(PacketInstallationInstruction):
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(app_path, branch)
+        self.use_common_dirs_scheme(self.app_path, branch)
 
         # ENV RAVEPATH $INSTALL_DIR_RAVE
 

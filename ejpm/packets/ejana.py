@@ -26,51 +26,45 @@ class EjanaInstallation(PacketInstallationInstruction):
 
     def __init__(self, build_threads=8):
         """
-
-        :param default_tag: Root version
         """
-
-
         super(EjanaInstallation, self).__init__('ejana')
         self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
         self.required_deps = ['clhep', 'root', 'rave', 'genfit', 'hepmc', 'eic-smear', 'jana']
 
-
     def _setup_dev(self, app_path):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # For dev version we don't use common path scheme
         self.config['app_path'] = app_path
+        self.config['branch'] = 'master'
+        self.config['build_threads'] = 1
 
-        branch = 'master'
         # The directory with source files for current version
-        self.config['source_path'] = "{app_path}/dev".format(app_path=self.app_path)
-        self.config['build_path'] = "{app_path}/dev/.build".format(app_path=self.app_path)  # build in dev directory
-        self.config['install_path'] = "{app_path}/dev/build".format(app_path=self.app_path)
+        self.config['source_path'] = "{app_path}/dev".format(**self.config)
+        self.config['build_path'] = "{app_path}/dev/cmake-build-debug".format(**self.config)  # build in dev directory
+        self.config['install_path'] = "{app_path}/dev/compiled".format(**self.config)
 
         #
         # ejana download link
         self.clone_command = "git clone -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
-            .format(branch=branch, source_path=self.source_path)
+                             .format(**self.config)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
-            .format(source_path=self.source_path,  # cmake source
-                    install_path=self.install_path,  # Installation path
-                    build_threads=self.build_threads)  # make global options like '-j8'. Skip now
+                         .format(**self.config)
 
-    def setup(self, app_path):
+    def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #if self.selected_tag == 'dev':
 
         # (!) at this point we alwais use dev environment
-        return self._setup_dev(app_path)
+        return self._setup_dev(self.app_path)
 
         # it is not a dev setup
         branch = 'master'
@@ -106,15 +100,11 @@ class EjanaInstallation(PacketInstallationInstruction):
         """Clones JANA from github mirror"""
 
         # Check the directory exists and not empty
-        if os.path.exists(self.source_path) and os.path.isdir(self.source_path) and os.listdir(self.source_path):
-            # The directory exists and is not empty. Nothing to do
-            return
-        else:
-            # Create the directory
-            run('mkdir -p {}'.format(self.source_path))
+        if self.source_dir_is_not_empty():
+            return  # The directory exists and is not empty. Nothing to do
 
-        # Execute git clone command
-        run(self.clone_command)
+        run('mkdir -p {source_path}'.format(**self.config))   # Create the directory
+        run(self.clone_command)                               # Execute git clone command
 
     def step_build(self):
         """Builds JANA from the ground"""

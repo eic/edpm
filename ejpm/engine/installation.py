@@ -1,4 +1,5 @@
 # This module contains classes, which hold information about how to install packets
+import os
 
 
 class PacketInstallationInstruction(object):
@@ -54,7 +55,7 @@ class PacketInstallationInstruction(object):
             "optional_deps" : [],   # Optional packets
         }
 
-    def setup(self, app_path):
+    def setup(self):
         """This function is used to format and fill variables, when app_path is known download command"""
         # ... (!) inherited classes should implement its logic here
         raise NotImplementedError()
@@ -118,3 +119,7 @@ class PacketInstallationInstruction(object):
     def optional_deps(self, value):
         self.config["optional_deps"] = value
 
+    def source_dir_is_not_empty(self):
+        return os.path.exists(self.source_path) \
+               and os.path.isdir(self.source_path) \
+               and os.listdir(self.source_path)

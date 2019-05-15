@@ -21,7 +21,7 @@ def set(ctx, ectx, packet_name, install_path):
     ectx.ensure_db_exists()
 
     # Check that the packet name is from known packets
-    ectx.ensure_packet_known(packet_name)
+    ectx.ensure_installer_known(packet_name)
 
     # update_install will add or update the packet install. We set it active as it make sense...
     from ejpm.engine.db import IS_ACTIVE

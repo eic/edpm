@@ -55,7 +55,7 @@ class EjpmContext(object):
             mprint("<green>creating database...</green>")
             self.db.save()
 
-    def ensure_packet_known(self, packet_name):
+    def ensure_installer_known(self, packet_name):
         """Check if packet_name is of known packets or aborts everything
 
            All ensure_xxx functions check the problem, fix it or write message and call Click.Abort()

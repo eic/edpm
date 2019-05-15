@@ -8,17 +8,35 @@ from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.packet_manager import PacketManager
 
 
+class InstallationRequest(object):
+    """ This class is assumed to reflect a user requests for a packet installation"""
+
+    def __init__(self, installer, mode, config, just_explain=False, deps_only=4):
+        assert isinstance(installer, PacketInstallationInstruction)
+
+        self.name = installer.name   # Packet name
+        self.installer = installer
+        self.mode = mode
+        self.just_explain = just_explain
+        self.config_overrides = config
+        self.deps_only = deps_only
+
+    def update_installer_config(self):
+        self.installer.config.update(self.config_overrides)
+
+
 @click.command()
 @click.option('--missing', 'dep_mode', flag_value='missing', help="Installs only missing dependencies", default=True)
 @click.option('--single', 'dep_mode', flag_value='single', help="Installs only this package")
 @click.option('--all', 'dep_mode', flag_value='all', help="Installs all dependencies by ejpm")
 @click.option('--path', 'install_path', default='', help="Is not implemented")
+@click.option('--build-threads','-j', 'build_threads', default=4, help="Build threads count")
 @click.option('--explain', 'just_explain', default=False, is_flag=True, help="Prints what is to be installed (but do nothing)")
 @click.option('--deps-only', 'deps_only', default=False, is_flag=True, help="Installs only dependencies but not the packet itself")
-@click.argument('name', nargs=1)
+@click.argument('names', nargs=-1)
 @pass_ejpm_context
 @click.pass_context
-def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False, deps_only=False):
+def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_explain=False, deps_only=False):
     """Installs packets (and all dependencies)
 
     \b
@@ -42,7 +60,8 @@ def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False, deps
     assert isinstance(pm, PacketManager)
 
     # Check if packet_name is all, missing or for known packet
-    ectx.ensure_packet_known(name)
+    for name in names:
+        ectx.ensure_installer_known(name)
 
     # Ok, looks like we are going to install something
 
@@ -56,10 +75,15 @@ def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False, deps
         _print_help_no_top_path()
         raise click.Abort()
 
+    config = {'build_threads':build_threads}
+
     # Install packets
     # set the tag we want to install
-    installer = pm.installers_by_name[name]
-    _install_with_deps(ectx, installer.name, mode=dep_mode, just_explain=just_explain, deps_only=deps_only)
+    requests = [InstallationRequest(pm.installers_by_name[name], dep_mode, config, just_explain, deps_only)
+                for name in names]
+
+    for request in requests:
+        _install_with_deps(ectx, request)
 
     # Update environment scripts if it is not just an explanation
     if not just_explain:
@@ -74,121 +98,144 @@ def install(ctx, ectx, dep_mode, name, install_path="", just_explain=False, deps
         pass
         # click.echo('I am about to invoke %s' % ctx.invoked_subcommand)
 
+def _build_deps_requests(ectx, initial_request, ):
+    assert isinstance(initial_request, InstallationRequest)
+    assert isinstance(ectx, EjpmContext)
 
-def _install_packet(db, packet, install_path='', replace_active=True):
-    """Installs packet using its 'installation instruction' class
+    install_chain_names = ectx.pm.get_installation_names(initial_request.name, initial_request.deps_only)
 
-        :var db: State database
-        :type db: PacketStateDatabase
-        :var packet: thing that knows how to install a packet
-        :type packet: PacketInstallationInstruction
-        :var install_path: Path to install app to. If empty {db.top_dir}/{packet.name} is used
-        :type install_path: str
-    
-    """
+    requests = []                       # resulting InstallationRequests
+    for name in install_chain_names:
 
-    assert isinstance(packet, PacketInstallationInstruction)
-    assert isinstance(db, PacketStateDatabase)
-    if not install_path:
-        install_path = os.path.join(db.top_dir, packet.name)
+        # Set installation mode to 'single' and 'deps_only' for all except initial request
+        if name != initial_request.name:
+            mode = 'single'
+            deps_only = False
+        else:
+            mode = initial_request.mode
+            deps_only = initial_request.deps_only
+
+        # Create installation requrest
+        request = InstallationRequest(ectx.pm.installers_by_name[name],
+                                      mode,
+                                      initial_request.config_overrides,
+                                      initial_request.just_explain,
+                                      deps_only)
+        requests.append(request)
+    return requests
+
+
+def _install_packet(ectx, request):
+    """Installs packet using its 'installation instruction' class"""
+
+    assert isinstance(request, InstallationRequest)
+    assert isinstance(ectx, EjpmContext)
+
+    db = ectx.db
+    install_path = os.path.join(db.top_dir, request.name)
 
     # set_app_path setups parameters (formats all string variables) for this particular path
-    packet.setup(install_path)
+    request.update_installer_config()
+    request.installer.setup()
 
     # Pretty header
     mprint("<magenta>=========================================</magenta>")
-    mprint("<green> INSTALLING</green> : <blue>{}</blue>", packet.name)
+    mprint("<green> INSTALLING</green> : <blue>{}</blue>", request.name)
     mprint("<magenta>=========================================</magenta>\n")
 
     # (!) here we actually install the packet
     try:
-        packet.step_install()
+        request.installer.step_install()
     except OSError as err:
         mprint("<red>Installation stopped because of the error</red> : {}", err)
         exit(1)
 
     # if we are here, the packet is installed
-    mprint("<green>{} installation step done!</green>\n", packet.name)
+    mprint("<green>{} installation step done!</green>\n", request.name)
 
     # Add to DB that we installed a packet
-    mprint("Adding path to database...\n   This {} installation is set as <blue>selected</blue>", packet.name)
+    mprint("Adding path to database...\n   This {} installation is set as <blue>selected</blue>", request.name)
 
     from ejpm.engine.db import IS_OWNED, IS_ACTIVE, SOURCE_PATH, BUILD_PATH
     updating_data = {
         IS_OWNED: True,
         IS_ACTIVE: True,
-        SOURCE_PATH: packet.source_path,
-        BUILD_PATH: packet.build_path
+        SOURCE_PATH: request.installer.source_path,
+        BUILD_PATH:  request.installer.build_path
     }
-    db.update_install(packet.name, packet.install_path, updating_data)
+    db.update_install( request.installer.name,  request.installer.install_path, updating_data)
     db.save()
 
 
-def _install_with_deps(ectx, packet_name, mode, just_explain=False, deps_only=False):
+def _install_with_deps(ectx, request):
+    assert isinstance(request, InstallationRequest)
     assert isinstance(ectx, EjpmContext)
 
-    desired_names = ectx.pm.get_installation_names(packet_name, deps_only)
+    must_exist_chain = _build_deps_requests(ectx, request)
 
-    # First we want to play 'setup' function on all dependencies.
-    # This will allow us to build the right environment for non existent packets
+    #
+    # First. Hit 'setup' function on all dependencies.
+    # This will allow us to build the right environment for nonexistent packets
     # If this is just a single packet install it will do no harm
-    for name in desired_names:
-        installer = ectx.pm.installers_by_name[name]
+    for request in must_exist_chain:
         # To call setup we need some installation path. Those are dependencies and we only know how to
         # install them to top_dir. So we don't care and set simple os.path.join(...)
-        installer.setup(os.path.join(ectx.db.top_dir, installer.name))
+        request.config_overrides['app_path'] = os.path.join(ectx.db.top_dir, request.name)
+        request.update_installer_config()
+        request.installer.setup()
 
     #
     # Lets see what is missing and tell it to the user
-    missing_packets = []
+    missing_chain = []
     mprint("\nCurrent status of the packet and dependencies:")
-    for name in desired_names:
-        data = ectx.db.get_active_install(name)
+    for request in must_exist_chain:
+        data = ectx.db.get_active_install(request.name)
         if not data:
-            mprint("   <blue>{:<6}</blue> : not installed", name)
-            missing_packets.append(name)
+            mprint("   <blue>{:<6}</blue> : not installed", request.name)
+            missing_chain.append(request)
         else:
             is_owned_str = '(owned)' if data['is_owned'] else ''
-            mprint("   <blue>{:<6}</blue> : {} {}", name, data['install_path'], is_owned_str)
+            mprint("   <blue>{:<6}</blue> : {} {}", request.name, data['install_path'], is_owned_str)
+
 
     #
     # Select packets to install. mode tells what we should do with dependencies
-    if mode == 'missing':
+    if request.mode == 'missing':
         # select only missing packets
-        install_packets = [ectx.pm.installers_by_name[name] for name in desired_names if name in missing_packets]
-    elif mode == 'single':
+        process_chain = [request for request in must_exist_chain if request in missing_chain]
+    elif request.mode == 'single':
         # single = we only one packet
-        install_packets = [ectx.pm.installers_by_name[packet_name]]
-    elif mode == 'all':
+        process_chain = [request]
+    elif request.mode == 'all':
         # all - we just overwrite everything
-        install_packets = [ectx.pm.installers_by_name[name] for name in desired_names]
+        process_chain = [request for request in must_exist_chain]
     else:
         raise NotImplementedError("installation dependencies mode is not in [missing, single, all]")
 
     #
     # Is there something to build?
-    if not install_packets:
+    if not process_chain:
         mprint("Nothing to build and install!")
         return
 
     # Print user what is going to be built
     mprint("\n <b>INSTALLATION ORDER</b>:")
-    for packet in install_packets:
-        mprint("   <blue>{:<6}</blue> : {}", packet.name, packet.install_path)
+    for request in process_chain:
+        mprint("   <blue>{:<6}</blue> : {}", request.name, request.installer.install_path)
 
     # It is just explanation
-    if just_explain:
+    if request.just_explain:
         return
 
     # Set environment before build
-    _update_python_env(ectx, ectx.pm.installers_by_name, mode)  # set environment spitting on existing missing
+    _update_python_env(ectx, process_chain, request.mode)  # set environment spitting on existing missing
 
     #
-    for packet in install_packets:
-        _install_packet(ectx.db, packet)
+    for request in process_chain:
+        _install_packet(ectx, request)
 
 
-def _update_python_env(ectx, dep_order, mode=''):
+def _update_python_env(ectx, process_chain, mode=''):
     """Update python os.environ assuming we will install missing packets"""
 
     from ejpm.engine.db import IS_OWNED, IS_ACTIVE, INSTALL_PATH
@@ -208,7 +255,7 @@ def _update_python_env(ectx, dep_order, mode=''):
     #   'all'     | replace all packets installation path assuming we will install all by our script
     #   ''        | just skip missing
 
-    inst_by_name = {}
+    install_data_by_name = {}
     for name, inst in ectx.db.get_active_installs().items():
 
         if mode == 'missing':
@@ -228,15 +275,15 @@ def _update_python_env(ectx, dep_order, mode=''):
             }
 
         if inst:
-            inst_by_name[name] = inst
+            install_data_by_name[name] = inst
 
-    for name in dep_order:
+    for request in process_chain:
         # If we have a generator for this program and installation data
-        if name in inst_by_name.keys() and name in ectx.pm.env_generators.keys():
-            mprint("<blue><b>Updating python environment for '{}'</b></blue>".format(name))
-            env_gens = ectx.pm.env_generators[name]
-            for env_gen in env_gens(inst_by_name[name]):   # Go through 'environment generators' look engine/env_gen.py
-                env_gen.update_python_env()                # Do environment update
+        if request.name in install_data_by_name.keys() and request.name in ectx.pm.env_generators.keys():
+            mprint("<blue><b>Updating python environment for '{}'</b></blue>".format(request.name))
+            env_gen = ectx.pm.env_generators[request.name]
+            for gen_step in env_gen(install_data_by_name[request.name]):   # Go through 'environment generators' look engine/env_gen.py
+                gen_step.update_python_env()              # Do environment update
 
 
 def _print_help_no_top_path():

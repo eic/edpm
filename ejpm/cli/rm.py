@@ -34,7 +34,7 @@ def rm(ctx, ectx, packet_name, install_paths, mode):
     ectx.ensure_db_exists()
 
     # Check that the packet name is from known packets
-    ectx.ensure_packet_known(packet_name)
+    ectx.ensure_installer_known(packet_name)
 
     if not install_paths:
         install_data = ectx.db.get_active_install(packet_name)

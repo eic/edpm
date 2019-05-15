@@ -23,7 +23,7 @@ class ClhepInstallation(PacketInstallationInstruction):
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
 
-    def setup(self, app_path):
+    def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # What branch will we use? CLHEP has only one=)
@@ -34,7 +34,7 @@ class ClhepInstallation(PacketInstallationInstruction):
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(app_path, branch)
+        self.use_common_dirs_scheme(self.app_path, branch)
 
         #
         # JANA download link. Clone with shallow copy
