@@ -15,6 +15,27 @@ def import_all_submodules(modules_dir, package_name):
         # >oO debug   print(module)
 
 
+class InstallationRequest(object):
+    """ This class is assumed to reflect a user requests for a packet installation"""
+
+    def __init__(self, installer, mode, config, just_explain=False, deps_only=4):
+        assert isinstance(installer, PacketInstallationInstruction)
+
+        self.name = installer.name   # Packet name
+        self.installer = installer
+        self.mode = mode
+        self.just_explain = just_explain
+        self.config_overrides = config
+        self.deps_only = deps_only
+
+    def update_installer_config(self):
+        self.installer.config.update(self.config_overrides)
+
+    def __repr__(self):
+        return "InstallationRequest '{}'".format(self.name)
+
+
+
 class PacketManager(object):
 
     class Config(object):

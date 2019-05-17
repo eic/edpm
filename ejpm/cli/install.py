@@ -1,28 +1,12 @@
 import os
 import click
+import copy
 
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.installation import PacketInstallationInstruction
-from ejpm.engine.packet_manager import PacketManager
-
-
-class InstallationRequest(object):
-    """ This class is assumed to reflect a user requests for a packet installation"""
-
-    def __init__(self, installer, mode, config, just_explain=False, deps_only=4):
-        assert isinstance(installer, PacketInstallationInstruction)
-
-        self.name = installer.name   # Packet name
-        self.installer = installer
-        self.mode = mode
-        self.just_explain = just_explain
-        self.config_overrides = config
-        self.deps_only = deps_only
-
-    def update_installer_config(self):
-        self.installer.config.update(self.config_overrides)
+from ejpm.engine.packet_manager import PacketManager, InstallationRequest
 
 
 @click.command()
@@ -98,7 +82,7 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
         pass
         # click.echo('I am about to invoke %s' % ctx.invoked_subcommand)
 
-def _build_deps_requests(ectx, initial_request, ):
+def _build_deps_requests(ectx, initial_request):
     assert isinstance(initial_request, InstallationRequest)
     assert isinstance(ectx, EjpmContext)
 
@@ -118,9 +102,12 @@ def _build_deps_requests(ectx, initial_request, ):
         # Create installation requrest
         request = InstallationRequest(ectx.pm.installers_by_name[name],
                                       mode,
-                                      initial_request.config_overrides,
+                                      copy.deepcopy(initial_request.config_overrides),
                                       initial_request.just_explain,
                                       deps_only)
+
+        # Set right deirectory name in config overwrites
+        request.config_overrides['app_path'] = os.path.join(ectx.db.top_dir, name)
         requests.append(request)
     return requests
 
@@ -197,7 +184,6 @@ def _install_with_deps(ectx, request):
             is_owned_str = '(owned)' if data['is_owned'] else ''
             mprint("   <blue>{:<6}</blue> : {} {}", request.name, data['install_path'], is_owned_str)
 
-
     #
     # Select packets to install. mode tells what we should do with dependencies
     if request.mode == 'missing':
@@ -228,63 +214,11 @@ def _install_with_deps(ectx, request):
         return
 
     # Set environment before build
-    _update_python_env(ectx, process_chain, request.mode)  # set environment spitting on existing missing
+    ectx.update_python_env(process_chain, request.mode)  # set environment spitting on existing missing
 
     #
     for request in process_chain:
         _install_packet(ectx, request)
-
-
-def _update_python_env(ectx, process_chain, mode=''):
-    """Update python os.environ assuming we will install missing packets"""
-
-    from ejpm.engine.db import IS_OWNED, IS_ACTIVE, INSTALL_PATH
-    assert isinstance(ectx, EjpmContext)
-
-    # Pretty header
-    mprint("\n")
-    mprint("<magenta>=========================================</magenta>")
-    mprint("<green> SETTING ENVIRONMENT</green>")
-    mprint("<magenta>=========================================</magenta>\n")
-
-    # We will look through database and see, what is 'active installation' of packages
-    # Depending on mode, we will try to:
-    #    mode     | action
-    #   ----------+----------
-    #   'missing' | replace missing installations assuming we will install the package
-    #   'all'     | replace all packets installation path assuming we will install all by our script
-    #   ''        | just skip missing
-
-    install_data_by_name = {}
-    for name, inst in ectx.db.get_active_installs().items():
-
-        if mode == 'missing':
-            # There is no installation data for the packet, but we assume we will install it now!
-            if not inst:
-                inst = {
-                    INSTALL_PATH: ectx.pm.installers_by_name[name].install_path,
-                    IS_ACTIVE: True,
-                    IS_OWNED: True
-                }
-        elif mode == 'all':
-            # We overwrite installation path for the packet
-            inst = {
-                INSTALL_PATH: ectx.pm.installers_by_name[name].install_path,
-                IS_ACTIVE: True,
-                IS_OWNED: True
-            }
-
-        if inst:
-            install_data_by_name[name] = inst
-
-    for request in process_chain:
-        # If we have a generator for this program and installation data
-        if request.name in install_data_by_name.keys() and request.name in ectx.pm.env_generators.keys():
-            mprint("<blue><b>Updating python environment for '{}'</b></blue>".format(request.name))
-            env_gen = ectx.pm.env_generators[request.name]
-            for gen_step in env_gen(install_data_by_name[request.name]):   # Go through 'environment generators' look engine/env_gen.py
-                gen_step.update_python_env()              # Do environment update
-
 
 def _print_help_no_top_path():
     mprint("<red>(!)</red> installation directory is not set <red>(!)</red>\n"

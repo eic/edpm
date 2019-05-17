@@ -17,6 +17,7 @@ ENV_SH_PATH = 'env_sh_path'             # SH environment generated file path
 ENV_CSH_PATH = 'env_csh_path'           # CSH environment generated file path
 
 
+
 class EjpmContext(object):
     """This class holds data that is provided to most EJPM CLI commands"""
 
@@ -143,6 +144,58 @@ class EjpmContext(object):
         # environment script paths
         self.config[ENV_SH_PATH] = os.path.join(ejpm_data_path, "env.sh")
         self.config[ENV_CSH_PATH] = os.path.join(ejpm_data_path, "env.csh")
+
+    def update_python_env(self, process_chain=(), mode=''):
+        """Update python os.environ assuming we will install missing packets
+
+           This func gets all 'active installation' of packages out of db to build environment
+           if process_chain and mode are given, then depending on 'mode':
+              'missing' : replace missing installations assuming we will install the package
+              'all'     : replace all packets installation path assuming we will install all by our script
+              ''        : just skip missing
+        """
+
+        if process_chain is None:
+            process_chain = []
+        from ejpm.engine.db import IS_OWNED, IS_ACTIVE, INSTALL_PATH
+
+        # Pretty header
+        mprint("\n")
+        mprint("<magenta>=========================================</magenta>")
+        mprint("<green> SETTING ENVIRONMENT</green>")
+        mprint("<magenta>=========================================</magenta>\n")
+
+        # 1st, we need all data we have. All because installing packets can utilize the fa
+        packet_data_by_name = {name: inst for name, inst in self.db.get_active_installs().items() if inst}
+
+        # if we have process_chain
+        for request in process_chain:
+            packet_data = None
+            if mode == 'missing' and (request.name not in packet_data_by_name.keys()):
+                # There is no installation data for the packet, but we assume we will install it now!
+                packet_data = {
+                    INSTALL_PATH: request.installer.install_path,
+                    IS_ACTIVE: True,
+                    IS_OWNED: True
+                }
+            elif mode == 'all':
+                # We overwrite installation path for the packet
+                packet_data = {
+                    INSTALL_PATH: request.installer.install_path,
+                    IS_ACTIVE: True,
+                    IS_OWNED: True
+                }
+            if packet_data:
+                packet_data_by_name[request.name] = packet_data
+
+        for name, data in packet_data_by_name.items():
+            if name not in self.pm.env_generators.keys():  # Skip if we don't know environment generator for a packet
+                continue
+            # If we have a generator for this program and installation data
+            mprint("<blue><b>Updating python environment for '{}'</b></blue>".format(name))
+            generators = self.pm.env_generators[name]
+            for step in generators(packet_data_by_name[name]):  # Go through 'env generators' look engine/env_gen.py
+                step.update_python_env()  # Do environment update
 
 
 # Create a database class and @pass_db decorator so our commands could use it

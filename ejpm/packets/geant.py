@@ -21,15 +21,8 @@ class GeantInstallation(PacketInstallationInstruction):
     install_path = {app_path}/root-{version}         # Where the binary installation is
     """
 
-
-    def __init__(self, default_tag='master', build_threads=8):
-        """
-        Installs Genfit track fitting framework
-        """
-
-        # Set initial values for parent class and self
+    def __init__(self):
         super(GeantInstallation, self).__init__('geant')
-        self.build_threads = build_threads
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
 
@@ -70,10 +63,7 @@ class GeantInstallation(PacketInstallationInstruction):
                 {source_path}
             && cmake --build . -- -j {build_threads}
             && cmake --build . --target install"""\
-                         .format(
-                             source_path=self.source_path,    # cmake source
-                             install_path=self.install_path,  # Installation path
-                             build_threads=self.build_threads)     # make global options like '-j8'. Skip now
+                         .format(**self.config)
         # remove multiple spaces and \n
         self.build_cmd = " ".join(self.build_cmd.split())
 
