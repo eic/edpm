@@ -74,11 +74,11 @@ def _print_combined(ectx, os_name, packet_names, print_mode):
     required = list(set([r for r in required if r]))
     optional = list(set([o for o in optional if o]))
 
-    if print_mode is "optional":
+    if print_mode == "optional":
         mprint(" ".join(optional))
-    elif print_mode is "required":
+    elif print_mode == "required":
         mprint(" ".join(required))
-    elif print_mode is "all":
+    elif print_mode == "all":
         mprint(" ".join(optional + required))
     else:
         # print all with juman readable titles
