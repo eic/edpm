@@ -14,7 +14,7 @@ from ejpm.engine.packet_manager import PacketManager, InstallationRequest
 @click.option('--single', 'dep_mode', flag_value='single', help="Installs only this package")
 @click.option('--all', 'dep_mode', flag_value='all', help="Installs all dependencies by ejpm")
 @click.option('--path', 'install_path', default='', help="Is not implemented")
-@click.option('--build-threads','-j', 'build_threads', default=4, help="Build threads count")
+@click.option('--build-threads', '-j', 'build_threads', default=0, help="Build threads count")
 @click.option('--explain', 'just_explain', default=False, is_flag=True, help="Prints what is to be installed (but do nothing)")
 @click.option('--deps-only', 'deps_only', default=False, is_flag=True, help="Installs only dependencies but not the packet itself")
 @click.argument('names', nargs=-1)
@@ -59,12 +59,20 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
         _print_help_no_top_path()
         raise click.Abort()
 
-    config = {'build_threads': build_threads}
-
     # Install packets
     # set the tag we want to install
-    requests = [InstallationRequest(pm.installers_by_name[name], dep_mode, config, just_explain, deps_only)
-                for name in names]
+    requests = []
+    for name in names:
+        # make config overrides
+        config = {}
+        config.update(db.get_global_config())
+        config.update(db.get_config(name))
+        if build_threads:
+            config['build_threads'] = build_threads
+
+        # make installation request and add to the list
+        request = InstallationRequest(pm.installers_by_name[name], dep_mode, config, just_explain, deps_only)
+        requests.append(request)
 
     for request in requests:
         _install_with_deps(ectx, request)

@@ -150,3 +150,13 @@ class EjanaInstallation(PacketInstallationInstruction):
             'centos': ""
         },
     }
+
+    # Flags that can me made in cmake
+    cmake_deps_flag_names = {
+        "root": "ROOT_DIR",             # Cern root installation
+        "jana": 'JANA_DIR',             # JANA2 installation directory
+        'genfit': 'GENFIT_DIR',         # Genfit2  installation directory
+        'eic-smear': 'EIC_SMEAR_DIR',   # EIC-smear smearing packet
+        'hepmc': 'HEPMC_DIR'
+    }
+

@@ -1,9 +1,7 @@
-import os
 
 import click
 
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
-from ejpm.engine.db import INSTALL_PATH
 from ejpm.engine.output import markup_print as mprint
 
 # @click.group(invoke_without_command=True)
@@ -14,7 +12,6 @@ from ejpm.engine.output import markup_print as mprint
 @click.option('--required', 'print_mode', flag_value='required', help="Print required packages")
 @click.option('--all', 'print_mode', flag_value='all', help="Print all packages (ready for packet manager install)")
 @click.option('--all-titles', 'print_mode', flag_value='all_titles', help="Print all packages (human readable)", default=True)
-
 @pass_ejpm_context
 @click.pass_context
 def req(ctx, ectx, os_name, args, print_mode):
