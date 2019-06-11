@@ -24,14 +24,13 @@ class RootInstallation(PacketInstallationInstruction):
     class DefaultConfigFields(object):
         pass
 
-    def __init__(self, build_threads=8):
+    def __init__(self):
         """
-        :param version: Root version
         """
 
         # Fill the common path pattern
         super(RootInstallation, self).__init__("root")
-        self.build_threads = build_threads
+        self.config['branch'] = 'v{}-{:02}-{:02}'.format(6, 16, 0)
 
     def find_python(self):
         from subprocess import check_output
@@ -42,17 +41,12 @@ class RootInstallation(PacketInstallationInstruction):
 
         if not out:
             out = check_output(["which", "python"]).decode('ascii').strip()
-
         return out
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
-        # Root clone branch is like v6-14-04 so if a version is given by tuple (which is awaited at this point)
-        # we format 'version' string so that we can use it as a branch name for clone command
-        version = 'v{}-{:02}-{:02}'.format(6, 16, 0)  # v6-14-04
-
         # Compile with python3, then whatever python is...
         python_path = self.find_python()
         self.config["python_flag"] = ' -DPYTHON_EXECUTABLE={} '.format(python_path) if python_path else ''
@@ -64,7 +58,7 @@ class RootInstallation(PacketInstallationInstruction):
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(self.app_path, version)
+        self.use_common_dirs_scheme()
 
         #
         # Root download link. We will use github root mirror:
@@ -72,7 +66,7 @@ class RootInstallation(PacketInstallationInstruction):
         # http://github.com/root-project/root.git
         # clone with shallow copy
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/root-project/root.git {source_path}" \
-            .format(branch=version, source_path=self.source_path)
+            .format(**self.config)
 
         #
         # ROOT packets to disable in our build (go with -D{name}=ON flag)
@@ -84,10 +78,7 @@ class RootInstallation(PacketInstallationInstruction):
                          " {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
-            .format(source_path=self.source_path,  # cmake source
-                    install_path=self.install_path,  # Installation path
-                    build_threads=self.build_threads,
-                    python_flag=self.config["python_flag"])  # make global options like '-j8'. Skip now
+            .format(**self.config)  # make global options like '-j8'. Skip now
 
     def step_install(self):
         self.step_clone_root()

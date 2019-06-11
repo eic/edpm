@@ -25,25 +25,22 @@ class GeantInstallation(PacketInstallationInstruction):
         super(GeantInstallation, self).__init__('geant')
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
+        self.config['branch'] = 'v10.5.1'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
-
-        # We don't care about tags and have only 1 branch name
-        branch = 'v10.5.0'
 
         #
         # use_common_dirs_scheme sets standard package variables:
         # source_path  = {app_path} / src   / {branch}       # Where the sources for the current version are located
         # build_path   = {app_path} / build / {branch}       # Where sources are built. Kind of temporary dir
         # install_path = {app_path} / geant-{branch}         # Where the binary installation is
-        self.use_common_dirs_scheme(self.app_path, branch)
+        self.use_common_dirs_scheme()
 
         #
-        # JANA download link. Clone with shallow copy
-        # TODO accept version tuple to get exact branch
+        # Git download link. Clone with shallow copy
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/Geant4/geant4 {source_path}"\
-            .format(branch=branch, source_path=self.source_path)
+            .format(**self.config)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075

@@ -15,42 +15,35 @@ class ClhepInstallation(PacketInstallationInstruction):
     """Provides data for building and installing CLHEP framework
     """
 
-    def __init__(self, build_threads=8):
+    def __init__(self):
 
         # Set initial values for parent class and self
         super(ClhepInstallation, self).__init__('clhep')
-        self.build_threads = build_threads
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
+        self.config['branch'] = 'master'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
-
-        # What branch will we use? CLHEP has only one=)
-        branch = 'master'
 
         #
         # use_common_dirs_scheme sets standard package variables:
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(self.app_path, branch)
+        self.use_common_dirs_scheme()
 
         #
-        # JANA download link. Clone with shallow copy
-        # TODO accept version tuple to get exact branch
+        # Git download link. Clone with shallow copy
         self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.cern.ch/CLHEP/CLHEP.git {source_path}"\
-            .format(branch=branch, source_path=self.source_path)
+            .format(**self.config)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -DCLHEP_SINGLE_THREAD=ON -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
-                         .format(
-                             source_path=self.source_path,       # cmake source
-                             install_path=self.install_path,     # Installation path
-                             build_threads=self.build_threads)   # make global options like '-j8'. Skip now
+                         .format(**self.config)   # make global options like '-j8'. Skip now
 
     def step_install(self):
         self.step_clone()

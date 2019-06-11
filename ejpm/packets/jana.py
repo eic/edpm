@@ -30,16 +30,14 @@ class JanaInstallation(PacketInstallationInstruction):
         required_deps = []     # Packets which are required for this to run
         optional_deps = []     # Optional packets
 
-    def __init__(self, build_threads=8):
+    def __init__(self):
         super(JanaInstallation, self).__init__('jana')
-        self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
+        self.config['branch'] = 'master'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
-
-        branch = 'master'
 
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -47,20 +45,17 @@ class JanaInstallation(PacketInstallationInstruction):
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(self.app_path, branch)
+        self.use_common_dirs_scheme()
 
         #
-        # JANA download link. Clone with shallow copy
-        # TODO accept version tuple to get exact branch
+        # Git download link. Clone with shallow copy
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA2.git {source_path}"\
-            .format(branch=branch, source_path=self.source_path)
+            .format(**self.config)
 
         #
         # scons installation command:
         self.build_command = "scons install -j{build_threads} PREFIX={install_path}"\
-                         .format(build_threads=self.build_threads,
-                                 install_path=self.install_path,
-                                 build_path=self.build_path)
+                         .format(**self.config)
 
     def step_install(self):
         self.step_clone()

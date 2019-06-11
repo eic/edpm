@@ -20,46 +20,39 @@ class GeantInstallation(PacketInstallationInstruction):
     """
 
 
-    def __init__(self, default_tag='master', build_threads=8):
+    def __init__(self):
         """
         Installs Genfit track fitting framework
         """
 
         # Set initial values for parent class and self
         super(GeantInstallation, self).__init__('g4e')
-        self.build_threads = build_threads
         self.clone_command = ''             # is set during self.setup(...)
         self.build_cmd = ''                 # is set during self.setup(...)
+        self.config['branch'] = 'master'
         self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm']
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
-
-        # We don't care about tags and have only 1 branch name
-        branch = 'master'
 
         #
         # use_common_dirs_scheme sets standard package variables:
         # source_path  = {app_path} / src   / {branch}       # Where the sources for the current version are located
         # build_path   = {app_path} / build / {branch}       # Where sources are built. Kind of temporary dir
         # install_path = {app_path} / geant-{branch}         # Where the binary installation is
-        self.use_common_dirs_scheme(self.app_path, branch)
+        self.use_common_dirs_scheme()
 
         #
-        # JANA download link. Clone with shallow copy
-        # TODO accept version tuple to get exact branch
+        # Git download link. Clone with shallow copy
         self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/jlab-eic/g4e.git {source_path}"\
-            .format(branch=branch, source_path=self.source_path)
+            .format(**self.config)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
-                         .format(
-                             source_path=self.source_path,    # cmake source
-                             install_path=self.install_path,  # Installation path
-                             build_threads=self.build_threads)     # make global options like '-j8'. Skip now
+                         .format(**self.config)
 
     def step_install(self):
         self.step_clone()
@@ -106,7 +99,6 @@ class GeantInstallation(PacketInstallationInstruction):
 
         bin_path = os.path.join(data['install_path'], 'bin')
         yield Prepend('PATH', bin_path)  # to make available clhep-config and others
-
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

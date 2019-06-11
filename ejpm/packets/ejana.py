@@ -24,21 +24,20 @@ class EjanaInstallation(PacketInstallationInstruction):
     """
 
 
-    def __init__(self, build_threads=8):
+    def __init__(self):
         """
         """
         super(EjanaInstallation, self).__init__('ejana')
-        self.build_threads = build_threads
         self.clone_command = ""
         self.build_command = ""
         self.required_deps = ['clhep', 'root', 'rave', 'genfit', 'hepmc', 'eic-smear', 'jana']
+        self.config['branch'] = 'master'
+        self.config['install_mode'] = 'dev'
 
-    def _setup_dev(self, app_path):
+    def _setup_dev(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # For dev version we don't use common path scheme
-        self.config['app_path'] = app_path
-        self.config['branch'] = 'master'
         self.config['build_threads'] = 1
 
         # The directory with source files for current version
@@ -61,13 +60,9 @@ class EjanaInstallation(PacketInstallationInstruction):
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
-        #if self.selected_tag == 'dev':
-
         # (!) at this point we alwais use dev environment
-        return self._setup_dev(self.app_path)
-
-        # it is not a dev setup
-        branch = 'master'
+        if self.config['mode'] == 'dev':
+            return self._setup_dev()
 
         #
         # use_common_dirs_scheme sets standard package variables:
@@ -75,22 +70,19 @@ class EjanaInstallation(PacketInstallationInstruction):
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(app_path, branch)
+        self.use_common_dirs_scheme()
 
         #
-        # JANA download link. Clone with shallow copy
-        # TODO accept version tuple to get exact branch
+        # Git download link. Clone with shallow copy
         self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
-            .format(branch=self.selected_tag, source_path=self.source_path)
+            .format(**self.config)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
-                         .format(source_path=self.source_path,      # cmake source
-                                 install_path=self.install_path,    # Installation path
-                                 build_threads=self.build_threads)  # make global options like '-j8'. Skip now
+                         .format(**self.config)  # make global options like '-j8'. Skip now
 
     def step_install(self):
         self.step_clone()
