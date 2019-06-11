@@ -8,7 +8,7 @@ https://gitlab.com/jlab-eic/g4e.git
 import os
 
 from ejpm.engine.commands import run, workdir
-from ejpm.engine.env_gen import Set, Append, Prepend
+from ejpm.engine.env_gen import Set, Prepend
 from ejpm.engine.installation import PacketInstallationInstruction
 
 
@@ -99,6 +99,9 @@ class GeantInstallation(PacketInstallationInstruction):
 
         bin_path = os.path.join(data['install_path'], 'bin')
         yield Prepend('PATH', bin_path)  # to make available clhep-config and others
+        yield Set('G4E_HOME', bin_path)
+        yield Set('G4E_RESOURCES', bin_path + '/work')
+
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
