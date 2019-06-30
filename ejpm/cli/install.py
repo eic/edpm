@@ -186,11 +186,11 @@ def _install_with_deps(ectx, request):
     for request in must_exist_chain:
         data = ectx.db.get_active_install(request.name)
         if not data:
-            mprint("   <blue>{:<6}</blue> : not installed", request.name)
+            mprint("   <blue>{:<9}</blue> : not installed", request.name)
             missing_chain.append(request)
         else:
             is_owned_str = '(owned)' if data['is_owned'] else ''
-            mprint("   <blue>{:<6}</blue> : {} {}", request.name, data['install_path'], is_owned_str)
+            mprint("   <blue>{:<9}</blue> : {} {}", request.name, data['install_path'], is_owned_str)
 
     #
     # Select packets to install. mode tells what we should do with dependencies

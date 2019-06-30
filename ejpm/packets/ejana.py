@@ -61,7 +61,7 @@ class EjanaInstallation(PacketInstallationInstruction):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # (!) at this point we alwais use dev environment
-        if self.config['mode'] == 'dev':
+        if self.config['install_mode'] == 'dev':
             return self._setup_dev()
 
         #
