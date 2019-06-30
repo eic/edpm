@@ -89,11 +89,13 @@ def _process_name_values(name_values):
             result[context][name] = value
         else:
             context = name_value
-            if context not in result.keys():
+            keys = list(result)
+            if context not in keys:
                 result[context] = {}
 
     # remove empty records:
-    for key in result.keys():
+    keys = list(result)   # to avoid RuntimeError: dictionary changed size during iteration
+    for key in keys:
         if not result[key]:
             del result[key]
 
