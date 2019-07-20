@@ -12,12 +12,12 @@ from ejpm.engine.commands import run, env, workdir
 
 
 class RaveInstallation(PacketInstallationInstruction):
-    """Provides data for building and installing root
+    """Provides data for building and installing Rave vertex reconstruction package
 
-    PacketInstallationInstruction is located in installation.py and contains the next standard package variables:
+    (PacketInstallationInstruction is located in installation.py)
     """
 
-    def __init__(self, build_threads=8):
+    def __init__(self):
         # Call parent constructor to fill version, app_path ... and others
         # (!) it is called AFTER we override self.version
         super(RaveInstallation, self).__init__('rave')
@@ -25,27 +25,25 @@ class RaveInstallation(PacketInstallationInstruction):
         self.clone_command = ""
         self.bootstrap_command = ""         # This command is called after clone command
         self.build_command = ""
-        self.build_threads = build_threads
+        self.config['branch'] = 'master'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
-        branch = 'master'
         #
         # use_common_dirs_scheme sets standard package variables:
         # version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
         # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
         # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
         # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme(self.app_path, branch)
+        self.use_common_dirs_scheme()
 
         # ENV RAVEPATH $INSTALL_DIR_RAVE
 
-        # JANA download link. Clone with shallow copy
-        # TODO accept version tuple to get exact branch
+        # Git download link. Clone with shallow copy
         self.clone_command = "git clone --depth 1 -b {branch} " \
                              "https://github.com/WolfgangWaltenberger/rave.git {source_path}" \
-            .format(branch=branch, source_path=self.source_path)
+            .format(**self.config)
 
         self.bootstrap_command = './bootstrap'
 
@@ -59,9 +57,7 @@ class RaveInstallation(PacketInstallationInstruction):
                              ' CXXFLAGS="-std=c++11 -I{{clhep_include_dir}}" ' \
                              '&&   make -j{build_threads} install' \
                              "&& for f in $(ls $RAVEPATH/include/rave/*.h); do sed -i 's/RaveDllExport//g' $f; done" \
-            .format(install_path=self.install_path,
-                    build_threads=4,
-                    version=branch)
+            .format(**self.config)
 
     def step_install(self):
         self.step_clone()

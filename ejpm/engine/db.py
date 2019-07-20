@@ -40,7 +40,10 @@ class PacketStateDatabase(object):
 
     @staticmethod
     def create_packet_minimal_data():
-        return {"installs": []}
+        return {
+            'build_config': {},
+            'installs': []
+        }
     
     def exists(self):
         """Returns True if db file exists
@@ -84,7 +87,7 @@ class PacketStateDatabase(object):
 
         # If we have no record in the packet installations, but we know the name is OK
         if packet_name not in self.data['packets'].keys() and packet_name in self.known_packet_names:
-            self.data['packets'][packet_name] = {"installs": []}
+            self.data['packets'][packet_name] = PacketStateDatabase.create_packet_minimal_data()
 
         # Return whatever we can (or it will raise KeyException)
         return self.data['packets'][packet_name]['installs']
@@ -94,10 +97,17 @@ class PacketStateDatabase(object):
 
         # If we have no record in the packet installations, but we know the name is OK
         if packet_name not in self.data['packets'].keys() and packet_name in self.known_packet_names:
-            self.data['packets'][packet_name] = {"installs": []}
+            self.data['packets'][packet_name] = PacketStateDatabase.create_packet_minimal_data()
 
         # Return whatever we can (or it will raise KeyException)
-        return self.data['packets'][packet_name]['installs']
+        if 'build_config' not in self.data['packets'][packet_name]:
+            self.data['packets'][packet_name]['build_config'] = {}
+        return self.data['packets'][packet_name]['build_config']
+
+    def get_global_config(self):
+        if 'global_build_config' not in self.data['global_build_config']:
+            self.data['global_build_config'] = {'build_threads': 4}
+        return self.data['global_build_config']
 
     def get_active_install(self, packet_name):
         """Get installation marked as 'is_active' from all installations of packet with name 'packet_name'"""

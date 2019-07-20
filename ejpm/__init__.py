@@ -49,18 +49,30 @@ def _print_packets_info(db):
     from ejpm.engine.db import IS_OWNED, IS_ACTIVE, INSTALL_PATH
     assert (isinstance(db, PacketStateDatabase))
 
-    mprint('\n<b><magenta>KNOWN PACKETS:</magenta></b> (*-active):')
+    installed_names = [name for name in db.packet_names]
 
-    for packet_name in db.packet_names:
-        mprint(' <b><blue>{}</blue></b>:'.format(packet_name))
-        installs = db.get_installs(packet_name)
-        for i, installation in enumerate(installs):
-            is_owned_str = '<green>(owned)</green>' if installation[IS_OWNED] else ''
-            is_active = installation[IS_ACTIVE]
-            is_active_str = '*' if is_active else ' '
-            path_str = installation[INSTALL_PATH]
-            id_str = "[{}]".format(i).rjust(4) if len(installs) > 1 else ""
-            mprint("  {}{} {} {}".format(is_active_str, id_str, path_str, is_owned_str))
+    # Fancy print of installed packets
+    if installed_names:
+        mprint('\n<b><magenta>INSTALLED PACKETS:</magenta></b> (*-active):')
+        for packet_name in installed_names:
+            mprint(' <b><blue>{}</blue></b>:'.format(packet_name))
+            installs = db.get_installs(packet_name)
+            for i, installation in enumerate(installs):
+                is_owned_str = '<green>(owned)</green>' if installation[IS_OWNED] else ''
+                is_active = installation[IS_ACTIVE]
+                is_active_str = '*' if is_active else ' '
+                path_str = installation[INSTALL_PATH]
+                id_str = "[{}]".format(i).rjust(4) if len(installs) > 1 else ""
+                mprint("  {}{} {} {}".format(is_active_str, id_str, path_str, is_owned_str))
+
+
+    not_installed_names = [name for name in db.known_packet_names if name not in installed_names]
+
+    # Fancy print of installed packets
+    if not_installed_names:
+        mprint("\n<b><magenta>NOT INSTALLED:</magenta></b>\n(could be installed by 'ejpm install')")
+        for packet_name in not_installed_names:
+            mprint(' <b><blue>{}</blue></b>'.format(packet_name))
 
 
 @click.group(invoke_without_command=True)
@@ -105,6 +117,8 @@ from ejpm.cli.set import set as set_command
 from ejpm.cli.rm import rm as rm_command
 from ejpm.cli.pwd import pwd as pwd_command
 from ejpm.cli.clean import clean as clean_command
+from ejpm.cli.info import info as info_command
+from ejpm .cli.config import config as config_command
 
 ejpm_cli.add_command(install_group)
 ejpm_cli.add_command(find_group)
@@ -114,6 +128,8 @@ ejpm_cli.add_command(set_command)
 ejpm_cli.add_command(rm_command)
 ejpm_cli.add_command(pwd_command)
 ejpm_cli.add_command(clean_command)
+ejpm_cli.add_command(info_command)
+ejpm_cli.add_command(config_command)
 
 if __name__ == '__main__':
     ejpm_cli()

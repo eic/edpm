@@ -31,21 +31,11 @@ class PacketInstallationInstruction(object):
         #
         # Short lowercase name of a packet
         self.name = name
-        #
-        # version could be given as a tuple (6, 06, 15) or some string 'master'
-        #  TODO remove the dead code below
-        # if isinstance(default_tag, tuple):
-        #     self.default_tag_tuple = default_tag
-        #     self.selected_tag = 'v{}-{:02}-{:02}'.format(*default_tag)
-        #     self.default_tag = self.selected_tag
-        # else:
-        #     self.default_tag_tuple = None
-        #     self.default_tag = default_tag
-        #     self.selected_tag = default_tag
 
         #
         # Next variables are set by ancestors
         self.config = {
+            "app_name": self.name,
             "app_path"      : "",   # installation path of this packet, all other pathes relative to this
             "download_path" : "",   # where we download the source or clone git
             "source_path"   : "",   # The directory with source files for current version
@@ -60,24 +50,21 @@ class PacketInstallationInstruction(object):
         # ... (!) inherited classes should implement its logic here
         raise NotImplementedError()
 
-    def use_common_dirs_scheme(self, app_path, install_name):
+    def use_common_dirs_scheme(self):
         """Function sets common directory scheme. It is the same for many packets:
         """
-
-        self.config["app_path"] = app_path
 
         # where we download the source or clone git
         self.config["download_path"] = "{app_path}/src".format(app_path=self.app_path)
 
         # The directory with source files for current version
-        self.config["source_path"] = "{app_path}/src/{suffix}".format(app_path=self.app_path, suffix=install_name)
+        self.config["source_path"] = "{app_path}/src/{branch}".format(**self.config)
 
         # The directory for cmake build
-        self.config["build_path"] = "{app_path}/build/{suffix}".format(app_path=self.app_path, suffix=install_name)
+        self.config["build_path"] = "{app_path}/build/{branch}".format(**self.config)
 
         # The directory, where binary is installed
-        self.config["install_path"] = "{app_path}/{app_name}-{suffix}" \
-            .format(app_path=self.app_path, app_name=self.name, suffix=install_name)
+        self.config["install_path"] = "{app_path}/{app_name}-{branch}".format(**self.config)
 
     def step_install(self):
         """Installs application"""

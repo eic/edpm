@@ -1,9 +1,7 @@
-import os
 
 import click
 
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
-from ejpm.engine.db import INSTALL_PATH
 from ejpm.engine.output import markup_print as mprint
 
 # @click.group(invoke_without_command=True)
@@ -14,7 +12,6 @@ from ejpm.engine.output import markup_print as mprint
 @click.option('--required', 'print_mode', flag_value='required', help="Print required packages")
 @click.option('--all', 'print_mode', flag_value='all', help="Print all packages (ready for packet manager install)")
 @click.option('--all-titles', 'print_mode', flag_value='all_titles', help="Print all packages (human readable)", default=True)
-
 @pass_ejpm_context
 @click.pass_context
 def req(ctx, ectx, os_name, args, print_mode):
@@ -74,11 +71,11 @@ def _print_combined(ectx, os_name, packet_names, print_mode):
     required = list(set([r for r in required if r]))
     optional = list(set([o for o in optional if o]))
 
-    if print_mode is "optional":
+    if print_mode == "optional":
         mprint(" ".join(optional))
-    elif print_mode is "required":
+    elif print_mode == "required":
         mprint(" ".join(required))
-    elif print_mode is "all":
+    elif print_mode == "all":
         mprint(" ".join(optional + required))
     else:
         # print all with juman readable titles
