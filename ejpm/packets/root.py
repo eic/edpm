@@ -56,7 +56,7 @@ class RootInstallation(PacketInstallationInstruction):
         # Compile with python3, then whatever python is...
         python_path = self.find_python()
         self.config["python_flag"] = ' -DPYTHON_EXECUTABLE={} '.format(python_path) if python_path else ''
-        print("Compiling ROOT with '{}' python flag".format(self.config["python_flag"]))
+        # >oO debug: print("Configuring ROOT with '{}' python flag".format(self.config["python_flag"]))
 
         #
         # use_common_dirs_scheme sets standard package variables:

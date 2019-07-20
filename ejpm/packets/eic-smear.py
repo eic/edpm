@@ -103,11 +103,14 @@ class EicSmearInstallation(PacketInstallationInstruction):
     def gen_env(data):
         """Generates environments to be set"""
 
-        path = data['install_path']
-        yield Set('EIC_SMEAR_HOME', path)
+        install_path = data['install_path']
+        yield Set('EIC_SMEAR_HOME', install_path)
 
+        lib_path = os.path.join(install_path, 'lib')  # on some platforms
+        lib64_path = os.path.join(install_path, 'lib64')  # on some platforms
 
-
+        yield Append('LD_LIBRARY_PATH', lib_path)
+        yield Append('LD_LIBRARY_PATH', lib64_path)
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
