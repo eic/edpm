@@ -69,8 +69,8 @@ class RootInstallation(PacketInstallationInstruction):
             .format(**self.config)
 
         # Make sure custom flags are in there
-        if "custom_flags" not in self.config:
-            self.config["cmake_custom_flags"]=''
+        if "cmake_custom_flags" not in self.config:
+            self.config["cmake_custom_flags"] = ''
 
         #
         # ROOT packets to disable in our build (go with -D{name}=ON flag)
@@ -79,7 +79,7 @@ class RootInstallation(PacketInstallationInstruction):
                          " -Dgdml=ON" \
                          " -Dminuit2=ON" \
                          " {python_flag}" \
-                         " {custom_flags}" \
+                         " {cmake_custom_flags}" \
                          " {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \

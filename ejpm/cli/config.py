@@ -85,7 +85,7 @@ def _process_name_values(name_values):
 
     for name_value in name_values:
         if '=' in name_value:
-            name, value = tuple(name_value.split('='))
+            name, value = tuple(name_value.split('=', 1))  # 1 as we want to split only the first occurrence
             result[context][name] = value
         else:
             context = name_value

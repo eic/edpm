@@ -107,13 +107,15 @@ class GeantInstallation(PacketInstallationInstruction):
     def gen_env(data):
         """Generates environments to be set
 
-        This function is a bit more tricky, we are going to use RawText which actually allows to:
+        This function is a bit more tricky than usual - RawText are going to be used.
+        RawText actually allows to:
          1. wright a custom text for sh and csh environment scripts
          2. and run a python command to set the environment
 
-        For bash and csh we want just to call 'source .../geant4.sh[csh]'
-        But we also want to set something for python to build Geant from scratch (when no geant4.sh[csh] yet)
-        update_python_environment - subfunction do this
+        For bash and csh one wants to run 'source .../geant4.sh[csh]'
+        But also, one must be set the environment inside python.
+        When building Geant from scratch and there is no geant4.sh[csh] yet
+        update_python_environment() - do this
 
         """
 
@@ -123,8 +125,8 @@ class GeantInstallation(PacketInstallationInstruction):
         lib64_path = os.path.join(install_path, 'lib64')    # on some platforms
 
         def update_python_environment():
-            """Function that will update Geant environment in python
-            We need this function because we DON'T want source thisroot in python
+            """Function that will update Geant environment in python build step
+            We need this function because we DON'T want to source geant4.sh in python
             """
             env_updates = [
                 env_gen.Append('LD_LIBRARY_PATH', lib_path),
@@ -138,8 +140,7 @@ class GeantInstallation(PacketInstallationInstruction):
             for updater in env_updates:
                 updater.update_python_env()
 
-        # We just call thisroot.xx in different shells
-
+        # We just call geant4.sh in different shells
         yield Prepend('PATH', bin_path)  # to make available clhep-config and others
 
         sh_text = "source {}".format(os.path.join(bin_path, 'geant4.sh'))
