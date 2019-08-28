@@ -68,6 +68,10 @@ class RootInstallation(PacketInstallationInstruction):
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/root-project/root.git {source_path}" \
             .format(**self.config)
 
+        # Make sure custom flags are in there
+        if "custom_flags" not in self.config:
+            self.config["cmake_custom_flags"]=''
+
         #
         # ROOT packets to disable in our build (go with -D{name}=ON flag)
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
@@ -75,6 +79,7 @@ class RootInstallation(PacketInstallationInstruction):
                          " -Dgdml=ON" \
                          " -Dminuit2=ON" \
                          " {python_flag}" \
+                         " {custom_flags}" \
                          " {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \

@@ -7,7 +7,7 @@ https://gitlab.com/eic/eic-smear
 import os
 
 from ejpm.engine.commands import run, workdir
-from ejpm.engine.env_gen import Set
+from ejpm.engine.env_gen import Set, Append
 from ejpm.engine.installation import PacketInstallationInstruction
 
 
