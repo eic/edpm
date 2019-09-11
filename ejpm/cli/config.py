@@ -1,5 +1,6 @@
 import click
 from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
+from ejpm.engine.installation import PacketInstallationInstruction
 from ejpm.engine.output import markup_print as mprint
 
 
@@ -45,6 +46,13 @@ def _show_configs(ectx, name):
 
     mprint('<b><magenta>{}</magenta></b>:'.format(name))  # pretty printing
     for param_name, value in build_config.items():
+        mprint(' <b><blue>{}</blue></b>: {}'.format(param_name, value))
+    mprint('<b><magenta>Default configs for {}</magenta></b>:'.format(name))  # pretty printing
+    installer = ectx.pm.installers_by_name[name]
+    assert isinstance(installer, PacketInstallationInstruction)
+    installer.setup()
+
+    for param_name, value in installer.config.items():
         mprint(' <b><blue>{}</blue></b>: {}'.format(param_name, value))
 
 
