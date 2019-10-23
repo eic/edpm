@@ -1,7 +1,7 @@
 
 import click
 
-from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
+from ejpm.engine.context import pass_ejpm_context, EjpmContext
 from ejpm.engine.output import markup_print as mprint
 
 # @click.group(invoke_without_command=True)
@@ -49,7 +49,7 @@ def req(ctx, ectx, os_name, args, print_mode):
         names = []
         for packet_name in args:                                    # get all dependencies
             ectx.ensure_installer_known(packet_name)
-            names += ectx.pm.get_installation_names(packet_name)    # this func returns name + its_deps
+            names += ectx.pm.get_installation_chain_names(packet_name)    # this func returns name + its_deps
 
         names = list(set(names))                                    # remove repeating names
 

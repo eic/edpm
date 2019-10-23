@@ -8,16 +8,16 @@ import os
 from distutils.dir_util import mkpath
 
 from ejpm.engine import env_gen
-from ejpm.engine.installation import PacketInstallationInstruction
+from ejpm.engine.recipe import Recipe
 from ejpm.engine.commands import run, env, workdir, is_not_empty_dir
 
 ROOTSYS = "ROOTSYS"
 
 
-class RootInstallation(PacketInstallationInstruction):
+class RootInstallation(Recipe):
     """Provides data for building and installing root
 
-    PackageInstallationContext is located in engine/installation.py
+    PackageInstallationContext is located in engine/recipe.py
 
     """
 
@@ -30,7 +30,8 @@ class RootInstallation(PacketInstallationInstruction):
 
         # Fill the common path pattern
         super(RootInstallation, self).__init__("root")
-        self.config['branch'] = 'v{}-{:02}-{:02}'.format(6, 16, 0)
+        self.config['branch'] = 'v{}-{:02}-{:02}'.format(6, 18, 0)
+        self.config['source_thisroot'] = True
 
     def find_python(self):
         from subprocess import check_output
@@ -124,8 +125,8 @@ class RootInstallation(PacketInstallationInstruction):
         self.step_build_root()
 
     @staticmethod
-    def gen_env(data):
-        install_path = data['install_path']
+    def gen_env(config):
+        install_path = config['install_path']
 
         def update_python_environment():
             """Function that will update ROOT environment in python
@@ -150,14 +151,13 @@ class RootInstallation(PacketInstallationInstruction):
                 updater.update_python_env()
 
         # We just call thisroot.xx in different shells
-
-        raw = env_gen.RawText(
-            "source {}".format(os.path.join(install_path, 'bin', 'thisroot.sh')),
-            "source {}".format(os.path.join(install_path, 'bin', 'thisroot.csh')),
-            update_python_environment
-        )
-
-        yield raw
+        if config['source_thisroot']:
+            raw = env_gen.RawText(
+                "source {}".format(os.path.join(install_path, 'bin', 'thisroot.sh')),
+                "source {}".format(os.path.join(install_path, 'bin', 'thisroot.csh')),
+                update_python_environment
+            )
+            yield raw
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

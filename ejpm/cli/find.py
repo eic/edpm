@@ -1,6 +1,6 @@
 import click
 
-from ejpm.cli.ejpm_context import pass_ejpm_context
+from ejpm.engine.context import pass_ejpm_context
 from ejpm.engine.db import PacketStateDatabase
 
 

@@ -1,6 +1,6 @@
 import click
 
-from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
+from ejpm.engine.context import pass_ejpm_context, EjpmContext
 from ejpm.engine.output import markup_print as mprint
 
 
@@ -27,7 +27,7 @@ def rm(ctx, ectx, packet_name, install_paths, mode):
         ejpm rm <packet-name> <path>  # removes the install with the path
 
     """
-    from ejpm.engine.db import INSTALL_PATH, IS_ACTIVE, IS_OWNED, SOURCE_PATH, BUILD_PATH
+    from ejpm.engine.db import INSTALL_PATH, IS_OWNED, SOURCE_PATH, BUILD_PATH
     assert isinstance(ectx, EjpmContext)
 
     # We need DB ready for this cli command

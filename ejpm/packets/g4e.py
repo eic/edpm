@@ -9,10 +9,10 @@ import os
 
 from ejpm.engine.commands import run, workdir
 from ejpm.engine.env_gen import Set, Prepend
-from ejpm.engine.installation import PacketInstallationInstruction
+from ejpm.engine.recipe import Recipe
 
 
-class GeantInstallation(PacketInstallationInstruction):
+class GeantInstallation(Recipe):
     """Provides data for building and installing Geant4 framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir

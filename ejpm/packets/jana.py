@@ -8,13 +8,13 @@ import os
 
 from ejpm.engine.commands import run, workdir
 from ejpm.engine.env_gen import Prepend, Set, Append
-from ejpm.engine.installation import PacketInstallationInstruction
+from ejpm.engine.recipe import Recipe
 
 
-class JanaInstallation(PacketInstallationInstruction):
+class JanaInstallation(Recipe):
     """Provides data for building and installing JANA2 framework
 
-    PacketInstallationInstruction is located in installation.py and contains the next standard package variables:
+    PacketInstallationInstruction is located in recipe.py and contains the next standard package variables:
 
 
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located

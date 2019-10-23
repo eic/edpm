@@ -6,7 +6,8 @@ import appdirs
 
 
 from ejpm.engine.db import PacketStateDatabase
-from ejpm.engine.packet_manager import PacketManager
+from ejpm.engine.recipe import Recipe
+from ejpm.engine.recipe_manager import RecipeManager
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.py23 import to_unicode
 
@@ -17,13 +18,12 @@ ENV_SH_PATH = 'env_sh_path'             # SH environment generated file path
 ENV_CSH_PATH = 'env_csh_path'           # CSH environment generated file path
 
 
-
 class EjpmContext(object):
     """This class holds data that is provided to most EJPM CLI commands"""
 
     def __init__(self):
         self.db = PacketStateDatabase()
-        self.pm = PacketManager()
+        self.pm = RecipeManager()
         self.config = {}
         self._set_paths()
 
@@ -35,7 +35,7 @@ class EjpmContext(object):
         self.pm.load_installers()               # load installers
 
         # Update DB "known installers"
-        self.db.known_packet_names = self.pm.installers_by_name.keys()
+        self.db.known_packet_names = self.pm.recipes_by_name.keys()
 
         return db_existed
 
@@ -63,24 +63,11 @@ class EjpmContext(object):
         """
 
         # Check if packet_name is all, missing or for known packet
-        names = [to_unicode(n) for n in self.pm.installers_by_name.keys()]
+        names = [to_unicode(n) for n in self.pm.recipes_by_name.keys()]
         is_valid_packet_name = to_unicode(packet_name) in names
 
         if not is_valid_packet_name:
             print("Packet with name '{}' is not found".format(packet_name))  # don't know what to do
-            raise click.Abort()
-
-    def ensure_tag_known(self, packet_name):
-        """Check if packet_name is of known packets or aborts everything
-
-           All ensure_xxx functions check the problem, fix it or write message and call Click.Abort()
-        """
-
-        # Check if packet_name is all, missing or for known packet
-        is_valid_packet_name = packet_name in self.pm.installers_by_tags.keys()
-
-        if not is_valid_packet_name:
-            print("Packet or tag with name '{}' is not found".format(packet_name))  # don't know what to do
             raise click.Abort()
 
     def save_shell_environ(self, file_path, shell):
@@ -144,6 +131,14 @@ class EjpmContext(object):
         # environment script paths
         self.config[ENV_SH_PATH] = os.path.join(ejpm_data_path, "env.sh")
         self.config[ENV_CSH_PATH] = os.path.join(ejpm_data_path, "env.csh")
+
+    def configure_recipes(self):
+        config = {}
+        config.update(self.db.get_global_config())
+        for recipe in self.pm.recipes_by_name.values():
+            assert isinstance(recipe, Recipe)
+            recipe.config.update(config)
+
 
     def update_python_env(self, process_chain=(), mode=''):
         """Update python os.environ assuming we will install missing packets

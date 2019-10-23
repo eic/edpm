@@ -1,6 +1,6 @@
 import click
-from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
-from ejpm.engine.installation import PacketInstallationInstruction
+from ejpm.engine.context import pass_ejpm_context, EjpmContext
+from ejpm.engine.recipe import Recipe
 from ejpm.engine.output import markup_print as mprint
 
 
@@ -28,6 +28,9 @@ def config(ectx, name_values):
     # We need DB ready for this cli command
     ectx.ensure_db_exists()
 
+    # We need at least some base configuration of recipes
+    ectx.configure_recipes()
+
     if len(name_values) > 1:
         _set_configs(ectx, name_values)
     elif len(name_values) == 1:
@@ -44,15 +47,14 @@ def _show_configs(ectx, name):
         ectx.ensure_installer_known(name)
         build_config = ectx.db.get_config(name)
 
-    mprint('<b><magenta>{}</magenta></b>:'.format(name))  # pretty printing
+    mprint('<b><magenta>{}</magenta></b>:'.format(name))                      # pretty printing
     for param_name, value in build_config.items():
         mprint(' <b><blue>{}</blue></b>: {}'.format(param_name, value))
     mprint('<b><magenta>Default configs for {}</magenta></b>:'.format(name))  # pretty printing
-    installer = ectx.pm.installers_by_name[name]
-    assert isinstance(installer, PacketInstallationInstruction)
-    installer.setup()
+    recipe = ectx.pm.recipes_by_name[name]
+    assert isinstance(recipe, Recipe)
 
-    for param_name, value in installer.config.items():
+    for param_name, value in recipe.config.items():
         mprint(' <b><blue>{}</blue></b>: {}'.format(param_name, value))
 
 

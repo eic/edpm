@@ -8,10 +8,10 @@ import os
 
 from ejpm.engine.commands import run, workdir
 from ejpm.engine.env_gen import Set, Append, Prepend
-from ejpm.engine.installation import PacketInstallationInstruction
+from ejpm.engine.recipe import Recipe
 
 
-class ClhepInstallation(PacketInstallationInstruction):
+class ClhepInstallation(Recipe):
     """Provides data for building and installing CLHEP framework
     """
 

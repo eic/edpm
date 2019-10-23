@@ -22,7 +22,7 @@ class PacketStateDatabase(object):
     def __init__(self):
         self.file_path = ""
 
-        # This field is set during runtime by packet manager knoweledge
+        # This field is set during runtime by packet manager knowledge
         self.known_packet_names = []
 
         self.data = {

@@ -8,10 +8,10 @@ import os
 
 from ejpm.engine.commands import run, workdir
 from ejpm.engine.env_gen import Set, Append
-from ejpm.engine.installation import PacketInstallationInstruction
+from ejpm.engine.recipe import Recipe
 
 
-class GenfitInstallation(PacketInstallationInstruction):
+class GenfitInstallation(Recipe):
     """Provides data for building and installing Genfit framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir

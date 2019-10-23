@@ -1,7 +1,7 @@
 import os
 import click
 
-from ejpm.cli.ejpm_context import pass_ejpm_context, DB_FILE_PATH, ENV_CSH_PATH, ENV_SH_PATH, EjpmContext
+from ejpm.engine.context import pass_ejpm_context, DB_FILE_PATH, ENV_CSH_PATH, ENV_SH_PATH, EjpmContext
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 

@@ -2,7 +2,7 @@
 import os
 
 
-class PacketInstallationInstruction(object):
+class Recipe(object):
     """
     This class stores information which is pretty similar for each package (like directory structure)
 

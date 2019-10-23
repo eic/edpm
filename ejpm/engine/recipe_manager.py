@@ -2,7 +2,7 @@ import importlib
 import pkgutil
 import ejpm.packets
 
-from ejpm.engine.installation import PacketInstallationInstruction
+from ejpm.engine.recipe import Recipe
 
 
 def import_all_submodules(modules_dir, package_name):
@@ -18,32 +18,31 @@ def import_all_submodules(modules_dir, package_name):
 class InstallationRequest(object):
     """ This class is assumed to reflect a user requests for a packet installation"""
 
-    def __init__(self, installer, mode, config, just_explain=False, deps_only=4):
-        assert isinstance(installer, PacketInstallationInstruction)
+    def __init__(self, recipe, mode, config, just_explain=False, deps_only=4):
+        assert isinstance(recipe, Recipe)
 
-        self.name = installer.name   # Packet name
-        self.installer = installer
+        self.name = recipe.name   # Packet name
+        self.recipe = recipe
         self.mode = mode
         self.just_explain = just_explain
         self.config_overrides = config
         self.deps_only = deps_only
 
     def update_installer_config(self):
-        self.installer.config.update(self.config_overrides)
+        self.recipe.config.update(self.config_overrides)
 
     def __repr__(self):
         return "InstallationRequest '{}'".format(self.name)
 
 
-
-class PacketManager(object):
+class RecipeManager(object):
 
     class Config(object):
         dir = ""
 
     def __init__(self):
         # But now we just import and create them manually
-        self.installers_by_name = {}
+        self.recipes_by_name = {}
         self.env_generators = {}
 
         # The next are collection of requirements for different operating systems
@@ -62,11 +61,11 @@ class PacketManager(object):
         import_all_submodules(modules_dir, package_name)
 
         # Create all subclasses of PacketInstallationInstruction and add here
-        for cls in PacketInstallationInstruction.__subclasses__():
+        for cls in Recipe.__subclasses__():
             installer = cls()
 
             # Add installer 'by name'
-            self.installers_by_name[installer.name] = installer
+            self.recipes_by_name[installer.name] = installer
 
             # Add environment generator to env_generators map
             if hasattr(installer, 'gen_env'):
@@ -89,24 +88,24 @@ class PacketManager(object):
         # Set the result by installer name
         self.os_deps_by_name[installer.name] = result
 
-    def get_installation_names(self, installer_name, deps_only=False):
+    def get_installation_chain_names(self, main_recepie_name, deps_only=False):
         """
         Returns name of the package + dependencies ejpm can install
         so it is like: ['CLHEP', 'root', ..., 'ejana'] for installer_name=ejana
         it is single: ['CLHEP'] for installer_name='CLHEP'
 
         :param deps_only: get only names of dependencies not packet name included
-        :param installer_name: name of packet like 'ejana'
+        :param main_recepie_name: name of packet like 'ejana'
         :return: list with dependencies names and installer name itself
         """
 
-        deps = self.installers_by_name[installer_name].required_deps
+        deps = self.recipes_by_name[main_recepie_name].required_deps
 
         if deps_only:
             return deps
 
         # If we install just a single packet desired_names a single name
-        return deps + [installer_name] if deps else [installer_name]
+        return deps + [main_recepie_name] if deps else [main_recepie_name]
 
     def gen_shell_env_text(self, name_data, shell='bash'):
         """Generates a text that sets environment for a given shell """

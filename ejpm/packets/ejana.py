@@ -7,14 +7,14 @@ https://gitlab.com/eic/ejana
 import os
 
 from ejpm.engine.env_gen import Set, Prepend
-from ejpm.engine.installation import PacketInstallationInstruction
+from ejpm.engine.recipe import Recipe
 from ejpm.engine.commands import run, env, workdir
 
 
-class EjanaInstallation(PacketInstallationInstruction):
+class EjanaInstallation(Recipe):
     """Provides data for building and installing JANA framework
 
-    PackageInstallationContext is located in installation.py and contains the next standard package variables:
+    PackageInstallationContext is located in recipe.py and contains the next standard package variables:
 
     version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
     glb_app_path = Context.work_dir                  # The directory where all other packets are installed

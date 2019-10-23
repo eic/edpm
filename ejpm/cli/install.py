@@ -2,11 +2,10 @@ import os
 import click
 import copy
 
-from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
+from ejpm.engine.context import pass_ejpm_context, EjpmContext
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
-from ejpm.engine.installation import PacketInstallationInstruction
-from ejpm.engine.packet_manager import PacketManager, InstallationRequest
+from ejpm.engine.recipe_manager import RecipeManager, InstallationRequest
 
 
 @click.command()
@@ -41,7 +40,7 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
     pm = ectx.pm
     assert isinstance(ectx, EjpmContext)
     assert isinstance(db, PacketStateDatabase)
-    assert isinstance(pm, PacketManager)
+    assert isinstance(pm, RecipeManager)
 
     # Check if packet_name is all, missing or for known packet
     for name in names:
@@ -71,7 +70,7 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
             config['build_threads'] = build_threads
 
         # make installation request and add to the list
-        request = InstallationRequest(pm.installers_by_name[name], dep_mode, config, just_explain, deps_only)
+        request = InstallationRequest(pm.recipes_by_name[name], dep_mode, config, just_explain, deps_only)
         requests.append(request)
 
     for request in requests:
@@ -94,7 +93,7 @@ def _build_deps_requests(ectx, initial_request):
     assert isinstance(initial_request, InstallationRequest)
     assert isinstance(ectx, EjpmContext)
 
-    install_chain_names = ectx.pm.get_installation_names(initial_request.name, initial_request.deps_only)
+    install_chain_names = ectx.pm.get_installation_chain_names(initial_request.name, initial_request.deps_only)
 
     requests = []                       # resulting InstallationRequests
     for name in install_chain_names:
@@ -131,7 +130,7 @@ def _install_packet(ectx, request):
 
     # set_app_path setups parameters (formats all string variables) for this particular path
     request.update_installer_config()
-    request.installer.setup()
+    request.recipe.setup()
 
     # Pretty header
     mprint("<magenta>=========================================</magenta>")
@@ -140,7 +139,7 @@ def _install_packet(ectx, request):
 
     # (!) here we actually install the packet
     try:
-        request.installer.step_install()
+        request.recipe.step_install()
     except OSError as err:
         mprint("<red>Installation stopped because of the error</red> : {}", err)
         exit(1)
@@ -155,10 +154,10 @@ def _install_packet(ectx, request):
     updating_data = {
         IS_OWNED: True,
         IS_ACTIVE: True,
-        SOURCE_PATH: request.installer.source_path,
-        BUILD_PATH:  request.installer.build_path
+        SOURCE_PATH: request.recipe.source_path,
+        BUILD_PATH:  request.recipe.build_path
     }
-    db.update_install( request.installer.name,  request.installer.install_path, updating_data)
+    db.update_install(request.recipe.name, request.recipe.install_path, updating_data)
     db.save()
 
 
@@ -177,7 +176,7 @@ def _install_with_deps(ectx, request):
         # install them to top_dir. So we don't care and set simple os.path.join(...)
         request.config_overrides['app_path'] = os.path.join(ectx.db.top_dir, request.name)
         request.update_installer_config()
-        request.installer.setup()
+        request.recipe.setup()
 
     #
     # Lets see what is missing and tell it to the user
@@ -215,7 +214,7 @@ def _install_with_deps(ectx, request):
     # Print user what is going to be built
     mprint("\n <b>INSTALLATION ORDER</b>:")
     for request in process_chain:
-        mprint("   <blue>{:<6}</blue> : {}", request.name, request.installer.install_path)
+        mprint("   <blue>{:<6}</blue> : {}", request.name, request.recipe.install_path)
 
     # It is just explanation
     if request.just_explain:

@@ -1,8 +1,6 @@
-import os
-
 import click
 
-from ejpm.cli.ejpm_context import pass_ejpm_context, EjpmContext
+from ejpm.engine.context import pass_ejpm_context, EjpmContext
 from ejpm.engine.output import markup_print as mprint
 
 

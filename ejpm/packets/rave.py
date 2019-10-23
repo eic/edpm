@@ -7,14 +7,14 @@ https://github.com/WolfgangWaltenberger/rave
 import os
 
 from ejpm.engine.env_gen import Set, Prepend
-from ejpm.engine.installation import PacketInstallationInstruction
+from ejpm.engine.recipe import Recipe
 from ejpm.engine.commands import run, env, workdir
 
 
-class RaveInstallation(PacketInstallationInstruction):
+class RaveInstallation(Recipe):
     """Provides data for building and installing Rave vertex reconstruction package
 
-    (PacketInstallationInstruction is located in installation.py)
+    (PacketInstallationInstruction is located in recipe.py)
     """
 
     def __init__(self):
