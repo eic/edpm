@@ -26,7 +26,7 @@ def config(ectx, name_values):
     assert isinstance(ectx, EjpmContext)
 
     # We need DB ready for this cli command
-    ectx.ensure_db_exists()
+    ectx.load_db_if_exists()
 
     # We need at least some base configuration of recipes
     ectx.configure_recipes()
@@ -50,6 +50,11 @@ def _show_configs(ectx, name):
     mprint('<b><magenta>{}</magenta></b>:'.format(name))                      # pretty printing
     for param_name, value in build_config.items():
         mprint(' <b><blue>{}</blue></b>: {}'.format(param_name, value))
+
+    # There is nothing more than 'global'
+    if name == 'global':
+        return
+
     mprint('<b><magenta>Default configs for {}</magenta></b>:'.format(name))  # pretty printing
     recipe = ectx.pm.recipes_by_name[name]
     assert isinstance(recipe, Recipe)

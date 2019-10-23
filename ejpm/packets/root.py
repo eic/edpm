@@ -31,7 +31,6 @@ class RootInstallation(Recipe):
         # Fill the common path pattern
         super(RootInstallation, self).__init__("root")
         self.config['branch'] = 'v{}-{:02}-{:02}'.format(6, 18, 0)
-        self.config['source_thisroot'] = True
 
     def find_python(self):
         from subprocess import check_output
@@ -125,8 +124,8 @@ class RootInstallation(Recipe):
         self.step_build_root()
 
     @staticmethod
-    def gen_env(config):
-        install_path = config['install_path']
+    def gen_env(data):
+        install_path = data['install_path']
 
         def update_python_environment():
             """Function that will update ROOT environment in python
@@ -151,13 +150,24 @@ class RootInstallation(Recipe):
                 updater.update_python_env()
 
         # We just call thisroot.xx in different shells
-        if config['source_thisroot']:
-            raw = env_gen.RawText(
-                "source {}".format(os.path.join(install_path, 'bin', 'thisroot.sh')),
-                "source {}".format(os.path.join(install_path, 'bin', 'thisroot.csh')),
-                update_python_environment
-            )
-            yield raw
+        bash_thisroot = os.path.join(install_path, 'bin', 'thisroot.sh')
+        csh_thisroot = os.path.join(install_path, 'bin', 'thisroot.csh')
+
+        raw = env_gen.RawText(
+            # Bash
+            'if test -f "{0}"; then source {0}; fi'.format(bash_thisroot),
+
+            # Tcsh
+            """
+            if ( ! -f {0} ) then
+                source {0}
+            endif
+            """.format(csh_thisroot),
+
+            # Python
+            update_python_environment
+        )
+        yield raw
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

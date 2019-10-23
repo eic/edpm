@@ -107,7 +107,7 @@ def _build_deps_requests(ectx, initial_request):
             deps_only = initial_request.deps_only
 
         # Create installation requrest
-        request = InstallationRequest(ectx.pm.installers_by_name[name],
+        request = InstallationRequest(ectx.pm.recipes_by_name[name],
                                       mode,
                                       copy.deepcopy(initial_request.config_overrides),
                                       initial_request.just_explain,

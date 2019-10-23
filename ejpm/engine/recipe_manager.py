@@ -127,6 +127,9 @@ class RecipeManager(object):
             output += "# =============================\n"
 
             # env_gen(data) provides environment manipulation instructions based on the given data
+            steps = env_gen(data)
+            if not steps:
+                continue
             for step in env_gen(data):
                 output += step.gen_csh() if shell == 'csh' else step.gen_bash() # bash or csh?
                 output += '\n'

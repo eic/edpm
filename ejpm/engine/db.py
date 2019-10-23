@@ -105,11 +105,8 @@ class PacketStateDatabase(object):
         return self.data['packets'][packet_name]['build_config']
 
     def get_global_config(self):
-        if 'global_build_config' not in self.data['global_build_config']:
+        if 'global_build_config' not in self.data:
             self.data['global_build_config'] = {'build_threads': 4}
-
-        if 'cxx_standard' not in self.data['global_build_config']:
-            self.data['global_build_config']['cxx_standard'] = '11'
 
         return self.data['global_build_config']
 
@@ -214,9 +211,10 @@ class PacketStateDatabase(object):
 
     def _update_schema(self):
         """Do migration between different DB schema versions"""
+        file_version = self.data['file_version']
 
         # version 1 to 2 migration
-        if self.data['file_version'] == 1:
+        if file_version == 1:
             # Remove some fields:
             # (Why pop https://stackoverflow.com/questions/11277432/how-to-remove-a-key-from-a-python-dictionary)
 
@@ -233,7 +231,7 @@ class PacketStateDatabase(object):
 
 
         # version 2 to 3 migration
-        if self.data['file_version'] == 2:
+        if file_version == 2:
 
             self.data['global_build_config'] = {'build_threads': 4}
 
@@ -242,3 +240,10 @@ class PacketStateDatabase(object):
 
             # finally change the version
             self.data['file_version'] = 3
+
+        # version 3 to 4 migration
+        if file_version == 3:
+            if 'cxx_standard' not in self.data['global_build_config']:
+                self.data['global_build_config']['cxx_standard'] = '11'
+
+            self.data['file_version'] = 4

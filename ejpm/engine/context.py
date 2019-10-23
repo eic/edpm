@@ -167,14 +167,14 @@ class EjpmContext(object):
             if mode == 'missing' and (request.name not in packet_data_by_name.keys()):
                 # There is no installation data for the packet, but we assume we will install it now!
                 packet_data = {
-                    INSTALL_PATH: request.installer.install_path,
+                    INSTALL_PATH: request.recipe.install_path,
                     IS_ACTIVE: True,
                     IS_OWNED: True
                 }
             elif mode == 'all':
                 # We overwrite installation path for the packet
                 packet_data = {
-                    INSTALL_PATH: request.installer.install_path,
+                    INSTALL_PATH: request.recipe.install_path,
                     IS_ACTIVE: True,
                     IS_OWNED: True
                 }

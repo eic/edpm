@@ -54,7 +54,7 @@ def req(ctx, ectx, os_name, args, print_mode):
         names = list(set(names))                                    # remove repeating names
 
     else:
-        names = ectx.pm.installers_by_name.keys()                   # select all packets
+        names = ectx.pm.recipes_by_name.keys()                   # select all packets
 
     _print_combined(ectx, os_name, names, print_mode)               # print what we have
 

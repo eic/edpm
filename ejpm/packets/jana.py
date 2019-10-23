@@ -6,7 +6,7 @@ https://github.com/JeffersonLab/JANA2
 
 import os
 
-from ejpm.engine.commands import run, workdir
+from ejpm.engine.commands import run, workdir, env
 from ejpm.engine.env_gen import Prepend, Set, Append
 from ejpm.engine.recipe import Recipe
 
@@ -54,8 +54,8 @@ class JanaInstallation(Recipe):
 
         #
         # scons installation command:
-        self.build_command = "scons install -j{build_threads} PREFIX={install_path}"\
-                         .format(**self.config)
+        self.build_command = "python2 {source_path}/scons/scons.py install -j{build_threads} PREFIX={install_path}"\
+                             .format(**self.config)
 
     def step_install(self):
         self.step_clone()
@@ -77,6 +77,17 @@ class JanaInstallation(Recipe):
 
     def step_build(self):
         """Builds JANA from the ground"""
+
+        # # We use scons that is shipped with JANA2, for this we have to append PYTHONPATH
+        # scons_dir = os.path.join(self.config['source_path'], 'scons')
+        # old_pythonpath = os.environ.get('PYTHONPATH')
+        #
+        # if old_pythonpath:
+        #     new_pythonpath = '{scons_dir};{old_pythonpath}'.format(scons_dir=scons_dir, old_pythonpath=old_pythonpath)
+        # else:
+        #     new_pythonpath = scons_dir
+        #
+        # env('PYTHONPATH', new_pythonpath)
 
         # Create build directory
         run('mkdir -p {}'.format(self.build_path))
