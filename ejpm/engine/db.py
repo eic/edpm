@@ -107,6 +107,10 @@ class PacketStateDatabase(object):
     def get_global_config(self):
         if 'global_build_config' not in self.data['global_build_config']:
             self.data['global_build_config'] = {'build_threads': 4}
+
+        if 'cxx_standard' not in self.data['global_build_config']:
+            self.data['global_build_config']['cxx_standard'] = '11'
+
         return self.data['global_build_config']
 
     def get_active_install(self, packet_name):

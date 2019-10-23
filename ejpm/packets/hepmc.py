@@ -48,7 +48,7 @@ class HepMCInstallation(Recipe):
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -Dmomentum:STRING=GEV -Dlength:STRING=MM" \
-                         " -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
+                         " -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(**self.config)

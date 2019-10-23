@@ -47,7 +47,7 @@ class GeantInstallation(Recipe):
         self.build_cmd = """
             cmake
                 -DGEANT4_INSTALL_DATA=ON
-                -DGEANT4_BUILD_CXXSTD=11
+                -DGEANT4_BUILD_CXXSTD={cxx_standard}
                 -DGEANT4_USE_GDML=ON
                 -DGEANT4_USE_SYSTEM_CLHEP=ON
                 -DCLHEP_ROOT_DIR=$CLHEP

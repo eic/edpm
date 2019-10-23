@@ -48,7 +48,6 @@ class EjpmContext(object):
     def ensure_db_exists(self):
         """Check if DB exist, create it or aborts everything
 
-
          All ensure_xxx functions check the problem, fix it or write message and call Click.Abort()
          """
         # save DB no db...
@@ -74,7 +73,6 @@ class EjpmContext(object):
         """Generates and saves shell environment to a file
         :param file_path: Path to file
         :param shell: 'bash' or 'csh'
-
         """
 
         with io.open(file_path, 'w', encoding='utf8') as outfile:    # Write file
