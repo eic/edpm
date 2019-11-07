@@ -36,11 +36,10 @@ class GeantInstallation(Recipe):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
-        # use_common_dirs_scheme sets standard package variables:
-        # source_path  = {app_path} / src   / {branch}       # Where the sources for the current version are located
-        # build_path   = {app_path} / build / {branch}       # Where sources are built. Kind of temporary dir
-        # install_path = {app_path} / geant-{branch}         # Where the binary installation is
-        self.use_common_dirs_scheme()
+        # The directory with source files for current version
+        self.config['source_path'] = "{app_path}/g4e-dev".format(**self.config)
+        self.config['build_path'] = "{app_path}/g4e-dev/cmake-build-debug".format(**self.config)  # build in dev directory
+        self.config['install_path'] = "{app_path}/g4e-dev".format(**self.config)
 
         #
         # Git download link. Clone with shallow copy
@@ -97,10 +96,14 @@ class GeantInstallation(Recipe):
     def gen_env(data):
         """Generates environments to be set"""
 
-        bin_path = os.path.join(data['install_path'], 'bin')
-        yield Prepend('PATH', bin_path)  # to make available clhep-config and others
-        yield Set('G4E_HOME', bin_path)
-        yield Set('G4E_RESOURCES', bin_path + '/work')
+        if 'source_path' in data.keys():
+            source_path = data['source_path']
+        else:
+            source_path = data['install_path']
+
+        yield Prepend('PATH', os.path.join(data['install_path']))  # to make available clhep-config and others
+        yield Set('G4E_HOME', source_path)           # where 'resources' are
+        yield Set('G4E_MACRO_PATH', source_path)
 
 
     #
