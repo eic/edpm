@@ -83,7 +83,3 @@ def rm(ctx, ectx, packet_name, install_paths, mode):
 
         if BUILD_PATH in install_data:
             run('rm -rf "{}"'.format(install_data[BUILD_PATH]))
-
-
-
-

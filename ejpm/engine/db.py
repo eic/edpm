@@ -8,6 +8,7 @@ import json
 import os
 import io
 from ejpm.engine.py23 import to_unicode
+from typing import Dict, List
 
 INSTALL_PATH = 'install_path'
 SOURCE_PATH = 'source_path'
@@ -16,6 +17,7 @@ IS_OWNED = 'is_owned'
 IS_ACTIVE = 'is_active'
 
 
+# noinspection PyTypeChecker
 class PacketStateDatabase(object):
     """Class to persist installation knowledge """
 
@@ -101,6 +103,7 @@ class PacketStateDatabase(object):
 
         # Return whatever we can (or it will raise KeyException)
         if 'build_config' not in self.data['packets'][packet_name]:
+            # noinspection PyUnresolvedReferences
             self.data['packets'][packet_name]['build_config'] = {}
         return self.data['packets'][packet_name]['build_config']
 
@@ -165,6 +168,7 @@ class PacketStateDatabase(object):
         # If we didn't find an install, lets add a new one
         if existing_install is None:
             existing_install = {}
+            installs: List
             installs = self.get_installs(packet_name)
             installs.append(existing_install)
             existing_install[IS_ACTIVE] = True      # It is the first installation. Should be active
@@ -194,11 +198,11 @@ class PacketStateDatabase(object):
         install_path = os.path.normpath(install_path)
 
         # Search for existing installation with this installation path
-        existing_install = None
         for install in installs:
             # We compare it just by == as all saved installs have gone through os.path.normpath
             assert isinstance(install, dict)
             if install[INSTALL_PATH] == to_unicode(install_path):
+                # noinspection PyUnresolvedReferences
                 installs.remove(install)
 
     @property
@@ -229,12 +233,12 @@ class PacketStateDatabase(object):
             # finally change the version
             self.data['file_version'] = 2
 
-
         # version 2 to 3 migration
         if file_version == 2:
 
             self.data['global_build_config'] = {'build_threads': 4}
 
+            packet: Dict
             for packet in self.data['packets'].values():
                 packet['build_config'] = {}
 

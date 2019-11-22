@@ -35,7 +35,10 @@ def color_echo(title, text, color, title_bold=False, text_bold=False, nl=True):
     click.secho(title, fg=color, bold=title_bold, nl=False)
     click.secho(text, bold=text_bold, nl=nl)
 
+
+# noinspection PyBroadException
 try:
+    # noinspection PyUnresolvedReferences
     from HTMLParser import HTMLParser
 except:
     from html.parser import HTMLParser

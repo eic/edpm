@@ -15,6 +15,7 @@ _help_option_auto = "Removes from DB and disk if(!) the packet is owned by ejpm"
 @click.argument('packet_name', nargs=1, metavar='<packet-name>')
 @click.argument('install_paths', nargs=-1, metavar='<path>')
 
+
 @pass_ejpm_context
 @click.pass_context
 def clean(ctx, ectx, packet_name, install_paths):

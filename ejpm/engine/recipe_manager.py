@@ -11,7 +11,8 @@ def import_all_submodules(modules_dir, package_name):
 
     # parent_module =  imp.find_module('packets', path)
     for (module_loader, name, ispkg) in pkgutil.iter_modules([modules_dir]):
-        module = importlib.import_module('.' + name, package_name)
+        importlib.import_module('.' + name, package_name)
+        # module = importlib.import_module('.' + name, package_name)
         # >oO debug   print(module)
 
 
@@ -131,7 +132,7 @@ class RecipeManager(object):
             if not steps:
                 continue
             for step in env_gen(data):
-                output += step.gen_csh() if shell == 'csh' else step.gen_bash() # bash or csh?
+                output += step.gen_csh() if shell == 'csh' else step.gen_bash()   # bash or csh?
                 output += '\n'
         return output
 
@@ -144,9 +145,7 @@ class RecipeManager(object):
         return self.gen_shell_env_text(name_data, shell='csh')
 
     def update_python_env(self, name_data):
-        """Updates python environment according to (name,paths) pairs
-        :param name_paths:
-        """
+        """Updates python environment according to (name,paths) pairs"""
 
         # Go through provided name-path pairs:
         for name, data in name_data.items():

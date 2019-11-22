@@ -12,7 +12,7 @@ The database file doesn't exist. Probably you run 'ejpm' for one of the first ti
 
 1. Install or check OS maintained required packages:
     > ejpm req ubuntu         # for all packets ejpm knows to built/install
-    > ejpm req usubnu ejana   # for ejana and its dependencies only
+    > ejpm req ubuntu ejana   # for ejana and its dependencies only
    
    * - at this point put 'ubuntu' for debian and 'centos' for RHEL and CentOS systems. 
    Will be updated in future to support macOS, and to have grained versions
