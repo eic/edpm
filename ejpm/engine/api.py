@@ -11,6 +11,7 @@ from ejpm.engine.recipe_manager import RecipeManager
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.py23 import to_unicode
 
+
 EJPM_HOME_PATH = 'ejpm_home_path'       # Home path of the EJPM
 EJPM_DATA_PATH = 'ejpm_data_path'       # Path where
 DB_FILE_PATH = 'db_file_path'           # Database file path
@@ -18,7 +19,7 @@ ENV_SH_PATH = 'env_sh_path'             # SH environment generated file path
 ENV_CSH_PATH = 'env_csh_path'           # CSH environment generated file path
 
 
-class EjpmContext(object):
+class EjpmApi(object):
     """This class holds data that is provided to most EJPM CLI commands"""
 
     def __init__(self):
@@ -76,12 +77,6 @@ class EjpmContext(object):
         """
 
         with io.open(file_path, 'w', encoding='utf8') as outfile:    # Write file
-            # Make it work for Python 2+3 and with Unicode
-            try:
-                # noinspection PyUnresolvedReferences
-                to_unicode = unicode
-            except NameError:
-                to_unicode = str
             outfile.write(to_unicode(self.pm.gen_shell_env_text(self.db.get_active_installs(), shell=shell)))
 
     def save_default_bash_environ(self):
@@ -96,12 +91,9 @@ class EjpmContext(object):
         """Sets ejpm paths"""
 
         # EJPM home path
-        # call 3 times dirname as we have <db path>/ejpm/cli
+        # call 'dirname' 3 times as we have <db path>/ejpm/cli
         ejpm_home_path = os.path.dirname(os.path.dirname(os.path.dirname(inspect.stack()[0][1])))
         self.config[EJPM_HOME_PATH] = ejpm_home_path
-
-        ejpm_source_stack_path = os.path.join(ejpm_home_path, 'ejpm', 'packets')
-        ejpm_source_stack_package = 'ejpm.packets'
 
         #
         # EJPM data path. It is where db.json and environment files are located
@@ -136,7 +128,6 @@ class EjpmContext(object):
         for recipe in self.pm.recipes_by_name.values():
             assert isinstance(recipe, Recipe)
             recipe.config.update(config)
-
 
     def update_python_env(self, process_chain=(), mode=''):
         """Update python os.environ assuming we will install missing packets
@@ -190,6 +181,46 @@ class EjpmContext(object):
             for step in generators(packet_data_by_name[name]):  # Go through 'env generators' look engine/env_gen.py
                 step.update_python_env()  # Do environment update
 
+    def req_get_known_os(self):
+        return self.pm.os_deps_by_name['ejana']['required'].keys()   # TODO change for
+
+    def req_get_deps(self, os_name, packet_names=None):
+        """ Returns
+        # No packets provided, so all packets are selected
+
+        :param os_name: Name of os like centos, ubuntu
+        :param packet_names: If set, returns requirements for this packages and their deps. If None - all packages deps
+        :return: list of required and optional packages
+        """
+
+        # Step 0 - What exactly packets are involved?
+        if packet_names:
+            names_with_deps = []    # Names of packets and their dependencies
+
+            # get all dependencies
+            for packet_name in packet_names:
+                self.ensure_installer_known(packet_name)
+                names_with_deps += self.pm.get_installation_chain_names(packet_name)  # func returns name + its_deps
+
+            names_with_deps = list(set(names_with_deps))  # remove repeating names
+
+        else:
+            # No packets provided, so all packets are selected
+            names_with_deps = self.pm.recipes_by_name.keys()
+
+        # Step 1 - Form results
+        required = []
+        optional = []
+        for name in names_with_deps:
+            required.extend(self.pm.os_deps_by_name[name]['required'][os_name].replace(',', ' ').split())
+            optional.extend(self.pm.os_deps_by_name[name]['optional'][os_name].replace(',', ' ').split())
+
+        # remove emtpy elements and repeating elements
+        required = list(set([r for r in required if r]))
+        optional = list(set([o for o in optional if o]))
+
+        return required, optional
+
 
 # Create a database class and @pass_db decorator so our commands could use it
-pass_ejpm_context = click.make_pass_decorator(EjpmContext, ensure=True)
+pass_ejpm_context = click.make_pass_decorator(EjpmApi, ensure=True)

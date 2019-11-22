@@ -1,6 +1,6 @@
 import click
 
-from ejpm.engine.context import pass_ejpm_context, EjpmContext
+from ejpm.engine.api import pass_ejpm_context, EjpmApi
 from ejpm.engine.output import markup_print as mprint
 
 
@@ -13,7 +13,7 @@ from ejpm.engine.output import markup_print as mprint
 def set(ctx, ectx, packet_name, install_path):
     """Sets packets"""
 
-    assert isinstance(ectx, EjpmContext)
+    assert isinstance(ectx, EjpmApi)
 
     # We need DB ready for this cli command
     ectx.ensure_db_exists()

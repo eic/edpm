@@ -1,7 +1,7 @@
 import os
 import click
 
-from ejpm.engine.context import pass_ejpm_context, DB_FILE_PATH, ENV_CSH_PATH, ENV_SH_PATH, EjpmContext
+from ejpm.engine.api import pass_ejpm_context, DB_FILE_PATH, ENV_CSH_PATH, ENV_SH_PATH, EjpmApi
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 
@@ -83,7 +83,7 @@ def _print_packets_info(db):
 def ejpm_cli(ctx, ectx, debug, top_dir):
     """EJPM stands for EIC Jana Packet Manager"""
 
-    assert isinstance(ectx, EjpmContext)    # Type check for ectx
+    assert isinstance(ectx, EjpmApi)    # Type check for ectx
 
     # Load db and modules from disk
     db_existed = ectx.load_shmoad_ugly_toad()    # False => Couldn't load and used default

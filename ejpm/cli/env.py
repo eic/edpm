@@ -1,6 +1,6 @@
 import click
 
-from ejpm.engine.context import pass_ejpm_context, EjpmContext, ENV_SH_PATH, ENV_CSH_PATH
+from ejpm.engine.api import pass_ejpm_context, EjpmApi, ENV_SH_PATH, ENV_CSH_PATH
 
 
 @click.command()
@@ -40,7 +40,7 @@ So there are 3 ways of managing environment variables
       to regenerate these 2 files
     """
 
-    assert isinstance(ectx, EjpmContext)
+    assert isinstance(ectx, EjpmApi)
 
     # check if DB file already exists
     if not ectx.db.exists():

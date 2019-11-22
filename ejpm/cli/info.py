@@ -2,7 +2,7 @@
 
 import click
 
-from ejpm.engine.context import pass_ejpm_context, EjpmContext
+from ejpm.engine.api import pass_ejpm_context, EjpmApi
 from ejpm.engine.db import INSTALL_PATH
 from ejpm.engine.output import markup_print as mprint
 
@@ -34,7 +34,7 @@ def info(ctx, ectx, flag_cmake, flag_db, flag_db_path):
     if _no_flags_set(flag_cmake, flag_db, flag_db_path):
         flag_db = True
 
-    assert isinstance(ectx, EjpmContext)
+    assert isinstance(ectx, EjpmApi)
 
     # We need DB ready for this cli command
     ectx.ensure_db_exists()

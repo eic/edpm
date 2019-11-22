@@ -1,5 +1,5 @@
 import click
-from ejpm.engine.context import pass_ejpm_context, EjpmContext
+from ejpm.engine.api import pass_ejpm_context, EjpmApi
 from ejpm.engine.recipe import Recipe
 from ejpm.engine.output import markup_print as mprint
 
@@ -23,7 +23,7 @@ def config(ectx, name_values):
     >> ejpm config jana branch=greenfield
     """
 
-    assert isinstance(ectx, EjpmContext)
+    assert isinstance(ectx, EjpmApi)
 
     # We need DB ready for this cli command
     ectx.load_db_if_exists()

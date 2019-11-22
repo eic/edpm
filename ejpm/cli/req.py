@@ -1,7 +1,7 @@
 
 import click
 
-from ejpm.engine.context import pass_ejpm_context, EjpmContext
+from ejpm.engine.api import pass_ejpm_context, EjpmApi
 from ejpm.engine.output import markup_print as mprint
 
 # @click.group(invoke_without_command=True)
@@ -19,23 +19,23 @@ def req(ctx, ectx, os_name, args, print_mode):
 
     \b
     Example:
-      req ubuntu ejana
+      req ubuntu
       req centos ejana
       req centos root clhep
 
-    By adding --optional, --required, --all flags you can use this command with packet managers:
-      req
+    By adding --optional, --required, --all flags you can use this command with packet managers:\n
+      apt install `ejpm req ubuntu --all`
 
 
     """
 
-    assert isinstance(ectx, EjpmContext)
+    assert isinstance(ectx, EjpmApi)
 
     # We need DB ready for this cli command
     ectx.ensure_db_exists()
 
     # We have some args, first is os name like 'ubuntu' or 'centos'
-    known_os = ectx.pm.os_deps_by_name['ejana']['required'].keys()
+    known_os = ectx.req_get_known_os()
 
     if os_name not in known_os:
         mprint('<red><b>ERROR</b></red>: name "{}" is unknown\nKnown os names are:', os_name)
@@ -45,31 +45,7 @@ def req(ctx, ectx, os_name, args, print_mode):
         ctx.exit(1)
 
     # We have something like 'ubuntu ejana'
-    if args:
-        names = []
-        for packet_name in args:                                    # get all dependencies
-            ectx.ensure_installer_known(packet_name)
-            names += ectx.pm.get_installation_chain_names(packet_name)    # this func returns name + its_deps
-
-        names = list(set(names))                                    # remove repeating names
-
-    else:
-        names = ectx.pm.recipes_by_name.keys()                   # select all packets
-
-    _print_combined(ectx, os_name, names, print_mode)               # print what we have
-
-
-def _print_combined(ectx, os_name, packet_names, print_mode):
-
-    required = []
-    optional = []
-    for name in packet_names:
-        required.extend(ectx.pm.os_deps_by_name[name]['required'][os_name].split(' ,'))
-        optional.extend(ectx.pm.os_deps_by_name[name]['optional'][os_name].split(' ,'))
-
-    # remove emtpy elements and repeating elements
-    required = list(set([r for r in required if r]))
-    optional = list(set([o for o in optional if o]))
+    required, optional = ectx.req_get_deps(os_name, args)
 
     if print_mode == "optional":
         mprint(" ".join(optional))

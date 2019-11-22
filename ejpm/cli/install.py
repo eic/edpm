@@ -2,7 +2,7 @@ import os
 import click
 import copy
 
-from ejpm.engine.context import pass_ejpm_context, EjpmContext
+from ejpm.engine.api import pass_ejpm_context, EjpmApi
 from ejpm.engine.db import PacketStateDatabase
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.recipe_manager import RecipeManager, InstallationRequest
@@ -38,7 +38,7 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
 
     db = ectx.db
     pm = ectx.pm
-    assert isinstance(ectx, EjpmContext)
+    assert isinstance(ectx, EjpmApi)
     assert isinstance(db, PacketStateDatabase)
     assert isinstance(pm, RecipeManager)
 
@@ -91,7 +91,7 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
 
 def _build_deps_requests(ectx, initial_request):
     assert isinstance(initial_request, InstallationRequest)
-    assert isinstance(ectx, EjpmContext)
+    assert isinstance(ectx, EjpmApi)
 
     install_chain_names = ectx.pm.get_installation_chain_names(initial_request.name, initial_request.deps_only)
 
@@ -123,7 +123,7 @@ def _install_packet(ectx, request):
     """Installs packet using its 'installation instruction' class"""
 
     assert isinstance(request, InstallationRequest)
-    assert isinstance(ectx, EjpmContext)
+    assert isinstance(ectx, EjpmApi)
 
     db = ectx.db
     install_path = os.path.join(db.top_dir, request.name)
@@ -163,7 +163,7 @@ def _install_packet(ectx, request):
 
 def _install_with_deps(ectx, request):
     assert isinstance(request, InstallationRequest)
-    assert isinstance(ectx, EjpmContext)
+    assert isinstance(ectx, EjpmApi)
 
     must_exist_chain = _build_deps_requests(ectx, request)
 
