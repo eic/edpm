@@ -56,6 +56,6 @@ def req(ctx, ectx, os_name, args, print_mode):
     else:
         # print all with juman readable titles
         mprint("<blue><b>REQUIRED</b></blue>:")
-        mprint(" ".join(optional))
-        mprint("<blue><b>OPTIONAL</b></blue>:")
         mprint(" ".join(required))
+        mprint("<blue><b>OPTIONAL</b></blue>:")
+        mprint(" ".join(optional))
