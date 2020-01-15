@@ -43,7 +43,7 @@ class GeantInstallation(Recipe):
 
         #
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/jlab-eic/g4e.git {source_path}"\
+        self.clone_command = "git clone -b {branch} https://gitlab.com/jlab-eic/g4e.git {source_path}"\
             .format(**self.config)
 
         # cmake command:
