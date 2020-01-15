@@ -410,7 +410,7 @@ the package. As git + cmake became a 'standard' there is a basic recipe class wh
 adding new git+cmake packets straight forward. 
 
 As a dive-in example of adding packets, 
-lets look on how to add such packet using Genfit as an example. 
+lets look on how to add such packet using Genfit as a copy-paste example. 
 
 
 [ejpm/recipes/genfit.py](ejpm/recipes/genfit.py)
@@ -491,6 +491,8 @@ os_dependencies = {
     },
 }
 ```
+
+> (!) don't remove any sections from the map, leave them blank
 
 To test it one can run:
 
