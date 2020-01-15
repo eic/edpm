@@ -453,7 +453,6 @@ csh/tcsh, bash and python*. So 3 commands to be used in this function:
 ```python
 @staticmethod
 def gen_env(data):
-    """Generates environments to be set"""
     path = data['install_path']   # data => installation information 
 
     yield Set('GENFIT_HOME', path)
