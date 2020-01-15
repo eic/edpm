@@ -354,31 +354,18 @@ And JLab is helpful enough to put its root level certificates in the middle.
 ```bash
 git clone https://gitlab.com/eic/ejpm.git
 pip install -r ejpm/requirements.txt
-python ejpm/run_ejpm.py
-
 
 # OR clone and add ejpm/bin to your PATH
 export PATH=`pwd`/ejpm/bin:$PATH
 ```
 
-***'ejpm'*** **command**:
-
-Calling ```python <path to ejpm>/run_ejpm.py``` is inconvenient!
-It is easy to add alias to your .bashrc (or whatever)
-```sh
-alias ejpm='python <path to ejpm>/run_ejpm.py'
-```
-So if you just cloned it copy/paste:
-```bash
-echo "alias='python `pwd`/ejpm/run_ejpm.py'" >> ~/.bashrc
-```
 
 **requirments**:
 
 ```Click``` and ```appdirs``` are the only requirements. If you have pip do: 
 
 ```bash
-pip install Click appdirs
+pip install --upgrade click appdirs
 ```
 > If for some reason you don't have pip, you don't know python well enough 
 and don't want to mess with it, pips, shmips and doh...
