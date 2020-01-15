@@ -378,3 +378,31 @@ Just download and add to ```PYTHONPATH```:
 [this 'click' folder](https://pypi.org/project/click/)
 and some folder with [appdirs.py](https://github.com/ActiveState/appdirs/blob/master/appdirs.py)
 
+
+<br>
+
+## Adding a package
+
+Each packet is represented by a single python file - a recipe which has instructions 
+of how to get and build the package. Usually it provides:
+- download/clone command 
+- build command 
+- setup of environment variables
+- system dependencies (which can be installed by OS packet managers: yum, apt) 
+
+
+For simplicity (at this point) all recipes are located in a folder inside this repo: 
+[ejpm/recipes](ejpm/recipes).
+
+
+### Adding Git-CMake package
+
+The most of packages served now by ejpm use git to get source code and cmake to build 
+the package. As git + cmake became a 'standard' there is a basic recipe class which makes
+adding new git+cmake packets straight forward. As a dive-in example of adding packets, 
+lets look on how to add such packet using Genfit as an example     
+
+
+
+
+
