@@ -1,6 +1,7 @@
 import importlib
 import pkgutil
-import ejpm.packets
+import ejpm.recipes
+from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 from ejpm.engine.recipe import Recipe
 
@@ -54,15 +55,19 @@ class RecipeManager(object):
     def load_installers(self, modules_dir="", package_name=""):
 
         if not modules_dir:
-            modules_dir = ejpm.packets.__path__[0]
+            modules_dir = ejpm.recipes.__path__[0]
         if not package_name:
-            package_name = ejpm.packets.__name__
+            package_name = ejpm.recipes.__name__
 
         # We need to import submodules at least once to get __submodules__() function work later
         import_all_submodules(modules_dir, package_name)
 
-        # Create all subclasses of PacketInstallationInstruction and add here
-        for cls in Recipe.__subclasses__():
+        # Create all subclasses of Recipe and GitCmakeRecipe and add here
+        classes = [cls for cls in Recipe.__subclasses__() + GitCmakeRecipe.__subclasses__() if cls != GitCmakeRecipe]
+
+        for cls in classes:
+            if cls == GitCmakeRecipe:
+                continue
             installer = cls()
 
             # Add installer 'by name'

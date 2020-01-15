@@ -16,18 +16,26 @@ The secondary goal is to help users with e^JANA plugin development cycle.
 * [Manage environment](#environment)
 * [Troubleshooting](#installation-troubleshooting)
 * [Manual or devel installation](#manual-or-development-installation)
+* [Adding a package](#adding-a-package)
+   * [Adding Git+Cmake package example](#adding-git-cmake-package)
 
 
 ***Cheat sheet:***
 
 Install ejpm:
+
 ```bash
-# install EJPM (bypassing root sertificate problems on JLab machines)
-sudo python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org -U ejpm
+# install EJPM
+sudo python -m pip install ejpm
 
 # OR without sudo: add --user flag and ensure ~/.local/bin is in your PATH
-python -m pip install --user --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org -U ejpm
+python -m pip install --user -U ejpm
 ```
+
+> JLab machines with certificate problems - add these flags to the command above:  
+>  --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org  
+> see [Troubleshooting](#installation-troubleshooting) chapter for details
+
 
 Install everything else
 
@@ -399,10 +407,94 @@ For simplicity (at this point) all recipes are located in a folder inside this r
 
 The most of packages served now by ejpm use git to get source code and cmake to build 
 the package. As git + cmake became a 'standard' there is a basic recipe class which makes
-adding new git+cmake packets straight forward. As a dive-in example of adding packets, 
-lets look on how to add such packet using Genfit as an example     
+adding new git+cmake packets straight forward. 
+
+As a dive-in example of adding packets, 
+lets look on how to add such packet using Genfit as an example. 
 
 
+[ejpm/recipes/genfit.py](ejpm/recipes/genfit.py)
 
 
+**1. Set packet name and where to clone from**
 
+One should change 3 lines: 
+
+```python
+class GenfitRecipe(GitCmakeRecipe):
+    def __init__(self):
+        """Installs Genfit track fitting framework"""
+        
+        # This name is used in ejpm commands like 'ejpm install genfit'
+        super(GenfitRecipe, self).__init__('genfit')
+    
+        # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'master'
+
+        # Repo address
+        self.config['repo_address'] = 'https://github.com/GenFit/GenFit'   
+```
+
+Basically that is enough to build the package and one can test:
+
+```bash
+ejpm install yourpacket
+```
+
+**2. Set environment variables**
+
+This is a done in `gen_env` function. By using this function ejpm generates environments for 
+csh/tcsh, bash and python*. So 3 commands to be used in this function:
+
+* `Set(name, value)` - equals `export name=value` in bash
+* `Append(name, value)` - equals `export name=$name:value` in bash
+* `Prepend(name, value)` - equals `export name=value:$name` in bash
+
+```python
+@staticmethod
+def gen_env(data):
+    """Generates environments to be set"""
+    path = data['install_path']   # data => installation information 
+
+    yield Set('GENFIT_HOME', path)
+
+    # add bin to PATH
+    yield Prepend('PATH', os.path.join(path, 'bin'))
+   
+    # add lib to LD_LIBRARY_PATH
+    yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
+```
+
+One can test gen_env with:
+
+```bash
+ejpm env
+```
+
+> \* - if other python packages use ejpm programmatically to build something
+
+
+**3. System requirments**
+
+If packet has some dependencies that can be installed by OS packet managers such as apt, one can
+add them to os_dependencies array.
+
+```python
+os_dependencies = {
+    'required': {
+        'ubuntu': "libboost-dev libeigen3-dev",
+        'centos': "boost-devel eigen3-devel"
+    },
+    'optional': {
+        'ubuntu': "",
+        'centos': ""
+    },
+}
+```
+
+To test it one can run:
+
+```python
+ejpm req ubuntu
+ejpm req centos
+```

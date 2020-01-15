@@ -1,7 +1,6 @@
 """
 This file provides information of how to build and configure Genfit framework:
 https://github.com/GenFit/GenFit
-
 """
 
 import os
