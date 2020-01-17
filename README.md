@@ -486,3 +486,49 @@ To test it one can run:
 ejpm req ubuntu
 ejpm req centos
 ```
+
+### Adding a custom package
+
+Compared to the previous example, several more functions should be added:
+
+- `setup` - configures the package
+- `step_clone`, `step_build`, `step_install` - execute commands to perform the step
+
+**1. Setup**
+
+Setup should provide all values, that are going to be used later in 'step_xxx' functions. 
+Usually it is just 3 things:
+
+```python
+def setup(self):
+    #
+    # use_common_dirs_scheme() sets standard package variables:
+    # source_path  = {app_path}/src/{branch}          # Where the sources for the current version are located
+    # build_path   = {app_path}/build/{branch}        # Where sources are built. Kind of temporary dir
+    # install_path = {app_path}/root-{branch}         # Where the binary installation is
+    self.use_common_dirs_scheme()
+
+    # Git download link. Clone with shallow copy
+    self.clone_command = "git clone --depth 1 -b {branch} {repo_address} {source_path}".format(**self.config)
+
+    # make command:
+    self.build_command = './configure && make -j{build_threads} install'.format(**self.config)
+
+```
+
+
+**2. Step functions**
+
+3 docker alike functions that helps to execute stuff:
+
+* `run(command)` - executes the console command
+* `workdir(dir)` - changes the working directory
+* `env(name, value)` - sets an environment variable
+
+
+```python
+run(self.clone_command)         # Execute git clone command
+workdir(self.source_path)       # Go to our build directory
+run('./bootstrap')              # This command required to run by rave once...
+env('RAVEPATH', self.install_path)
+```   
