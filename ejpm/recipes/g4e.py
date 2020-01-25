@@ -30,7 +30,7 @@ class GeantInstallation(Recipe):
         self.clone_command = ''             # is set during self.setup(...)
         self.build_cmd = ''                 # is set during self.setup(...)
         self.config['branch'] = 'master'
-        self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm']
+        self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm', 'easy-profiler']
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
