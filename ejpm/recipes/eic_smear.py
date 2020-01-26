@@ -27,6 +27,7 @@ class EicSmearInstallation(Recipe):
         self.build_cmd = ''                 # will be set by self.set_app_path
         self.required_deps = ['root']
         self.config['branch'] = 'master'
+        self.config['repo_address'] = 'https://gitlab.com/eic/eic-smear.git'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -40,7 +41,7 @@ class EicSmearInstallation(Recipe):
 
         #
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone -b {branch} https://gitlab.com/eic/eic-smear.git {source_path}"\
+        self.clone_command = "git clone -b {branch} {repo_address} {source_path}"\
             .format(**self.config)
 
         # cmake command:

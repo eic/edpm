@@ -31,6 +31,7 @@ class GeantInstallation(Recipe):
         self.build_cmd = ''                 # is set during self.setup(...)
         self.config['branch'] = 'master'
         self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm', 'easy-profiler']
+        self.config['repo_address'] = 'https://gitlab.com/jlab-eic/g4e.git'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -43,7 +44,7 @@ class GeantInstallation(Recipe):
 
         #
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone -b {branch} https://gitlab.com/jlab-eic/g4e.git {source_path}"\
+        self.clone_command = "git clone -b {branch} {repo_address} {source_path}"\
             .format(**self.config)
 
         # cmake command:
@@ -102,7 +103,7 @@ class GeantInstallation(Recipe):
             source_path = data['install_path']
 
         yield Prepend('PATH', data['install_path'])  # to make available clhep-config and others
-        yield Prepend('PYTHONPATH', os.path.join(data['install_path'], 'g4epy'))  # to make g4epy available
+        yield Prepend('PYTHONPATH', os.path.join(data['install_path'], 'python'))  # to make g4epy available
         yield Set('G4E_HOME', source_path)                         # where 'resources' are
         yield Set('G4E_MACRO_PATH', source_path)
 
