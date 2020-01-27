@@ -30,7 +30,7 @@ class GeantInstallation(Recipe):
         self.clone_command = ''             # is set during self.setup(...)
         self.build_cmd = ''                 # is set during self.setup(...)
         self.config['branch'] = 'master'
-        self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm', 'easy-profiler']
+        self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm']
         self.config['repo_address'] = 'https://gitlab.com/jlab-eic/g4e.git'
 
     def setup(self):
@@ -49,7 +49,7 @@ class GeantInstallation(Recipe):
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
+        self.build_cmd = "cmake -w -DG4E_SILENCE_WARNINGS=1 -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(**self.config)
