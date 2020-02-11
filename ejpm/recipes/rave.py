@@ -26,32 +26,30 @@ class RaveInstallation(Recipe):
         self.bootstrap_command = ""         # This command is called after clone command
         self.build_command = ""
         self.config['branch'] = 'master'
+        self.config['repo_address'] = 'https://github.com/WolfgangWaltenberger/rave.git'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
-        # use_common_dirs_scheme sets standard package variables:
-        # version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
-        # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
-        # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
-        # install_path = {app_path}/root-{version}         # Where the binary installation is
+        # use_common_dirs_scheme() sets standard package variables:
+        # source_path  = {app_path}/src/{branch}          # Where the sources for the current version are located
+        # build_path   = {app_path}/build/{branch}        # Where sources are built. Kind of temporary dir
+        # install_path = {app_path}/root-{branch}         # Where the binary installation is
         self.use_common_dirs_scheme()
 
         # ENV RAVEPATH $INSTALL_DIR_RAVE
 
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone --depth 1 -b {branch} " \
-                             "https://github.com/WolfgangWaltenberger/rave.git {source_path}" \
-            .format(**self.config)
-
-        self.bootstrap_command = './bootstrap'
+        self.clone_command = "git clone --depth 1 -b {branch} {repo_address} {source_path}".format(**self.config)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         # (!) {{clhep_lib_dir}} and {{clhep_include_dir}} is in 2 braces. So it becomes {clhep_include_dir}
         #     on step_build the right environment will be set and we will use .format(..) again to fill them
+        #
         #     ugly? YEA!!! say hello to RAVE
+        # (!)
         self.build_command = './configure --disable-java --prefix=$RAVEPATH ' \
                              ' LDFLAGS="-L{{clhep_lib_dir}}" ' \
                              ' CXXFLAGS="-std=c++11 -I{{clhep_include_dir}}" ' \
@@ -67,7 +65,7 @@ class RaveInstallation(Recipe):
         """Clones RAVE from github mirror"""
 
         # Check the directory exists and not empty
-        if os.path.exists(self.source_path) and os.path.isdir(self.source_path) and os.listdir(self.source_path):
+        if self.source_dir_is_not_empty():
             # The directory exists and is not empty. Nothing to do
             return
         else:
@@ -76,7 +74,7 @@ class RaveInstallation(Recipe):
 
         run(self.clone_command)         # Execute git clone command
         workdir(self.source_path)       # Go to our build directory
-        run(self.bootstrap_command)     # This command required by rave once...
+        run('./bootstrap')              # This command required to run by rave once...
 
     def step_build(self):
         # Create build directory

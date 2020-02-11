@@ -1,51 +1,55 @@
 """
-This file provides information of how to build and configure Eic-smear framework:
-https://gitlab.com/eic/eic-smear
+This file provides information of how to build and configure Geant4 framework:
+https://gitlab.com/jlab-eic/g4e.git
+
 
 """
 
 import os
 
 from ejpm.engine.commands import run, workdir
-from ejpm.engine.env_gen import Set, Append
+from ejpm.engine.env_gen import Set, Prepend
 from ejpm.engine.recipe import Recipe
 
 
-class EicSmearInstallation(Recipe):
-    """Provides data for building and installing Genfit framework
+class GeantInstallation(Recipe):
+    """Provides data for building and installing Geant4 framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
     install_path = {app_path}/root-{version}         # Where the binary installation is
     """
 
+
     def __init__(self):
-        """"""
+        """
+        Installs Genfit track fitting framework
+        """
 
         # Set initial values for parent class and self
-        super(EicSmearInstallation, self).__init__('eic-smear')
-        self.clone_command = ''             # will be set by self.set_app_path
-        self.build_cmd = ''                 # will be set by self.set_app_path
-        self.required_deps = ['root']
+        super(GeantInstallation, self).__init__('g4e')
+        self.clone_command = ''             # is set during self.setup(...)
+        self.build_cmd = ''                 # is set during self.setup(...)
         self.config['branch'] = 'master'
+        self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm']
+        self.config['repo_address'] = 'https://gitlab.com/jlab-eic/g4e.git'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
-        # use_common_dirs_scheme sets standard package variables:
-        # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
-        # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
-        # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme()
+        # The directory with source files for current version
+        self.config['source_path'] = "{app_path}/g4e-dev".format(**self.config)
+        self.config['build_path'] = "{app_path}/g4e-dev/cmake-build-debug".format(**self.config)  # build in dev directory
+        self.config['install_path'] = "{app_path}/g4e-dev".format(**self.config)
 
         #
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone -b {branch} https://gitlab.com/eic/eic-smear.git {source_path}"\
+        self.clone_command = "git clone -b {branch} {repo_address} {source_path}"\
             .format(**self.config)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
+        self.build_cmd = "cmake -w -DG4E_SILENCE_WARNINGS=1 -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(**self.config)
@@ -93,14 +97,16 @@ class EicSmearInstallation(Recipe):
     def gen_env(data):
         """Generates environments to be set"""
 
-        install_path = data['install_path']
-        yield Set('EIC_SMEAR_HOME', install_path)
+        if 'source_path' in data.keys():
+            source_path = data['source_path']
+        else:
+            source_path = data['install_path']
 
-        lib_path = os.path.join(install_path, 'lib')  # on some platforms
-        lib64_path = os.path.join(install_path, 'lib64')  # on some platforms
+        yield Prepend('PATH', data['install_path'])  # to make available clhep-config and others
+        yield Prepend('PYTHONPATH', os.path.join(data['install_path'], 'python'))  # to make g4epy available
+        yield Set('G4E_HOME', source_path)                         # where 'resources' are
+        yield Set('G4E_MACRO_PATH', source_path)
 
-        yield Append('LD_LIBRARY_PATH', lib_path)
-        yield Append('LD_LIBRARY_PATH', lib64_path)
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

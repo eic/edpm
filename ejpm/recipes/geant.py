@@ -26,6 +26,8 @@ class GeantInstallation(Recipe):
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
         self.config['branch'] = 'v10.6.0'
+        self.config['cmake_build_type'] = 'RelWithDebInfo'
+
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -55,7 +57,7 @@ class GeantInstallation(Recipe):
                 -DGEANT4_USE_RAYTRACER_X11=ON
                 -DGEANT4_BUILD_MULTITHREADED=ON 
                 -DGEANT4_USE_QT=ON
-                -DCMAKE_BUILD_TYPE=RelWithDebInfo
+                -DCMAKE_BUILD_TYPE={cmake_build_type}
                 -DCMAKE_INSTALL_PREFIX={install_path}
                 -Wno-dev
                 {source_path}

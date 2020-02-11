@@ -1,49 +1,47 @@
 """
-This file provides information of how to build and configure Geant4 framework:
-https://gitlab.com/jlab-eic/g4e.git
-
+This file provides information of how to build and configure Eic-smear framework:
+https://gitlab.com/eic/eic-smear
 
 """
 
 import os
 
 from ejpm.engine.commands import run, workdir
-from ejpm.engine.env_gen import Set, Prepend
+from ejpm.engine.env_gen import Set, Append
 from ejpm.engine.recipe import Recipe
 
 
-class GeantInstallation(Recipe):
-    """Provides data for building and installing Geant4 framework
+class EicSmearInstallation(Recipe):
+    """Provides data for building and installing Genfit framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
     install_path = {app_path}/root-{version}         # Where the binary installation is
     """
 
-
     def __init__(self):
-        """
-        Installs Genfit track fitting framework
-        """
+        """"""
 
         # Set initial values for parent class and self
-        super(GeantInstallation, self).__init__('g4e')
-        self.clone_command = ''             # is set during self.setup(...)
-        self.build_cmd = ''                 # is set during self.setup(...)
+        super(EicSmearInstallation, self).__init__('eic-smear')
+        self.clone_command = ''             # will be set by self.set_app_path
+        self.build_cmd = ''                 # will be set by self.set_app_path
+        self.required_deps = ['root']
         self.config['branch'] = 'master'
-        self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm']
+        self.config['repo_address'] = 'https://gitlab.com/eic/eic-smear.git'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
-        # The directory with source files for current version
-        self.config['source_path'] = "{app_path}/g4e-dev".format(**self.config)
-        self.config['build_path'] = "{app_path}/g4e-dev/cmake-build-debug".format(**self.config)  # build in dev directory
-        self.config['install_path'] = "{app_path}/g4e-dev".format(**self.config)
+        # use_common_dirs_scheme sets standard package variables:
+        # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
+        # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
+        # install_path = {app_path}/root-{version}         # Where the binary installation is
+        self.use_common_dirs_scheme()
 
         #
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/jlab-eic/g4e.git {source_path}"\
+        self.clone_command = "git clone -b {branch} {repo_address} {source_path}"\
             .format(**self.config)
 
         # cmake command:
@@ -96,15 +94,14 @@ class GeantInstallation(Recipe):
     def gen_env(data):
         """Generates environments to be set"""
 
-        if 'source_path' in data.keys():
-            source_path = data['source_path']
-        else:
-            source_path = data['install_path']
+        install_path = data['install_path']
+        yield Set('EIC_SMEAR_HOME', install_path)
 
-        yield Prepend('PATH', os.path.join(data['install_path']))  # to make available clhep-config and others
-        yield Set('G4E_HOME', source_path)                         # where 'resources' are
-        yield Set('G4E_MACRO_PATH', source_path)
+        lib_path = os.path.join(install_path, 'lib')  # on some platforms
+        lib64_path = os.path.join(install_path, 'lib64')  # on some platforms
 
+        yield Append('LD_LIBRARY_PATH', lib_path)
+        yield Append('LD_LIBRARY_PATH', lib64_path)
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

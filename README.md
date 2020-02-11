@@ -16,18 +16,26 @@ The secondary goal is to help users with e^JANA plugin development cycle.
 * [Manage environment](#environment)
 * [Troubleshooting](#installation-troubleshooting)
 * [Manual or devel installation](#manual-or-development-installation)
+* [Adding a package](#adding-a-package)
+   * [Adding Git+Cmake package example](#adding-git-cmake-package)
 
 
 ***Cheat sheet:***
 
 Install ejpm:
+
 ```bash
-# install EJPM (bypassing root sertificate problems on JLab machines)
-sudo python -m pip install --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org -U ejpm
+# install EJPM
+sudo python -m pip install ejpm
 
 # OR without sudo: add --user flag and ensure ~/.local/bin is in your PATH
-python -m pip install --user --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org -U ejpm
+python -m pip install --user -U ejpm
 ```
+
+> JLab machines with certificate problems - add these flags to the command above:  
+>  --trusted-host pypi.python.org --trusted-host files.pythonhosted.org --trusted-host pypi.org  
+> see [Troubleshooting](#installation-troubleshooting) chapter for details
+
 
 Install everything else
 
@@ -346,31 +354,18 @@ And JLab is helpful enough to put its root level certificates in the middle.
 ```bash
 git clone https://gitlab.com/eic/ejpm.git
 pip install -r ejpm/requirements.txt
-python ejpm/run_ejpm.py
-
 
 # OR clone and add ejpm/bin to your PATH
 export PATH=`pwd`/ejpm/bin:$PATH
 ```
 
-***'ejpm'*** **command**:
-
-Calling ```python <path to ejpm>/run_ejpm.py``` is inconvenient!
-It is easy to add alias to your .bashrc (or whatever)
-```sh
-alias ejpm='python <path to ejpm>/run_ejpm.py'
-```
-So if you just cloned it copy/paste:
-```bash
-echo "alias='python `pwd`/ejpm/run_ejpm.py'" >> ~/.bashrc
-```
 
 **requirments**:
 
 ```Click``` and ```appdirs``` are the only requirements. If you have pip do: 
 
 ```bash
-pip install Click appdirs
+pip install --upgrade click appdirs
 ```
 > If for some reason you don't have pip, you don't know python well enough 
 and don't want to mess with it, pips, shmips and doh...
@@ -378,3 +373,162 @@ Just download and add to ```PYTHONPATH```:
 [this 'click' folder](https://pypi.org/project/click/)
 and some folder with [appdirs.py](https://github.com/ActiveState/appdirs/blob/master/appdirs.py)
 
+
+<br>
+
+## Adding a package
+
+Each packet is represented by a single python file - a recipe which has instructions 
+of how to get and build the package. Usually it provides:
+- download/clone command 
+- build command 
+- setup of environment variables
+- system dependencies (which can be installed by OS packet managers: yum, apt) 
+
+
+For simplicity (at this point) all recipes are located in a folder inside this repo: 
+[ejpm/recipes](ejpm/recipes).
+
+
+### Adding Git-CMake package
+
+The most of packages served now by ejpm use git to get source code and cmake to build 
+the package. As git + cmake became a 'standard' there is a basic recipe class which makes
+adding new git+cmake packets straight forward. 
+
+As a dive-in example of adding packets, 
+lets look on how to add such packet using Genfit as a copy-paste example. 
+
+
+[ejpm/recipes/genfit.py](ejpm/recipes/genfit.py)
+
+
+**1. Set packet name and where to clone from**
+
+One should change 3 lines: 
+
+```python
+class GenfitRecipe(GitCmakeRecipe):
+    def __init__(self):
+        """Installs Genfit track fitting framework"""
+        
+        # This name is used in ejpm commands like 'ejpm install genfit'
+        super(GenfitRecipe, self).__init__('genfit')
+    
+        # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'master'
+
+        # Repo address
+        self.config['repo_address'] = 'https://github.com/GenFit/GenFit'   
+```
+
+Basically that is enough to build the package and one can test:
+
+```bash
+ejpm install yourpacket
+```
+
+**2. Set environment variables**
+
+This is a done in `gen_env` function. By using this function ejpm generates environments for 
+csh/tcsh, bash and python*. So 3 commands to be used in this function:
+
+* `Set(name, value)` - equals `export name=value` in bash
+* `Append(name, value)` - equals `export name=$name:value` in bash
+* `Prepend(name, value)` - equals `export name=value:$name` in bash
+
+```python
+@staticmethod
+def gen_env(data):
+    path = data['install_path']   # data => installation information 
+
+    yield Set('GENFIT_HOME', path)
+
+    # add bin to PATH
+    yield Prepend('PATH', os.path.join(path, 'bin'))
+   
+    # add lib to LD_LIBRARY_PATH
+    yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
+```
+
+One can test gen_env with:
+
+```bash
+ejpm env
+```
+
+> \* - if other python packages use ejpm programmatically to build something
+
+
+**3. System requirments**
+
+If packet has some dependencies that can be installed by OS packet managers such as apt, one can
+add them to os_dependencies array.
+
+```python
+os_dependencies = {
+    'required': {
+        'ubuntu': "libboost-dev libeigen3-dev",
+        'centos': "boost-devel eigen3-devel"
+    },
+    'optional': {
+        'ubuntu': "",
+        'centos': ""
+    },
+}
+```
+
+> (!) don't remove any sections from the map, leave them blank
+
+To test it one can run:
+
+```python
+ejpm req ubuntu
+ejpm req centos
+```
+
+### Adding a custom package
+
+Compared to the previous example, several more functions should be added:
+
+- `setup` - configures the package
+- `step_clone`, `step_build`, `step_install` - execute commands to perform the step
+
+**1. Setup**
+
+Setup should provide all values, that are going to be used later in 'step_xxx' functions. 
+Usually it is just 3 things:
+
+```python
+def setup(self):
+    #
+    # use_common_dirs_scheme() sets standard package variables:
+    # source_path  = {app_path}/src/{branch}          # Where the sources for the current version are located
+    # build_path   = {app_path}/build/{branch}        # Where sources are built. Kind of temporary dir
+    # install_path = {app_path}/root-{branch}         # Where the binary installation is
+    self.use_common_dirs_scheme()
+
+    # Git download link. Clone with shallow copy
+    self.clone_command = "git clone --depth 1 -b {branch} {repo_address} {source_path}".format(**self.config)
+
+    # make command:
+    self.build_command = './configure && make -j{build_threads} install'.format(**self.config)
+
+```
+
+
+**2. Step functions**
+
+3 docker alike functions that helps to execute stuff:
+
+* `run(command)` - executes the console command
+* `workdir(dir)` - changes the working directory
+* `env(name, value)` - sets an environment variable
+
+
+```python
+run(self.clone_command)         # Execute git clone command
+workdir(self.source_path)       # Go to our build directory
+run('./bootstrap')              # This command required to run by rave once...
+env('RAVEPATH', self.install_path)
+```   
