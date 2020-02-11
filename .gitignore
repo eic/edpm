@@ -200,3 +200,5 @@ venv2/
 env\.csh
 
 env\.sh
+
+.idea/
