@@ -158,11 +158,10 @@ class RootInstallation(Recipe):
             'if test -f "{0}"; then source {0}; fi'.format(bash_thisroot),
 
             # Tcsh
-            """
-            if ( ! -f {0} ) then
-                source {0}
-            endif
-            """.format(csh_thisroot),
+            "if ( -f {0} ) then\n"\
+            "    source {0}\n"\
+            "endif"\
+            .format(csh_thisroot),
 
             # Python
             update_python_environment
