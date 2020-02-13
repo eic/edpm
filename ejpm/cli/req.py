@@ -29,6 +29,15 @@ def req(ctx, ectx, os_name, args, print_mode):
 
     """
 
+    os_aliases = {
+        "centos7": "centos",
+        "rhel": "centos",
+        "rhel7": "centos",
+        "rhel8": "centos8",
+        "mint": "ubuntu",
+        "debian": "ubuntu"
+    }
+
     assert isinstance(ectx, EjpmApi)
 
     # We need DB ready for this cli command
@@ -36,6 +45,9 @@ def req(ctx, ectx, os_name, args, print_mode):
 
     # We have some args, first is os name like 'ubuntu' or 'centos'
     known_os = ectx.req_get_known_os()
+
+    if os_name in os_aliases.keys():
+        os_name = os_aliases[os_name]
 
     if os_name not in known_os:
         mprint('<red><b>ERROR</b></red>: name "{}" is unknown\nKnown os names are:', os_name)

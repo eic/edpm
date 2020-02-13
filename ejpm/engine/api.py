@@ -212,8 +212,10 @@ class EjpmApi(object):
         required = []
         optional = []
         for name in names_with_deps:
-            required.extend(self.pm.os_deps_by_name[name]['required'][os_name].replace(',', ' ').split())
-            optional.extend(self.pm.os_deps_by_name[name]['optional'][os_name].replace(',', ' ').split())
+            if os_name in self.pm.os_deps_by_name[name]['required'].keys():
+                required.extend(self.pm.os_deps_by_name[name]['required'][os_name].replace(',', ' ').split())
+            if os_name in self.pm.os_deps_by_name[name]['optional'].keys():
+                optional.extend(self.pm.os_deps_by_name[name]['optional'][os_name].replace(',', ' ').split())
 
         # remove emtpy elements and repeating elements
         required = list(set([r for r in required if r]))

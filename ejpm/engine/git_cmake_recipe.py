@@ -25,6 +25,8 @@ class GitCmakeRecipe(Recipe):
         # Set initial values for parent class and self
         self.config['branch'] = 'master'
         self.config['repo_address'] = ''
+        self.config['cmake_flags'] = ''
+        self.config['user_cmake_flags'] = ''
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -39,7 +41,8 @@ class GitCmakeRecipe(Recipe):
         #
         # Check we have a repo address
         if not self.config['repo_address']:
-            raise ValueError("config 'repo_address' must be set. Either in recepie or later with 'ejpm config <packet> repo_address=<value>'")
+            raise ValueError("config 'repo_address' must be set. "
+                             "Either in recepie or later with 'ejpm config <packet> repo_address=<value>'")
 
         #
         # Git download link. Clone with shallow copy
@@ -48,7 +51,9 @@ class GitCmakeRecipe(Recipe):
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
+        self.build_cmd = "cmake -Wno-dev " \
+                         "-DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} " \
+                         "{cmake_flags} {user_cmake_flags} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(**self.config)

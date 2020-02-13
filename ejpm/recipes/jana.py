@@ -52,9 +52,12 @@ class JanaInstallation(Recipe):
         self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA2.git {source_path}"\
             .format(**self.config)
 
+        #from shutil import which
+        #if which("python2") is not None:
+
         #
         # scons installation command:
-        self.build_command = "python2 {source_path}/scons/scons.py install -j{build_threads} PREFIX={install_path}"\
+        self.build_command = "python3 {source_path}/scons/scons.py install -j{build_threads} PREFIX={install_path}"\
                              .format(**self.config)
 
     def step_install(self):
@@ -127,7 +130,8 @@ class JanaInstallation(Recipe):
     os_dependencies = {
         'required': {
             'ubuntu': "scons libxerces-c-dev curl python3-dev",
-            'centos': "scons xerces curl"
+            'centos': "scons xerces-c-devel curl",
+            'centos8': "python3-scons xerces-c-devel curl"
         },
         'optional': {
             'ubuntu': "",

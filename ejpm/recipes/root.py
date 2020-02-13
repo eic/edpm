@@ -177,7 +177,8 @@ class RootInstallation(Recipe):
     os_dependencies = {
         'required': {
             'ubuntu': "git dpkg-dev cmake g++ gcc binutils libx11-dev libxpm-dev libxft-dev libxext-dev",
-            'centos': "git cmake gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel"
+            'centos': "git cmake gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel",
+            'centos8': "git cmake gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel"
         },
         'optional': {
             'ubuntu': "gfortran libssl-dev libpcre3-dev "
@@ -191,7 +192,12 @@ class RootInstallation(Recipe):
                       "mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel "
                       "fftw-devel cfitsio-devel graphviz-devel "
                       "avahi-compat-libdns_sd-devel libldap-dev python-devel "
-                      "libxml2-devel gsl-static"
+                      "libxml2-devel gsl-static",
+            'centos8': "gcc-gfortran openssl-devel pcre-devel "
+                      "mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel "
+                      "fftw-devel cfitsio-devel graphviz-devel "
+                      "avahi-compat-libdns_sd-devel openldap-devel python36-devel "
+                      "libxml2-devel gsl-devel"
         },
     }
 

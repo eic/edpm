@@ -1,6 +1,6 @@
 """
-This file provides information of how to build and configure Genfit framework:
-https://github.com/GenFit/GenFit
+This file provides information of how to build and configure ACTS framework:
+https://gitlab.cern.ch/acts/acts-core
 """
 
 import os
@@ -9,7 +9,7 @@ from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class GenfitRecipe(GitCmakeRecipe):
+class ActsRecipe(GitCmakeRecipe):
     """Provides data for building and installing Genfit framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -22,17 +22,31 @@ class GenfitRecipe(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(GenfitRecipe, self).__init__('genfit')                        # This name will be used in ejpm commands
-        self.config['branch'] = 'master'                                    # The branch or tag to be cloned (-b flag)
-        self.config['repo_address'] = 'https://github.com/GenFit/GenFit'    # Repo address
+        super(ActsRecipe, self).__init__('acts')                        # This name will be used in ejpm commands
+        self.config['branch'] = 'v0.16.00'                              # The branch or tag to be cloned (-b flag)
+        self.config['repo_address'] = 'https://gitlab.cern.ch/acts/acts-core.git'    # Repo address
+        self.config['cmake_flags'] = '-DACTS_BUILD_TGEO_PLUGIN=ON -DACTS_BUILD_JSON_PLUGIN=ON'
+
+    def setup(self):
+        # ACTS require C++14 (at least). We  check that it is set
+        if int(self.config['cxx_standard']) < 14:
+            message = "ERROR. cxx_standard must be 14 or above to build ACTS.\n"\
+                      "To set cxx_standard globally:\n"\
+                      "   ejpm config global cxx_standard=14\n"\
+                      "To set cxx_standard for acts:\n"\
+                      "   ejpm config acts cxx_standard=14\n"\
+                      "(!) Make sure cmake is regenerated after. (rm <top_dir>/acts and run ejpm install acts again)\n"
+            raise ValueError(message)
+
+        # Call GitCmakeRecipe `default` setup function
+        super(ActsRecipe, self).setup()
 
     @staticmethod
     def gen_env(data):
         """Generates environments to be set"""
         path = data['install_path']
 
-        yield Set('GENFIT', path)
-        yield Set('GENFIT_DIR', path)
+        yield Set('ACTS_DIR', path)
 
         # it could be lib or lib64. There are bugs on different platforms (RHEL&centos and WSL included)
         # https://stackoverflow.com/questions/46847939/config-site-for-vendor-libs-on-centos-x86-64
