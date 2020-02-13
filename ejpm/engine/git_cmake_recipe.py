@@ -26,7 +26,7 @@ class GitCmakeRecipe(Recipe):
         self.config['branch'] = 'master'
         self.config['repo_address'] = ''
         self.config['cmake_flags'] = ''
-        self.config['user_cmake_flags'] = ''
+        self.config['cmake_custom_flags'] = ''
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
@@ -53,7 +53,7 @@ class GitCmakeRecipe(Recipe):
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev " \
                          "-DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} " \
-                         "{cmake_flags} {user_cmake_flags} {source_path}" \
+                         "{cmake_flags} {cmake_custom_flags} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(**self.config)
