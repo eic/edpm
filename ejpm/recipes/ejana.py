@@ -35,15 +35,10 @@ class EjanaInstallation(Recipe):
         self.config['install_mode'] = 'dev'
 
     def _setup_dev(self):
-        """Sets all variables like source dirs, build dirs, etc"""
-
-        # For dev version we don't use common path scheme
-        self.config['build_threads'] = 1
-
         # The directory with source files for current version
-        self.config['source_path'] = "{app_path}/dev".format(**self.config)
-        self.config['build_path'] = "{app_path}/dev/cmake-build-debug".format(**self.config)  # build in dev directory
-        self.config['install_path'] = "{app_path}/dev/compiled".format(**self.config)
+        self.config['source_path'] = "{app_path}/ejana-dev".format(**self.config)
+        self.config['build_path'] = "{app_path}/ejana-dev/cmake-build-debug".format(**self.config)  # build in dev directory
+        self.config['install_path'] = "{app_path}/ejana-dev/compiled".format(**self.config)
 
         #
         # ejana download link

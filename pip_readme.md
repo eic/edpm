@@ -17,7 +17,7 @@ ejpm req centos ejana         # get list of OS packets required to build jana an
 sudo yum install ...          # install watever 'ejpm req' shows
 
 # or if you are a lucky bash user (yes, csh is still common in physics):
-sudo yum install $(ejpm req centos ejana) 
+sudo yum install $(ejpm req centos ejana --all) 
 
 # SETUP EJPM
 ejpm --top-dir=<where-to>   # Directory where packets will be installed
@@ -46,8 +46,8 @@ So here is ejpm.
 
 At this points **ejpm** tries to unify experience and make it simple to deploy e^JANA for:
 
-- Users on RHEL 7 and CentOS
-- Users on Ubutnu (and Windows with WSL) \*\*
+- Users on RHEL 7, 8 and CentOS
+- Users on Ubutnu/Debian (and Windows with WSL) \*\*
 - Docker and other containers
 
 

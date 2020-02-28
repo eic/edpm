@@ -11,6 +11,7 @@ from ejpm.engine.recipe_manager import RecipeManager, InstallationRequest
 @click.command()
 @click.option('--missing', 'dep_mode', flag_value='missing', help="Installs only missing dependencies", default=True)
 @click.option('--single', 'dep_mode', flag_value='single', help="Installs only this package")
+@click.option('--force', 'dep_mode', flag_value='single', help="Force installation of a single package (same as --single)")
 @click.option('--all', 'dep_mode', flag_value='all', help="Installs all dependencies by ejpm")
 @click.option('--path', 'install_path', default='', help="Is not implemented")
 @click.option('--build-threads', '-j', 'build_threads', default=0, help="Build threads count")

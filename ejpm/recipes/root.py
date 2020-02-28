@@ -30,7 +30,8 @@ class RootInstallation(Recipe):
 
         # Fill the common path pattern
         super(RootInstallation, self).__init__("root")
-        self.config['branch'] = 'v{}-{:02}-{:02}'.format(6, 18, 0)
+        self.config['branch'] = 'v6-20-00'
+        self.config['cmake_custom_flags'] = ''
 
     def find_python(self):
         from subprocess import check_output
