@@ -177,9 +177,9 @@ class RootInstallation(Recipe):
     #                   }
     os_dependencies = {
         'required': {
-            'ubuntu': "git dpkg-dev cmake g++ gcc binutils libx11-dev libxpm-dev libxft-dev libxext-dev",
-            'centos': "git cmake gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel",
-            'centos8': "git cmake gcc-c++ gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel"
+            'ubuntu': "dpkg-dev binutils libx11-dev libxpm-dev libxft-dev libxext-dev",
+            'centos': "gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel",
+            'centos8': "gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel"
         },
         'optional': {
             'ubuntu': "gfortran libssl-dev libpcre3-dev "
