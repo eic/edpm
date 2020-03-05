@@ -34,7 +34,7 @@ class JanaInstallation(Recipe):
         super(JanaInstallation, self).__init__('jana')
         self.clone_command = ""
         self.build_command = ""
-        self.config['branch'] = 'master'
+        self.config['branch'] = 'v2.0.1'
 
     def setup(self):
         """Sets all variables like source dirs, build dirs, etc"""
