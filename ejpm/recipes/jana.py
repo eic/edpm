@@ -8,10 +8,11 @@ import os
 
 from ejpm.engine.commands import run, workdir, env
 from ejpm.engine.env_gen import Prepend, Set, Append
+from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 from ejpm.engine.recipe import Recipe
 
 
-class JanaInstallation(Recipe):
+class JanaInstallation(GitCmakeRecipe):
     """Provides data for building and installing JANA2 framework
 
     PacketInstallationInstruction is located in recipe.py and contains the next standard package variables:
@@ -22,94 +23,10 @@ class JanaInstallation(Recipe):
     install_path = {app_path}/root-{version}         # Where the binary installation is
     """
 
-    class DefaultConfig(object):
-        download_path = ""     # where we download the source or clone git
-        source_path = ""       # The directory with source files for current version
-        build_path = ""        # The directory for cmake/scons build
-        install_path = ""      # The directory, where binary is installed
-        required_deps = []     # Packets which are required for this to run
-        optional_deps = []     # Optional packets
-
     def __init__(self):
         super(JanaInstallation, self).__init__('jana')
-        self.clone_command = ""
-        self.build_command = ""
-        self.config['branch'] = 'v2.0.1'
-
-    def setup(self):
-        """Sets all variables like source dirs, build dirs, etc"""
-
-        #
-        # use_common_dirs_scheme sets standard package variables:
-        # version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
-        # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
-        # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
-        # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme()
-
-        #
-        # Git download link. Clone with shallow copy
-        self.clone_command = "git clone --depth 1 -b {branch} https://github.com/JeffersonLab/JANA2.git {source_path}"\
-            .format(**self.config)
-
-        #from shutil import which
-        #if which("python2") is not None:
-
-        #
-        # scons installation command:
-        self.build_command = "python3 {source_path}/scons/scons.py install -j{build_threads} PREFIX={install_path}"\
-                             .format(**self.config)
-
-    def step_install(self):
-        self.step_clone()
-        self.step_build()
-
-    def step_clone(self):
-        """Clones JANA from github mirror"""
-
-        # Check the directory exists and not empty
-        if os.path.exists(self.source_path) and os.path.isdir(self.source_path) and os.listdir(self.source_path):
-            # The directory exists and is not empty. Nothing to do
-            return
-        else:
-            # Create the directory
-            run('mkdir -p {}'.format(self.source_path))
-
-        # Execute git clone command
-        run(self.clone_command)
-
-    def step_build(self):
-        """Builds JANA from the ground"""
-
-        # # We use scons that is shipped with JANA2, for this we have to append PYTHONPATH
-        # scons_dir = os.path.join(self.config['source_path'], 'scons')
-        # old_pythonpath = os.environ.get('PYTHONPATH')
-        #
-        # if old_pythonpath:
-        #     new_pythonpath = '{scons_dir};{old_pythonpath}'.format(scons_dir=scons_dir, old_pythonpath=old_pythonpath)
-        # else:
-        #     new_pythonpath = scons_dir
-        #
-        # env('PYTHONPATH', new_pythonpath)
-
-        # Create build directory
-        run('mkdir -p {}'.format(self.build_path))
-
-        # go to source directory to invoke scons
-        workdir(self.source_path)
-
-        # run scons && scons install
-        run(self.build_command)
-
-    def step_reinstall(self):
-        """Delete everything and start over"""
-
-        # clear sources directories if needed
-        run('rm -rf {}'.format(self.app_path))
-
-        # Now run build root
-        self.step_install()
-
+        self.config['branch'] = 'v2.0.2'
+        self.config['repo_address'] = 'https://github.com/JeffersonLab/JANA2.git'
 
     @staticmethod
     def gen_env(data):
