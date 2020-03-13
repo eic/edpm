@@ -3,7 +3,7 @@ import click
 import copy
 
 from ejpm.engine.api import pass_ejpm_context, EjpmApi
-from ejpm.engine.db import PacketStateDatabase
+from ejpm.engine.db import PacketStateDatabase, BUILT_WITH_CONFIG
 from ejpm.engine.output import markup_print as mprint
 from ejpm.engine.recipe_manager import RecipeManager, InstallationRequest
 
@@ -156,7 +156,8 @@ def _install_packet(ectx, request):
         IS_OWNED: True,
         IS_ACTIVE: True,
         SOURCE_PATH: request.recipe.source_path,
-        BUILD_PATH:  request.recipe.build_path
+        BUILD_PATH:  request.recipe.build_path,
+        BUILT_WITH_CONFIG: request.recipe.config
     }
     db.update_install(request.recipe.name, request.recipe.install_path, updating_data)
     db.save()

@@ -15,6 +15,7 @@ from ejpm.engine.py23 import to_unicode
 INSTALL_PATH = 'install_path'
 SOURCE_PATH = 'source_path'
 BUILD_PATH = 'build_path'
+BUILT_WITH_CONFIG = 'built_with_config'
 IS_OWNED = 'is_owned'
 IS_ACTIVE = 'is_active'
 

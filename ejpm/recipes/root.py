@@ -8,6 +8,7 @@ import os
 from distutils.dir_util import mkpath
 
 from ejpm.engine import env_gen
+from ejpm.engine.db import BUILT_WITH_CONFIG
 from ejpm.engine.recipe import Recipe
 from ejpm.engine.commands import run, env, workdir, is_not_empty_dir
 
@@ -128,6 +129,15 @@ class RootInstallation(Recipe):
     def gen_env(data):
         install_path = data['install_path']
 
+        isinstance(data, dict)
+
+        # The next is about conda
+        # in conda thisroot.sh triggers error explaining, that everything is already done in activate
+        # so we don't need to put thisroot if we acting under conda
+        # this is hacky hack
+        is_under_conda = 'ROOT_INSTALLED_BY_CONDA' in os.environ
+
+        # In any case we need python environment to build stuff with root under ejpm
         def update_python_environment():
             """Function that will update ROOT environment in python
             We need this function because we DON'T want source thisroot in python
@@ -151,22 +161,21 @@ class RootInstallation(Recipe):
                 updater.update_python_env()
 
         # We just call thisroot.xx in different shells
-        bash_thisroot = os.path.join(install_path, 'bin', 'thisroot.sh')
-        csh_thisroot = os.path.join(install_path, 'bin', 'thisroot.csh')
+        bash_thisroot_path = os.path.join(install_path, 'bin', 'thisroot.sh')
+        bash_text =  'if test -f "{0}"; then source {0}; fi'.format(bash_thisroot_path)
 
-        raw = env_gen.RawText(
-            # Bash
-            'if test -f "{0}"; then source {0}; fi'.format(bash_thisroot),
+        csh_thisroot_path = os.path.join(install_path, 'bin', 'thisroot.csh')
+        csh_text = "if ( -f {0} ) then\n"\
+                       "    source {0}\n"\
+                       "endif"\
+                       .format(csh_thisroot_path),
 
-            # Tcsh
-            "if ( -f {0} ) then\n"\
-            "    source {0}\n"\
-            "endif"\
-            .format(csh_thisroot),
+        bash_text = bash_text if not is_under_conda else "# Don't call thisroot.sh under conda"
+        csh_text = csh_text if not is_under_conda else "# Don't call thisroot.csh under conda"
+        # Do we need this because of conda?
 
-            # Python
-            update_python_environment
-        )
+        # RawText requires text for bash, csh and a function for python
+        raw = env_gen.RawText(bash_text, csh_text, update_python_environment)
         yield raw
 
     #
