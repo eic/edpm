@@ -7,6 +7,8 @@ Like: name, installation path, installation date,
 import json
 import os
 import io
+from pprint import pprint
+
 from ejpm.engine.py23 import to_unicode
 
 
@@ -75,7 +77,7 @@ class PacketStateDatabase(object):
         # Read JSON file
         with open(self.file_path) as data_file:
             self.data = json.load(data_file)
-            self._update_schema()
+            self.update_schema(self.data)
 
         self.is_loaded = True
 
@@ -213,9 +215,9 @@ class PacketStateDatabase(object):
     def top_dir(self, path):
         self.data["top_dir"] = path
 
-    def _update_schema(self):
+    def update_schema(self, data):
         """Do migration between different DB schema versions"""
-        file_version = self.data['file_version']
+        file_version = data['file_version']
 
         # version 1 to 2 migration
         if file_version == 1:
@@ -223,30 +225,55 @@ class PacketStateDatabase(object):
             # (Why pop https://stackoverflow.com/questions/11277432/how-to-remove-a-key-from-a-python-dictionary)
 
             # installed group (we use packet/installs instead)
-            self.data.pop('installed', None)
+            data.pop('installed', None)
 
             # 'required' (we use dependency chain instead)
-            for name, packet in self.data['packets'].items():
+            for name, packet in data['packets'].items():
                 if 'required' in packet:
                     packet.pop('required', None)
 
             # finally change the version
-            self.data['file_version'] = 2
+            data['file_version'] = 2
 
         # version 2 to 3 migration
         if file_version == 2:
 
-            self.data['global_build_config'] = {'build_threads': 4}
+            data['global_build_config'] = {'build_threads': 4}
 
-            for packet in self.data['packets'].values():
+            for packet in data['packets'].values():
                 packet['build_config'] = {}
 
             # finally change the version
-            self.data['file_version'] = 3
+            data['file_version'] = 3
 
         # version 3 to 4 migration
         if file_version == 3:
-            if 'cxx_standard' not in self.data['global_build_config']:
-                self.data['global_build_config']['cxx_standard'] = '11'
+            if 'cxx_standard' not in data['global_build_config']:
+                data['global_build_config']['cxx_standard'] = '11'
 
-            self.data['file_version'] = 4
+            data['file_version'] = 4
+
+
+def merge_db(orig_db, import_db):
+    assert isinstance(orig_db, PacketStateDatabase)
+    assert isinstance(import_db, PacketStateDatabase)
+
+    # Select names that are known for orig db
+    import_names = [name for name in import_db.packet_names if name in orig_db.known_packet_names]
+
+    for name in import_names:
+        installs = import_db.get_installs(name)
+        for install in installs:
+            # Check original DB don't have install info to this path:
+            if not orig_db.get_install(name, install[INSTALL_PATH]):
+                # Check if we have some installations of this packet
+                no_prior_installs = orig_db.get_active_install(name) is None
+
+                # Add imported record
+                copied_install = orig_db.update_install(name, install[INSTALL_PATH], install)
+                copied_install[IS_OWNED] = False
+
+                # Set install active if we don't have an active install for this packet
+                copied_install[IS_ACTIVE] = no_prior_installs
+                # >oO debug pprint(copied_install)
+

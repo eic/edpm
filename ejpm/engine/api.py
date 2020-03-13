@@ -5,7 +5,7 @@ import click
 import appdirs
 
 
-from ejpm.engine.db import PacketStateDatabase
+from ejpm.engine.db import PacketStateDatabase, merge_db
 from ejpm.engine.recipe import Recipe
 from ejpm.engine.recipe_manager import RecipeManager
 from ejpm.engine.output import markup_print as mprint
@@ -45,6 +45,12 @@ class EjpmApi(object):
             self.db.load()
             return True
         return False
+
+    def merge_external_db(self, file_path):
+        import_db = PacketStateDatabase()
+        import_db.file_path = file_path
+        import_db.load()
+        merge_db(self.db, import_db)
 
     def ensure_db_exists(self):
         """Check if DB exist, create it or aborts everything
@@ -226,3 +232,35 @@ class EjpmApi(object):
 
 # Create a database class and @pass_db decorator so our commands could use it
 pass_ejpm_context = click.make_pass_decorator(EjpmApi, ensure=True)
+
+
+def print_packets_info(db):
+    """Prints known installations of packets and what packet is selected"""
+
+    from ejpm.engine.db import IS_OWNED, IS_ACTIVE, INSTALL_PATH
+    assert (isinstance(db, PacketStateDatabase))
+
+    installed_names = [name for name in db.packet_names]
+
+    # Fancy print of installed packets
+    if installed_names:
+        mprint('\n<b><magenta>INSTALLED PACKETS:</magenta></b> (*-active):')
+        for packet_name in installed_names:
+            mprint(' <b><blue>{}</blue></b>:'.format(packet_name))
+            installs = db.get_installs(packet_name)
+            for i, installation in enumerate(installs):
+                is_owned_str = '<green>(owned)</green>' if installation[IS_OWNED] else ''
+                is_active = installation[IS_ACTIVE]
+                is_active_str = '*' if is_active else ' '
+                path_str = installation[INSTALL_PATH]
+                id_str = "[{}]".format(i).rjust(4) if len(installs) > 1 else ""
+                mprint("  {}{} {} {}".format(is_active_str, id_str, path_str, is_owned_str))
+
+
+    not_installed_names = [name for name in db.known_packet_names if name not in installed_names]
+
+    # Fancy print of installed packets
+    if not_installed_names:
+        mprint("\n<b><magenta>NOT INSTALLED:</magenta></b>\n(could be installed by 'ejpm install')")
+        for packet_name in not_installed_names:
+            mprint(' <b><blue>{}</blue></b>'.format(packet_name))

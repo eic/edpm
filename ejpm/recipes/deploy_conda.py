@@ -79,7 +79,8 @@
    78  ejpm
    79  ejpm install vgm
    80  locate libEGL.so
-   81  ls /work/eic/epic/miniconda/envs/epic/bin/../x86_64-conda_cos6-linux-gnu/
+   81  ls
+   /envs/epic/bin/../x86_64-conda_cos6-linux-gnu/
    82  ls /work/eic/epic/miniconda/envs/epic/bin/../x86_64-conda_cos6-linux-gnu/sysroot/
    83  ls /work/eic/epic/miniconda/envs/epic/bin/../x86_64-conda_cos6-linux-gnu/sysroot/usr/
    84  ls /work/eic/epic/miniconda/envs/epic/bin/../x86_64-conda_cos6-linux-gnu/sysroot/usr/lib/*EGL.so
@@ -102,7 +103,7 @@
   101  conda install clhep
   102  conda install -c conda-forge clhep
   103  ejpm set clhep /work/eic/epic/miniconda/
-  104  conda update -n base -c defaults conda
+  104  conda update -n base -c defaults condawork/eic/epic/miniconda/envs/epic/bin/
   105  conda update --all
   106  ejpm
   107  ejpm install vgm
