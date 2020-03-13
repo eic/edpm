@@ -166,9 +166,9 @@ class RootInstallation(Recipe):
 
         csh_thisroot_path = os.path.join(install_path, 'bin', 'thisroot.csh')
         csh_text = "if ( -f {0} ) then\n"\
-                       "    source {0}\n"\
-                       "endif"\
-                       .format(csh_thisroot_path),
+                   "    source {0}\n"\
+                   "endif"\
+                   .format(csh_thisroot_path)
 
         bash_text = bash_text if not is_under_conda else "# Don't call thisroot.sh under conda"
         csh_text = csh_text if not is_under_conda else "# Don't call thisroot.csh under conda"
