@@ -25,6 +25,7 @@ class GenfitRecipe(GitCmakeRecipe):
         super(GenfitRecipe, self).__init__('genfit')                        # This name will be used in ejpm commands
         self.config['branch'] = 'master'                                    # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/DraTeots/GenFit.git'    # Repo address
+        self.required_deps = ['eigen3']
 
     @staticmethod
     def gen_env(data):
