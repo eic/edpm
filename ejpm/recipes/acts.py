@@ -26,6 +26,7 @@ class ActsRecipe(GitCmakeRecipe):
         self.config['branch'] = 'v0.16.00'                              # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://gitlab.cern.ch/acts/acts-core.git'    # Repo address
         self.config['cmake_flags'] = '-DACTS_BUILD_TGEO_PLUGIN=ON -DACTS_BUILD_JSON_PLUGIN=ON'
+        self.config['cxx_standard'] = 17
 
     def setup(self):
         # ACTS require C++14 (at least). We  check that it is set

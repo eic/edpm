@@ -30,7 +30,7 @@ class EjanaInstallation(Recipe):
         super(EjanaInstallation, self).__init__('ejana')
         self.clone_command = ""
         self.build_command = ""
-        self.required_deps = ['clhep', 'root', 'genfit', 'hepmc', 'eic-smear', 'jana']
+        self.required_deps = ['eigen3', 'clhep', 'root', 'genfit', 'hepmc', 'eic-smear', 'jana']
         self.config['branch'] = 'master'
         self.config['install_mode'] = 'dev'
 

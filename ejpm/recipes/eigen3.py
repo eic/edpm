@@ -6,22 +6,12 @@ https://gitlab.com/libeigen/eigen.git
 
 import os
 
-from ejpm.engine.commands import run, workdir, env
 from ejpm.engine.env_gen import Prepend, Set, Append
 from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
-from ejpm.engine.recipe import Recipe
 
 
 class EigenInstallation(GitCmakeRecipe):
-    """Provides data for building and installing JANA2 framework
-
-    PacketInstallationInstruction is located in recipe.py and contains the next standard package variables:
-
-
-    source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
-    build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
-    install_path = {app_path}/root-{version}         # Where the binary installation is
-    """
+    """Provides data for building and installing Eicgen3 framework"""
 
     def __init__(self):
         super(EigenInstallation, self).__init__('eigen3')

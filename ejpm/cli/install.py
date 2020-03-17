@@ -107,10 +107,16 @@ def _build_deps_requests(ectx, initial_request):
             mode = initial_request.mode
             deps_only = initial_request.deps_only
 
+        config = {}
+        config.update(ectx.db.get_global_config())
+        config.update(ectx.db.get_config(name))
+        config['build_threads'] = initial_request.config_overrides.get('build_threads', 4)
+
         # Create installation requrest
+
         request = InstallationRequest(ectx.pm.recipes_by_name[name],
                                       mode,
-                                      copy.deepcopy(initial_request.config_overrides),
+                                      config,
                                       initial_request.just_explain,
                                       deps_only)
 

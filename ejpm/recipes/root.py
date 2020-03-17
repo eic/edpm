@@ -34,6 +34,7 @@ class RootInstallation(Recipe):
         self.config['branch'] = 'v6-20-00'
         self.config['cmake_custom_flags'] = ''
 
+
     def find_python(self):
         from subprocess import check_output
         out = check_output(["which", "python3"]).decode('ascii').strip()
@@ -78,6 +79,9 @@ class RootInstallation(Recipe):
         # ROOT packets to disable in our build (go with -D{name}=ON flag)
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} " \
+                         " -DCMAKE_CXX_STANDARD={cxx_standard}" \
+                         " -Dhttp=ON" \
+                         " -Droot7=ON" \
                          " -Dgdml=ON" \
                          " -Dminuit2=ON" \
                          " {python_flag}" \
