@@ -102,7 +102,7 @@ class GeantInstallation(Recipe):
         else:
             source_path = data['install_path']
 
-        yield Prepend('PATH', data['install_path'])  # to make available clhep-config and others
+        yield Prepend('PATH', os.path.join(data['install_path'], 'bin'))  # to make available clhep-config and others
         yield Prepend('PYTHONPATH', os.path.join(data['install_path'], 'python'))  # to make g4epy available
         yield Set('G4E_HOME', source_path)                         # where 'resources' are
         yield Set('G4E_MACRO_PATH', source_path)
