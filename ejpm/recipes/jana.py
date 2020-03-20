@@ -25,8 +25,8 @@ class JanaInstallation(GitCmakeRecipe):
 
     def __init__(self):
         super(JanaInstallation, self).__init__('jana')
-        self.config['branch'] = 'fix_cmake'
-        self.config['repo_address'] = 'https://github.com/DraTeots/JANA2.git'
+        self.config['branch'] = 'v2.0.2'
+        self.config['repo_address'] = 'https://github.com/JeffersonLab/JANA2.git'
 
     @staticmethod
     def gen_env(data):

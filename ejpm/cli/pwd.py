@@ -3,15 +3,22 @@ import os
 import click
 
 from ejpm.engine.api import pass_ejpm_context, EjpmApi
+from ejpm.engine.db import INSTALL_PATH, IS_OWNED, SOURCE_PATH, BUILD_PATH
 from ejpm.engine.output import markup_print as mprint
 
 
 # @click.group(invoke_without_command=True)
 @click.command()
 @click.argument('packet_names', nargs=-1, metavar='<packet-name>')
+@click.option('--install', 'print_mode', flag_value='install', help="Print installation directory")
+@click.option('--build', 'print_mode', flag_value='build', help="Print build directory")
+@click.option('--source', 'print_mode', flag_value='source', help="Print source directory")
+@click.option('--all', 'print_mode', default=True, flag_value='all', help="Print all information on the package")
+
+
 @pass_ejpm_context
 @click.pass_context
-def pwd(ctx, ectx, packet_names):
+def pwd(ctx, ectx, packet_names, print_mode):
     """Shows a directory related to the active packet
 
     Remark:
@@ -43,21 +50,37 @@ def pwd(ctx, ectx, packet_names):
             mprint("No active installation data found for the packet '{}'", packet_name)
             raise click.Abort()
 
-        # If ejpm 'owns' an installation at this point we assume that parent directory usually is needed
-        # Like if ejpm owns 'root' it is assumed that <top-dir>/root is needed rather than <top-dir>/root/root-v6-...
-        pwd_path = install_data[INSTALL_PATH]
-        mprint("<blue><b>Install path: </b></blue>\n{}", pwd_path)
+        if print_mode == 'install':
+            _print_single_path(install_data, INSTALL_PATH)
+        elif print_mode == 'build':
+            _print_single_path(install_data, BUILD_PATH)
+        elif print_mode == 'source':
+            _print_single_path(install_data, SOURCE_PATH)
+        else:
+            _pretty_print_all(install_data)
 
-        if install_data[IS_OWNED]:
-            pwd_path = os.path.dirname(pwd_path)
-            mprint("<blue><b>EJPM 'owned' base path: </b></blue>\n{}", pwd_path)
 
-        # Source path if known
-        if SOURCE_PATH in install_data:
-            mprint("<blue><b>Sources: </b></blue>\n{}", install_data[SOURCE_PATH])
+def _print_single_path(install_data, what_path):
+    if what_path in install_data:
+        print(install_data[what_path])
 
-        if BUILD_PATH in install_data:
-            mprint("<blue><b>Build dir: </b></blue>\n{}", install_data[BUILD_PATH])
+
+def _pretty_print_all(install_data):
+    # If ejpm 'owns' an installation at this point we assume that parent directory usually is needed
+    # Like if ejpm owns 'root' it is assumed that <top-dir>/root is needed rather than <top-dir>/root/root-v6-...
+    pwd_path = install_data[INSTALL_PATH]
+    mprint("<blue><b>Install path: </b></blue>\n{}", pwd_path)
+
+    if install_data[IS_OWNED]:
+        pwd_path = os.path.dirname(pwd_path)
+        mprint("<blue><b>EJPM 'owned' base path: </b></blue>\n{}", pwd_path)
+
+    # Source path if known
+    if SOURCE_PATH in install_data:
+        mprint("<blue><b>Sources: </b></blue>\n{}", install_data[SOURCE_PATH])
+
+    if BUILD_PATH in install_data:
+        mprint("<blue><b>Build dir: </b></blue>\n{}", install_data[BUILD_PATH])
 
     # os.chdir(cd_path)
 
