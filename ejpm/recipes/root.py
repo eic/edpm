@@ -33,6 +33,7 @@ class RootInstallation(Recipe):
         super(RootInstallation, self).__init__("root")
         self.config['branch'] = 'v6-20-00'
         self.config['cmake_custom_flags'] = ''
+        self.config['cmake_build_type']='RelWithDebInfo'
 
 
     def find_python(self):
@@ -80,6 +81,7 @@ class RootInstallation(Recipe):
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} " \
                          " -DCMAKE_CXX_STANDARD={cxx_standard}" \
+                         " -DCMAKE_BUILD_TYPE={cmake_build_type}"\
                          " -Dhttp=ON" \
                          " -Droot7=ON" \
                          " -Dgdml=ON" \

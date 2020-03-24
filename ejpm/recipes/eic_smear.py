@@ -7,7 +7,7 @@ https://gitlab.com/eic/eic-smear
 import os
 
 from ejpm.engine.commands import run, workdir
-from ejpm.engine.env_gen import Set, Append
+from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.recipe import Recipe
 
 
@@ -100,8 +100,10 @@ class EicSmearInstallation(Recipe):
         lib_path = os.path.join(install_path, 'lib')  # on some platforms
         lib64_path = os.path.join(install_path, 'lib64')  # on some platforms
 
-        yield Append('LD_LIBRARY_PATH', lib_path)
-        yield Append('LD_LIBRARY_PATH', lib64_path)
+        if os.path.isdir(lib64_path):
+            yield Prepend('LD_LIBRARY_PATH', lib64_path)
+        else:
+            yield Prepend('LD_LIBRARY_PATH', lib_path)
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

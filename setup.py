@@ -17,7 +17,7 @@ setup(
     description="EIC Jana Package Manager",
     long_description=readme,
     long_description_content_type="text/markdown",
-    url="https://gitlab.com/eic/ejpm",
+    url="https://gitlab.com/eic/escalate/ejpm",
     author="Dmitry Romanov",
     author_email="romanov@jlab.org",
     license="MIT",

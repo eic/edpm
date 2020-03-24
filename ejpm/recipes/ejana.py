@@ -69,7 +69,7 @@ class EjanaInstallation(Recipe):
 
         #
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
+        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/escalate/ejana.git {source_path}"\
             .format(**self.config)
 
         # cmake command:
@@ -117,9 +117,18 @@ class EjanaInstallation(Recipe):
     @staticmethod
     def gen_env(data):
         """Generates environments to be set"""
-        path = data['install_path']
-        yield Prepend('JANA_PLUGIN_PATH', os.path.join(path, 'plugins'))
-        yield Prepend('PATH', os.path.join(path, 'bin'))
+        install_path = data['install_path']
+        yield Set('EJANA_HOME', install_path)
+        yield Prepend('JANA_PLUGIN_PATH', os.path.join(install_path, 'plugins'))
+        yield Prepend('PATH', os.path.join(install_path, 'bin'))
+
+        lib_path = os.path.join(install_path, 'lib')  # on some platforms
+        lib64_path = os.path.join(install_path, 'lib64')  # on some platforms
+
+        if os.path.isdir(lib64_path):
+            yield Prepend('LD_LIBRARY_PATH', lib64_path)
+        else:
+            yield Prepend('LD_LIBRARY_PATH', lib_path)
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
