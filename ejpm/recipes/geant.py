@@ -127,6 +127,12 @@ class GeantInstallation(Recipe):
         lib_path = os.path.join(install_path, 'lib')        # on some platforms
         lib64_path = os.path.join(install_path, 'lib64')    # on some platforms
 
+        # The next is about conda
+        # in conda thisroot.sh triggers error explaining, that everything is already done in activate
+        # so we don't need to put thisroot if we acting under conda
+        # this is hacky hack
+        is_under_conda = 'GEANT_INSTALLED_BY_CONDA' in os.environ
+
         def update_python_environment():
             """Function that will update Geant environment in python build step
             We need this function because we DON'T want to source geant4.sh in python
@@ -150,6 +156,9 @@ class GeantInstallation(Recipe):
 
         # in Geant CSH script Geant asks to get a path for geant bin directory
         csh_text = "source {} {}".format(os.path.join(bin_path, 'geant4.csh'), bin_path)
+
+        sh_text = sh_text if not is_under_conda else "# Don't call geant4.sh under conda"
+        csh_text = csh_text if not is_under_conda else "# Don't call geant4.csh under conda"
 
         yield env_gen.RawText(
             sh_text,
