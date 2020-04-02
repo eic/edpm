@@ -65,7 +65,8 @@ class ActsRecipe(GitCmakeRecipe):
         else:
             yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
 
-        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake'))
+        # share/cmake/Acts
+        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'share', 'cmake', 'Acts'))
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
