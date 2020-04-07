@@ -11,7 +11,7 @@ from ejpm.engine.recipe import Recipe
 from ejpm.engine.commands import run, env, workdir
 
 
-class FastJetInstallation(Recipe):
+class FastJetRecipe(Recipe):
     """Provides data for building and installing Rave vertex reconstruction package
 
     (PacketInstallationInstruction is located in recipe.py)
@@ -20,7 +20,7 @@ class FastJetInstallation(Recipe):
     def __init__(self):
         # Call parent constructor to fill version, app_path ... and others
         # (!) it is called AFTER we override self.version
-        super(FastJetInstallation, self).__init__('fastjet')
+        super(FastJetRecipe, self).__init__('fastjet')
 
         self.clone_command = ""
         self.unpack_command = ""         # This command is to untar downloaded array

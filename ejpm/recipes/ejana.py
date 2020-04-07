@@ -11,7 +11,7 @@ from ejpm.engine.recipe import Recipe
 from ejpm.engine.commands import run, env, workdir
 
 
-class EjanaInstallation(Recipe):
+class EjanaRecipe(Recipe):
     """Provides data for building and installing JANA framework
 
     PackageInstallationContext is located in recipe.py and contains the next standard package variables:
@@ -27,7 +27,7 @@ class EjanaInstallation(Recipe):
     def __init__(self):
         """
         """
-        super(EjanaInstallation, self).__init__('ejana')
+        super(EjanaRecipe, self).__init__('ejana')
         self.clone_command = ""
         self.build_command = ""
         self.required_deps = ['eigen3', 'clhep', 'root', 'genfit', 'hepmc', 'eic-smear', 'jana']

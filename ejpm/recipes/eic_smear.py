@@ -11,7 +11,7 @@ from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class EicSmearInstallation(GitCmakeRecipe):
+class EicSmearRecipe(GitCmakeRecipe):
     """Provides data for building and installing Genfit framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -22,7 +22,7 @@ class EicSmearInstallation(GitCmakeRecipe):
         """"""
 
         # Set initial values for parent class and self
-        super(EicSmearInstallation, self).__init__('eic-smear')
+        super(EicSmearRecipe, self).__init__('eic-smear')
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
         self.required_deps = ['root']

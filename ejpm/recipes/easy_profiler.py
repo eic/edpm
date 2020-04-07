@@ -9,7 +9,7 @@ from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class GenfitRecipe(GitCmakeRecipe):
+class EasyProfilerRecipe(GitCmakeRecipe):
     """Provides data for building and installing Genfit framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -22,7 +22,7 @@ class GenfitRecipe(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(GenfitRecipe, self).__init__('easy-profiler')      # This name will be used in ejpm commands
+        super(EasyProfilerRecipe, self).__init__('easy-profiler')      # This name will be used in ejpm commands
         self.config['branch'] = 'v2.1.0'                         # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/yse/easy_profiler.git'
 

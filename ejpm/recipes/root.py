@@ -15,7 +15,7 @@ from ejpm.engine.commands import run, env, workdir, is_not_empty_dir
 ROOTSYS = "ROOTSYS"
 
 
-class RootInstallation(Recipe):
+class RootRecipe(Recipe):
     """Provides data for building and installing root
 
     PackageInstallationContext is located in engine/recipe.py
@@ -30,7 +30,7 @@ class RootInstallation(Recipe):
         """
 
         # Fill the common path pattern
-        super(RootInstallation, self).__init__("root")
+        super(RootRecipe, self).__init__("root")
         self.config['branch'] = 'v6-20-04'
         self.config['cmake_custom_flags'] = ''
         self.config['cmake_build_type']='RelWithDebInfo'

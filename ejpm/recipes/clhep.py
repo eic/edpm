@@ -10,13 +10,13 @@ from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class ClhepInstallation(GitCmakeRecipe):
+class ClhepRecipe(GitCmakeRecipe):
     """Provides data for building and installing CLHEP framework
     """
 
     def __init__(self):
         # Set initial values for parent class and self
-        super(ClhepInstallation, self).__init__('clhep')
+        super(ClhepRecipe, self).__init__('clhep')
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
         self.config['branch'] = 'master'

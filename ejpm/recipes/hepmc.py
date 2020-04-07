@@ -13,7 +13,7 @@ from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
 
-class HepMCInstallation(GitCmakeRecipe):
+class HepMCRecipe(GitCmakeRecipe):
     """Provides data for building and installing HepMC framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -26,7 +26,7 @@ class HepMCInstallation(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(HepMCInstallation, self).__init__('hepmc')
+        super(HepMCRecipe, self).__init__('hepmc')
 
         self.config['branch'] = 'HEPMC_02_06_09'
         self.config['repo_address'] = 'https://gitlab.cern.ch/hepmc/HepMC.gi'

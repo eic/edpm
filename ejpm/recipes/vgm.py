@@ -15,7 +15,7 @@ from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 from ejpm.engine.recipe import Recipe
 
 
-class VgmInstallation(GitCmakeRecipe):
+class VgmRecipe(GitCmakeRecipe):
     """Provides data for building and installing Geant4 framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -28,7 +28,7 @@ class VgmInstallation(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(VgmInstallation, self).__init__('vgm')
+        super(VgmRecipe, self).__init__('vgm')
         self.config['branch'] = 'v4-5'
         self.config['cmake_flags'] = '-DWITH_EXAMPLES=0'
         self.config['repo_address'] = 'https://github.com/vmc-project/vgm'

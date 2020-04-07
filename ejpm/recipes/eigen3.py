@@ -10,11 +10,11 @@ from ejpm.engine.env_gen import Prepend, Set, Append
 from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class EigenInstallation(GitCmakeRecipe):
+class EigenRecipe(GitCmakeRecipe):
     """Provides data for building and installing Eicgen3 framework"""
 
     def __init__(self):
-        super(EigenInstallation, self).__init__('eigen3')
+        super(EigenRecipe, self).__init__('eigen3')
         self.config['branch'] = '3.3.7'
         self.config['repo_address'] = 'https://gitlab.com/libeigen/eigen.git'
 

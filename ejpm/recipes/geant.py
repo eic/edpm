@@ -14,7 +14,7 @@ from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.recipe import Recipe
 
 
-class GeantInstallation(Recipe):
+class GeantRecipe(Recipe):
     """Provides data for building and installing Geant4 framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -22,7 +22,7 @@ class GeantInstallation(Recipe):
     """
 
     def __init__(self):
-        super(GeantInstallation, self).__init__('geant')
+        super(GeantRecipe, self).__init__('geant')
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
         self.config['branch'] = 'v10.6.1'

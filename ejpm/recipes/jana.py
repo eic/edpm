@@ -12,7 +12,7 @@ from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 from ejpm.engine.recipe import Recipe
 
 
-class JanaInstallation(GitCmakeRecipe):
+class JanaRecipe(GitCmakeRecipe):
     """Provides data for building and installing JANA2 framework
 
     PacketInstallationInstruction is located in recipe.py and contains the next standard package variables:
@@ -24,7 +24,7 @@ class JanaInstallation(GitCmakeRecipe):
     """
 
     def __init__(self):
-        super(JanaInstallation, self).__init__('jana')
+        super(JanaRecipe, self).__init__('jana')
         self.config['branch'] = 'v2.0.2'
         self.config['repo_address'] = 'https://github.com/JeffersonLab/JANA2.git'
 
