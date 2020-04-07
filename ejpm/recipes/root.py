@@ -31,7 +31,7 @@ class RootInstallation(Recipe):
 
         # Fill the common path pattern
         super(RootInstallation, self).__init__("root")
-        self.config['branch'] = 'v6-20-00'
+        self.config['branch'] = 'v6-20-04'
         self.config['cmake_custom_flags'] = ''
         self.config['cmake_build_type']='RelWithDebInfo'
 
