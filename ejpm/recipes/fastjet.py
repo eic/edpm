@@ -29,7 +29,7 @@ class FastJetInstallation(Recipe):
         self.config['archive_name'] = 'fastjet-{branch}'
         self.config['repo_address'] = 'http://fastjet.fr/repo/{archive_name}.tar.gz'
 
-    def setup(self):
+    def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #

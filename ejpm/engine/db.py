@@ -7,7 +7,6 @@ Like: name, installation path, installation date,
 import json
 import os
 import io
-from pprint import pprint
 
 from ejpm.engine.py23 import to_unicode
 
@@ -18,6 +17,7 @@ BUILD_PATH = 'build_path'
 BUILT_WITH_CONFIG = 'built_with_config'
 IS_OWNED = 'is_owned'
 IS_ACTIVE = 'is_active'
+IS_CDB = 'is_central_db'    # is from central database
 
 
 # noinspection PyTypeChecker,PyUnresolvedReferences
@@ -191,7 +191,6 @@ class PacketStateDatabase(object):
 
     def remove_install(self, packet_name, install_path):
         """
-
         :param packet_name: Name of the packet. Like root, genfit, rave, etc
         :param install_path: Path of the installation
         :return:

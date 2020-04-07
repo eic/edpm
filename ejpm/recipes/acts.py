@@ -28,7 +28,7 @@ class ActsRecipe(GitCmakeRecipe):
         self.config['cmake_flags'] = '-DACTS_BUILD_TGEO_PLUGIN=ON -DACTS_BUILD_JSON_PLUGIN=ON'
         self.config['cxx_standard'] = 17
 
-    def setup(self):
+    def setup(self, db):
         # ACTS require C++14 (at least). We  check that it is set
         if int(self.config['cxx_standard']) < 14:
             message = "ERROR. cxx_standard must be 14 or above to build ACTS.\n"\
@@ -40,7 +40,7 @@ class ActsRecipe(GitCmakeRecipe):
             raise ValueError(message)
 
         # Call GitCmakeRecipe `default` setup function
-        super(ActsRecipe, self).setup()
+        super(ActsRecipe, self).setup(db)
 
     @staticmethod
     def gen_env(data):

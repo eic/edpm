@@ -33,7 +33,7 @@ class GeantInstallation(Recipe):
         self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm']
         self.config['repo_address'] = 'https://gitlab.com/eic/escalate/g4e.git'
 
-    def setup(self):
+    def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #

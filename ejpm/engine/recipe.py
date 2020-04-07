@@ -45,7 +45,7 @@ class Recipe(object):
             "optional_deps" : [],   # Optional packets
         }
 
-    def setup(self):
+    def setup(self, db):
         """This function is used to format and fill variables, when app_path is known download command"""
         # ... (!) inherited classes should implement its logic here
         raise NotImplementedError()

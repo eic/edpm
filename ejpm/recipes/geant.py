@@ -29,7 +29,7 @@ class GeantInstallation(Recipe):
         self.config['cmake_build_type'] = 'RelWithDebInfo'
 
 
-    def setup(self):
+    def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #

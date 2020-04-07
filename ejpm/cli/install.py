@@ -137,7 +137,7 @@ def _install_packet(ectx, request):
 
     # set_app_path setups parameters (formats all string variables) for this particular path
     request.update_installer_config()
-    request.recipe.setup()
+    request.recipe.setup(ectx.db)
 
     # Pretty header
     mprint("<magenta>=========================================</magenta>")
@@ -184,7 +184,7 @@ def _install_with_deps(ectx, request):
         # install them to top_dir. So we don't care and set simple os.path.join(...)
         request.config_overrides['app_path'] = os.path.join(ectx.db.top_dir, request.name)
         request.update_installer_config()
-        request.recipe.setup()
+        request.recipe.setup(ectx.db)
 
     #
     # Lets see what is missing and tell it to the user

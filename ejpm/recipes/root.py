@@ -47,7 +47,7 @@ class RootInstallation(Recipe):
             out = check_output(["which", "python"]).decode('ascii').strip()
         return out
 
-    def setup(self):
+    def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #

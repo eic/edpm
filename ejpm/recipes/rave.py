@@ -28,7 +28,7 @@ class RaveInstallation(Recipe):
         self.config['branch'] = 'master'
         self.config['repo_address'] = 'https://github.com/WolfgangWaltenberger/rave.git'
 
-    def setup(self):
+    def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #

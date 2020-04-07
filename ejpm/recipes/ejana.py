@@ -52,7 +52,7 @@ class EjanaInstallation(Recipe):
                          "&& cmake --build . --target install" \
                          .format(**self.config)
 
-    def setup(self):
+    def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # (!) at this point we alwais use dev environment

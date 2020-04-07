@@ -28,7 +28,7 @@ class GitCmakeRecipe(Recipe):
         self.config['cmake_flags'] = ''
         self.config['cmake_custom_flags'] = ''
 
-    def setup(self):
+    def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
