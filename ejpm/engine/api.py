@@ -104,10 +104,8 @@ class EjpmApi(object):
         #
         # EJPM data path. It is where db.json and environment files are located
         # We try to read it from EJPM_DATA_PATH environment variable and then use standard (XDG) location
-        if 'EJPM_DATA_PATH' in os.environ:
-            ejpm_data_path = os.environ['EJPM_DATA_PATH']
-            # We don't care if the directory exist as if user provides EJPM_DATA_PATH he is responsible
-        else:
+        ejpm_data_path = os.environ.get('EJPM_DATA_PATH', None)
+        if not ejpm_data_path:
             # Get the default (XDG or whatever) standard path to store user data
             ejpm_data_path = appdirs.user_data_dir("ejpm", "Dmitry Romanov")
 

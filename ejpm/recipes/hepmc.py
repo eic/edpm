@@ -29,7 +29,7 @@ class HepMCRecipe(GitCmakeRecipe):
         super(HepMCRecipe, self).__init__('hepmc')
 
         self.config['branch'] = 'HEPMC_02_06_09'
-        self.config['repo_address'] = 'https://gitlab.cern.ch/hepmc/HepMC.gi'
+        self.config['repo_address'] = 'https://gitlab.cern.ch/hepmc/HepMC.git'
         self.config['cmake_flags'] = ' -Dmomentum:STRING=GEV -Dlength:STRING=MM '
 
     @staticmethod
