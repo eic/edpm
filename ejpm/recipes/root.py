@@ -35,8 +35,8 @@ class RootRecipe(Recipe):
         self.config['cmake_custom_flags'] = ''
         self.config['cmake_build_type']='RelWithDebInfo'
 
-
     def find_python(self):
+        """Searches default python which is first found in PATH"""
         from subprocess import check_output
         out = check_output(["which", "python3"]).decode('ascii').strip()
 
