@@ -28,7 +28,7 @@ class Dire(Recipe):
         self.clone_command = ""
         self.unpack_command = ""         # This command is to untar downloaded array
         self.build_command = ""
-        self.required_deps = ['pythia8']
+        self.required_deps = ['lhapdf6', 'pythia8']
         self.config['branch'] = 'DIRE-2.004'
         self.config['repo_address'] = 'https://dire.gitlab.io/Downloads/{branch}.tar.gz'
         self.config['python_exec'] = self.find_python()
@@ -114,6 +114,7 @@ class Dire(Recipe):
     @staticmethod
     def gen_env(data):
         install_path = data['install_path']
+        yield Set('DIRE_ROOT_DIR', install_path)
         yield Prepend('PATH', os.path.join(install_path, 'bin'))
         yield Prepend('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
 

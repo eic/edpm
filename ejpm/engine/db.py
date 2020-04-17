@@ -262,18 +262,15 @@ def merge_db(orig_db, import_db):
     import_names = [name for name in import_db.packet_names if name in orig_db.known_packet_names]
 
     for name in import_names:
-        installs = import_db.get_installs(name)
-        for install in installs:
-            # Check original DB don't have install info to this path:
-            if not orig_db.get_install(name, install[INSTALL_PATH]):
-                # Check if we have some installations of this packet
-                no_prior_installs = orig_db.get_active_install(name) is None
+        for import_install in import_db.get_installs(name):
+            # Check if we have some installations of this packet
+            no_prior_installs = orig_db.get_active_install(name) is None
 
-                # Add imported record
-                copied_install = orig_db.update_install(name, install[INSTALL_PATH], install)
-                copied_install[IS_OWNED] = False
+            # Add imported record
+            copied_install = orig_db.update_install(name, import_install[INSTALL_PATH], import_install)
+            copied_install[IS_OWNED] = False
 
-                # Set install active if we don't have an active install for this packet
-                copied_install[IS_ACTIVE] = no_prior_installs
-                # >oO debug pprint(copied_install)
+            # Set install active if we don't have an active install for this packet
+            copied_install[IS_ACTIVE] = no_prior_installs
+            # >oO debug pprint(copied_install)
 
