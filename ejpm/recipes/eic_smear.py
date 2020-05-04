@@ -20,13 +20,12 @@ class EicSmearRecipe(GitCmakeRecipe):
 
     def __init__(self):
         """"""
-
         # Set initial values for parent class and self
         super(EicSmearRecipe, self).__init__('eic-smear')
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
         self.required_deps = ['root']
-        self.config['branch'] = 'master'
+        self.config['branch'] = '1.0.4'
         self.config['repo_address'] = 'https://gitlab.com/eic/eic-smear.git'
 
     @staticmethod

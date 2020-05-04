@@ -254,7 +254,6 @@ def print_packets_info(db):
                 id_str = "[{}]".format(i).rjust(4) if len(installs) > 1 else ""
                 mprint("  {}{} {} {}".format(is_active_str, id_str, path_str, is_owned_str))
 
-
     not_installed_names = [name for name in db.known_packet_names if name not in installed_names]
 
     # Fancy print of installed packets
