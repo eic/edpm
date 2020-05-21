@@ -23,6 +23,7 @@ class DelphesRecipe(GitCmakeRecipe):
         """Generates environments to be set"""
         path = data['install_path']
 
+        yield Set("DELPHES_HOME", path)
         yield Prepend('CMAKE_PREFIX_PATH', os.path.join(path, 'share/eigen3/cmake/'))
 
     #
