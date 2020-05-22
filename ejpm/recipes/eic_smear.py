@@ -25,7 +25,7 @@ class EicSmearRecipe(GitCmakeRecipe):
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
         self.required_deps = ['root']
-        self.config['branch'] = '1.0.4'
+        self.config['branch'] = '1.0.4-fix1'
         self.config['repo_address'] = 'https://gitlab.com/eic/eic-smear.git'
 
     @staticmethod

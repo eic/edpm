@@ -39,7 +39,7 @@ class HepMC3Recipe(GitCmakeRecipe):
         install_path = data['install_path']
         bin_path = os.path.join(install_path, 'bin')
         yield Prepend('PATH', bin_path)  # to make available clhep-config and others
-        yield Set('HEPMC_DIR', install_path)
+        yield Set('HEPMC3_DIR', install_path)
 
 
         yield Append('CMAKE_PREFIX_PATH', os.path.join(install_path, 'share', 'HepMC3', 'cmake'))
