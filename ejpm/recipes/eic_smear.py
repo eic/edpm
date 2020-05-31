@@ -34,6 +34,7 @@ class EicSmearRecipe(GitCmakeRecipe):
 
         install_path = data['install_path']
         yield Set('EIC_SMEAR_HOME', install_path)
+        yield Append('ROOT_INCLUDE_PATH', os.path.join(install_path, '/include'))
 
         lib_path = os.path.join(install_path, 'lib')  # on some platforms
         lib64_path = os.path.join(install_path, 'lib64')  # on some platforms
