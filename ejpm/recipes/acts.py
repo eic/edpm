@@ -23,8 +23,8 @@ class ActsRecipe(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(ActsRecipe, self).__init__('acts')                        # This name will be used in ejpm commands
-        self.config['branch'] = 'v0.22.00'                              # The branch or tag to be cloned (-b flag)
-        self.config['repo_address'] = 'https://gitlab.cern.ch/acts/acts-core.git'    # Repo address
+        self.config['branch'] = 'v1.2.1'                                # The branch or tag to be cloned (-b flag)
+        self.config['repo_address'] = 'https://github.com/acts-project/acts'    # Repo address
         self.config['cmake_flags'] = '-DACTS_BUILD_TGEO_PLUGIN=ON -DACTS_BUILD_JSON_PLUGIN=ON'
         self.config['cxx_standard'] = 17
 
