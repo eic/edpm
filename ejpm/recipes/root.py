@@ -31,9 +31,10 @@ class RootRecipe(Recipe):
 
         # Fill the common path pattern
         super(RootRecipe, self).__init__("root")
-        self.config['branch'] = 'v6-20-04'
+        self.config['branch'] = 'v6-22-02'
         self.config['cmake_custom_flags'] = ''
-        self.config['cmake_build_type']='RelWithDebInfo'
+        self.config['cmake_build_type'] = 'RelWithDebInfo'
+        self.config['cxx_standard'] = '14'
 
     def find_python(self):
         """Searches default python which is first found in PATH"""
@@ -50,6 +51,15 @@ class RootRecipe(Recipe):
     def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
+        # Ensure that we are using C++14 or higher
+        if int(self.config['cxx_standard']) < 14:
+            message = "ERROR. cxx_standard must be 14 or above to build root7.\n" \
+                      "To set cxx_standard globally:\n" \
+                      "   ejpm config global cxx_standard=14\n" \
+                      "To set cxx_standard for acts:\n" \
+                      "   ejpm config root7 cxx_standard=14\n" \
+                      "(!) Make sure cmake is regenerated after. (rm <top_dir>/acts and run ejpm install acts again)\n"
+            raise ValueError(message)
         #
         # Compile with python3, then whatever python is...
         python_path = self.find_python()
@@ -85,6 +95,11 @@ class RootRecipe(Recipe):
                          " -Dhttp=ON" \
                          " -Droot7=ON" \
                          " -Dgdml=ON" \
+                         " -Dxrootd=OFF" \
+                         " -Dmysql=OFF" \
+                         " -Dpythia6=OFF" \
+                         " -Dpythia6_nolink=OFF" \
+                         " -Dpythia8=OFF" \
                          " -Dminuit2=ON" \
                          " {python_flag}" \
                          " {cmake_custom_flags}" \
