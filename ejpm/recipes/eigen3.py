@@ -15,7 +15,7 @@ class EigenRecipe(GitCmakeRecipe):
 
     def __init__(self):
         super(EigenRecipe, self).__init__('eigen3')
-        self.config['branch'] = '3.3.7'
+        self.config['branch'] = '3.3.8'
         self.config['repo_address'] = 'https://gitlab.com/libeigen/eigen.git'
 
     @staticmethod
