@@ -149,6 +149,7 @@ class RootRecipe(Recipe):
     @staticmethod
     def gen_env(data):
         install_path = data['install_path']
+        yield env_gen.Prepend('CMAKE_PREFIX_PATH', os.path.join(install_path, 'cmake/'))
 
         isinstance(data, dict)
 
