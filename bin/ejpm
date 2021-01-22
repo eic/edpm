@@ -16,7 +16,11 @@ if __name__ == '__main__':
 
     sys.path.insert(0, ejpm_top_dir)
 
-    import ejpm
+    try:
+        import ejpm
 
-    # Run ejpm cli
-    ejpm.ejpm_cli()
+        # Run ejpm cli
+        ejpm.ejpm_cli()
+    except ModuleNotFoundError as ex:
+        if 'appdirs' in str(ex):
+            print("No module named 'appdirs'. Please install it. 'python3 -m pip install --user appdirs' should work")
