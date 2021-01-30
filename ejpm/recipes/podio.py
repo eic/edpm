@@ -1,6 +1,6 @@
 """
-This file provides information of how to build and configure ACTS framework:
-https://gitlab.cern.ch/acts/acts-core
+PodIO
+https://github.com/AIDASoft/podio.git
 """
 
 import os
@@ -9,7 +9,7 @@ from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class ActsRecipe(GitCmakeRecipe):
+class PodioRecipe(GitCmakeRecipe):
     """Provides data for building and installing Genfit framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -22,25 +22,11 @@ class ActsRecipe(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(ActsRecipe, self).__init__('acts')                        # This name will be used in ejpm commands
-        self.config['branch'] = 'v1.2.1'                                # The branch or tag to be cloned (-b flag)
-        self.config['repo_address'] = 'https://github.com/acts-project/acts'    # Repo address
-        self.config['cmake_flags'] = '-DACTS_BUILD_PLUGIN_TGEO=ON'
+        super(PodioRecipe, self).__init__('podio')                        # This name will be used in ejpm commands
+        self.config['branch'] = 'v00-13'                                # The branch or tag to be cloned (-b flag)
+        self.config['repo_address'] = 'https://github.com/AIDASoft/podio.git'    # Repo address
+        self.config['cmake_flags'] = '-DBUILD_TESTING=ON'
         self.config['cxx_standard'] = 17
-
-    def setup(self, db):
-        # ACTS require C++14 (at least). We  check that it is set
-        if int(self.config['cxx_standard']) < 14:
-            message = "ERROR. cxx_standard must be 14 or above to build ACTS.\n"\
-                      "To set cxx_standard globally:\n"\
-                      "   ejpm config global cxx_standard=14\n"\
-                      "To set cxx_standard for acts:\n"\
-                      "   ejpm config acts cxx_standard=14\n"\
-                      "(!) Make sure cmake is regenerated after. (rm <top_dir>/acts and run ejpm install acts again)\n"
-            raise ValueError(message)
-
-        # Call GitCmakeRecipe `default` setup function
-        super(ActsRecipe, self).setup(db)
 
     @staticmethod
     def gen_env(data):
@@ -65,8 +51,8 @@ class ActsRecipe(GitCmakeRecipe):
         else:
             yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
 
-        # share/cmake/Acts
-        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'share', 'cmake', 'Acts'))
+        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'podio'))
+
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
@@ -76,9 +62,9 @@ class ActsRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-test-dev libeigen3-dev",
-            'centos': "boost-devel eigen3-devel",
-            'centos8': "boost-devel eigen3-devel",
+            'ubuntu': "python-jinja2 python-yaml",
+            'centos': "",
+            'centos8': "",
         },
         'optional': {
             'ubuntu': "",

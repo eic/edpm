@@ -184,12 +184,20 @@ class RootRecipe(Recipe):
 
         # We just call thisroot.xx in different shells
         bash_thisroot_path = os.path.join(install_path, 'bin', 'thisroot.sh')
-        bash_text =  'if test -f "{0}"; then source {0}; fi'.format(bash_thisroot_path)
+        bash_text = '\n' \
+                    'if [[ -z "$ROOT_INSTALLED_BY_CONDA" ]]; then \n' \
+                    '   if test -f "{0}"; then \n' \
+                    '      source {0}; \n' \
+                    '   fi\n' \
+                    'fi\n'.format(bash_thisroot_path)
 
         csh_thisroot_path = os.path.join(install_path, 'bin', 'thisroot.csh')
-        csh_text = "if ( -f {0} ) then\n"\
-                   "    source {0}\n"\
-                   "endif"\
+        csh_text = "\n" \
+                   "if (! $?ROOT_INSTALLED_BY_CONDA) then\n" \
+                   "   if ( -f {0} ) then\n"\
+                   "      source {0}\n"\
+                   "   endif\n" \
+                   "endif\n"\
                    .format(csh_thisroot_path)
 
         bash_text = bash_text if not is_under_conda else "# Don't call thisroot.sh under conda"
