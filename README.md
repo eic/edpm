@@ -51,6 +51,8 @@ ejpm                          # To see how ejpm is configured
 ejpm install ejana --explain  # To see what is to be installed
 ejpm set root `$ROOTSYS`      # if you have CERN.ROOT. Or skip this step
 ejpm set <packet> <path>      # set other existing packets. Or skip this step!!!
+ejpm config global cxx_standard=17   # It is recommended if compiler supports C++17
+
 
 # Build and install the rest
 ejpm install ejana            # install ejana and dependencies (like genfit, jana and rave)
@@ -63,6 +65,11 @@ ejpm env csh > your.csh       # if you are still on CSH
 # If that worked don't read the next...
 ```
 
+> (!) If you use your version of ROOT, all packages depending on ROOT should be
+> installed with the same C++ standard flags as root. So it it was C++11 or C++17, it should be used
+> everywhere. To set it in ejpm  
+> ```ejpm config global cxx_standard=17```
+>
 
 
 # Motivation
