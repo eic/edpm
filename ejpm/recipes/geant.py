@@ -56,7 +56,7 @@ class GeantRecipe(Recipe):
                 -DGEANT4_USE_OPENGL_X11=ON
                 -DGEANT4_USE_RAYTRACER_X11=ON
                 -DGEANT4_BUILD_MULTITHREADED=ON 
-                -DGEANT4_USE_QT=OFF
+                -DGEANT4_USE_QT=ON
                 -DCMAKE_BUILD_TYPE={cmake_build_type}
                 -DCMAKE_INSTALL_PREFIX={install_path}
                 -Wno-dev
