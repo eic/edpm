@@ -31,8 +31,9 @@ class EjanaRecipe(Recipe):
         self.clone_command = ""
         self.build_command = ""
         self.required_deps = ['root', 'hepmc3', 'eic-smear', 'jana']
-        self.config['branch'] = 'v1.3.0'
+        self.config['branch'] = 'v1.3.1'
         self.config['install_mode'] = 'dev'
+        self.config['with_eicsmear'] = 'true'
 
     def _setup_dev(self):
         # The directory with source files for current version
@@ -45,9 +46,12 @@ class EjanaRecipe(Recipe):
         self.clone_command = "git clone -b {branch} https://gitlab.com/eic/ejana.git {source_path}"\
                              .format(**self.config)
 
+        eicsmear_flag = "ON" if self.config['with_eicsmear'].lower() in ["true", "on", "1"] else "OFF"
+        eicsmear_flag = "-DWITH_EIC_SMEAR=" + eicsmear_flag
+        self.config['eicsmear_flag'] = eicsmear_flag
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
+        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {eicsmear_flag} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(**self.config)
