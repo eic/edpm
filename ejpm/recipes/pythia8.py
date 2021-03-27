@@ -28,11 +28,11 @@ class Pythia8(Recipe):
         self.clone_command = ""
         self.unpack_command = ""         # This command is to untar downloaded array
         self.build_command = ""
-        self.required_deps = ['lhapdf6', 'hepmc', 'fastjet']
-        self.config['branch'] = 'pythia8244'
+        self.make_exec_command = ""
+        self.required_deps = ['lhapdf6', 'hepmc3', 'fastjet']
+        self.config['branch'] = 'pythia8303'
         self.config['repo_address'] = 'http://home.thep.lu.se/~torbjorn/pythia8/{branch}.tgz'
         self.config['python_exec'] = self.find_python()
-
 
     @staticmethod
     def find_python():
@@ -60,8 +60,6 @@ class Pythia8(Recipe):
         # install_path = {app_path}/root-{branch}         # Where the binary installation is
         self.use_common_dirs_scheme()
 
-
-
         # Python! get_paths returns list of python directories
         py_info = sysconfig.get_paths()  # a dictionary of key-paths
         build_flags =" --with-python --with-python-include=" +  py_info['include']
@@ -72,9 +70,9 @@ class Pythia8(Recipe):
             build_flags += " --with-fastjet3=" + fastjet_install[INSTALL_PATH]
 
         # Do we have HepMC?
-        hepmc_install = db.get_active_install("hepmc")
+        hepmc_install = db.get_active_install("hepmc3")
         if hepmc_install:
-            build_flags += " --with-hepmc2=" + hepmc_install[INSTALL_PATH]
+            build_flags += " --with-hepmc3=" + hepmc_install[INSTALL_PATH]
 
         # Do we have lhapdf6?
         lhapdf6_install = db.get_active_install('lhapdf6')
@@ -91,6 +89,8 @@ class Pythia8(Recipe):
                              ' make -j {build_threads} &&' \
                              ' make install' \
             .format(**self.config)
+
+
 
     def step_install(self):
         self.step_clone()
@@ -118,8 +118,16 @@ class Pythia8(Recipe):
 
         # To fix error such as tput: No value for $TERM and no -T specified
         env('TERM', 'xterm')
+
         # run cmake && make && install
         run(self.build_command)
+
+        # now make example300 and rename it
+        examples_dir = os.path.join(self.config['install_path'], 'share', 'Pythia8', 'examples')
+        exec_file_name = os.path.join(self.config['install_path'], 'bin', 'pythia8-run')
+        workdir(examples_dir)
+        run('make main300')
+        run('mv main300 ' + exec_file_name)
 
     @staticmethod
     def gen_env(data):

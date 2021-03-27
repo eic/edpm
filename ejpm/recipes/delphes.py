@@ -15,6 +15,8 @@ class DelphesRecipe(GitCmakeRecipe):
 
     def __init__(self):
         super(DelphesRecipe, self).__init__('delphes')
+
+        self.required_deps = ['root', 'pythia8']
         self.config['branch'] = '3.4.2'
         self.config['repo_address'] = 'https://github.com/delphes/delphes.git'
 

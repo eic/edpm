@@ -226,7 +226,7 @@ class RootRecipe(Recipe):
                       "libmysqlclient-dev libfftw3-dev libcfitsio-dev "
                       "graphviz-dev libavahi-compat-libdnssd-dev "
                       "libldap2-dev python-dev libxml2-dev libkrb5-dev "
-                      "libgsl0-dev libqt4-dev",
+                      "libgsl0-dev",
 
             'centos': "gcc-gfortran openssl-devel pcre-devel "
                       "mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel "
