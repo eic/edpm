@@ -23,10 +23,9 @@ class DelphesRecipe(GitCmakeRecipe):
     @staticmethod
     def gen_env(data):
         """Generates environments to be set"""
-        path = data['install_path']
+        install_path = data['install_path']
+        yield Prepend('PATH', os.path.join(install_path, 'bin'))
 
-        yield Set("DELPHES_HOME", path)
-        yield Prepend('CMAKE_PREFIX_PATH', os.path.join(path, 'share/eigen3/cmake/'))
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

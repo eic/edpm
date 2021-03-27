@@ -133,6 +133,7 @@ class Pythia8(Recipe):
     def gen_env(data):
         install_path = data['install_path']
         yield Set('PYTHIA8_ROOT_DIR', install_path)
+        yield Set('PYTHIA8_DIR', install_path)  # For Delphes
         yield Prepend('PATH', os.path.join(install_path, 'bin'))
         yield Prepend('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
 
