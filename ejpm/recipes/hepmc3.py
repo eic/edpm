@@ -7,7 +7,7 @@ https://gitlab.cern.ch/hepmc/HepMC
 
 import os
 
-from ejpm.engine.commands import run, workdir
+from ejpm.engine.commands import run, workdir, env
 from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
@@ -30,7 +30,20 @@ class HepMC3Recipe(GitCmakeRecipe):
 
         self.config['branch'] = '3.2.1'
         self.config['repo_address'] = 'https://gitlab.cern.ch/hepmc/HepMC3.git'
-        self.config['cmake_flags'] = ' -DHEPMC3_ENABLE_ROOTIO=OFF -DHEPMC3_ENABLE_PYTHON=OFF '
+        self.config['cmake_flags'] = ' -DHEPMC3_ENABLE_ROOTIO=OFF -DHEPMC3_ENABLE_PYTHON=OFF -DHEPMC3_BUILD_EXAMPLES=ON'
+
+    def step_build(self):
+
+        super(HepMC3Recipe, self).step_build()
+
+        # To fix error such as tput: No value for $TERM and no -T specified
+        env('TERM', 'xterm')
+
+        # now copy convert_example.exe as HepMC3-convert in the bin folder
+        examples_dir = os.path.join(self.config['build_path'], 'outputs', 'bin')
+        exec_file_name = os.path.join(self.config['install_path'], 'bin', 'HepMC3-convert')
+        workdir(examples_dir)
+        run('mv convert_example.exe ' + exec_file_name)
 
     @staticmethod
     def gen_env(data):

@@ -70,9 +70,9 @@ class Pythia8(Recipe):
             build_flags += " --with-fastjet3=" + fastjet_install[INSTALL_PATH]
 
         # Do we have HepMC?
-        hepmc_install = db.get_active_install("hepmc")
+        hepmc_install = db.get_active_install("hepmc3")
         if hepmc_install:
-            build_flags += " --with-hepmc2=" + hepmc_install[INSTALL_PATH]
+            build_flags += " --with-hepmc3=" + hepmc_install[INSTALL_PATH]
 
         # Do we have lhapdf6?
         lhapdf6_install = db.get_active_install('lhapdf6')

@@ -87,18 +87,16 @@ other packet managers and could be located anywhere. We also praise "version hel
 with CLHEP from ubuntu repo) and lack of software manpower (e.g. to sufficiently and continuously maintain packages 
 for major distros or even to fix some simple issues on GitHub). 
 
-Still we love our users and ~~know they will never install everything on their own~~ so we try to get things easier for them!
-
+What about Spack? - Spack works and shines on clusters with supervision of experts.
+In failed countless times when the task was to install something working for students. 
+Spack requires to know Spack and its concepts to debug its deep dependencies failures
 
 At this points **ejpm** tries to unify experience and make it simple to deploy eJANA for:
 
 - Users on RHEL 7 and CentOS
 - Users on Ubutnu (and Windows with WSL)
 - Docker and other containers
-
-The experience should be as easy as pointing right configuration and installing everything 
-automatically with just few commands. But also it should provide a possibility to fine control 
-over installed dependencies and help with development. 
+ 
 
 **Design features**
 
@@ -107,7 +105,7 @@ over installed dependencies and help with development.
     * it is shipped by pip (python official repo), so can be installed with one command on all major platforms
     * CLI (command line interface) - provides users with commands to manipulate packets 
     * JSON database stores the current state and packets locations
-    * It makes easy to... e.g. switch between known versions, rebuild packets, deploy missing packets, continue after fail, etc.
+    * It makes easy to...  rebuild packets, deploy missing packets, continue after fail, etc.
 
 * Under the hood:
     * Each packet has a single python file that defines how it will be installed and configured
@@ -240,6 +238,24 @@ ejpm env                             # To generate env & regenerate env files
 
 ***longer reading:***
 
+Every time configuration is changed (something installed or deleted) or 
+***ejpm env*** command is called, ejpm creates 
+2 environment files with the current environment: 
+
+```bash
+~/.local/share/ejpm/env.sh    # bash
+~/.local/share/ejpm/env.csh    # bash
+```
+
+There is a command to print our the environement. One can then redirect it to a file
+or feed to source directly (examples are below)
+
+```bash
+ejpm env    # type with --help for options
+```
+
+Examples: 
+
 1. Dynamically source output of ```ejpm env``` command (recommended)
     
     ```bash        
@@ -260,6 +276,39 @@ ejpm env                             # To generate env & regenerate env files
     (!) The files are regenerated each time ```ejpm``` changes something.
     If you change ```db.json``` by yourself, ejpm doesn't track it automatically, so call ```ejpm env```
     to regenerate these 2 files
+   
+
+## Configuration
+
+Ejpm stores the states in ``db.json``` file. There are certain parameters relevant for 
+all/most of the packages such as cxx_standard or a number of compilation threads. 
+Then there are parameters to configure each package installation.
+
+To view and change those configuration: 
+
+```
+ejpm config <packet name> <config name> = <new value> 
+```
+
+examples: 
+
+```bash
+ejpm config            # ejpm config global
+ejpm config global     # Show global configs
+ejpm config root       # Show configs for packet root
+
+ejpm config global cxx_standard=14  # Set globally to use C++14 for all new packages  
+                                    # (if that is not overwritten by the package config)
+
+ejpm config acts cxx_standard=17    # Set cxx standard for root (overwrites global level)
+```
+
+Config allows 
+
+
+
+
+
 
 **Where EJPM data is stored:**
 
