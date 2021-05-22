@@ -23,19 +23,19 @@ class ActsRecipe(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(ActsRecipe, self).__init__('acts')                        # This name will be used in ejpm commands
-        self.config['branch'] = 'v1.2.1'                                # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'v8.1.0'                                # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/acts-project/acts'    # Repo address
-        self.config['cmake_flags'] = '-DACTS_BUILD_PLUGIN_TGEO=ON'
+        self.config['cmake_flags'] = '-DACTS_BUILD_PLUGIN_TGEO=ON -DACTS_BUILD_PLUGIN_DD4HEP=ON -DACTS_BUILD_PLUGIN_DIGITIZATION=ON ACTS_BUILD_PLUGIN_JSON=ON '
         self.config['cxx_standard'] = 17
 
     def setup(self, db):
         # ACTS require C++14 (at least). We  check that it is set
-        if int(self.config['cxx_standard']) < 14:
-            message = "ERROR. cxx_standard must be 14 or above to build ACTS.\n"\
+        if int(self.config['cxx_standard']) < 17:
+            message = "ERROR. cxx_standard must be 17 or above to build ACTS.\n"\
                       "To set cxx_standard globally:\n"\
-                      "   ejpm config global cxx_standard=14\n"\
+                      "   ejpm config global cxx_standard=17\n"\
                       "To set cxx_standard for acts:\n"\
-                      "   ejpm config acts cxx_standard=14\n"\
+                      "   ejpm config acts cxx_standard=17\n"\
                       "(!) Make sure cmake is regenerated after. (rm <top_dir>/acts and run ejpm install acts again)\n"
             raise ValueError(message)
 

@@ -1,6 +1,6 @@
 """
-PodIO
-https://github.com/AIDASoft/podio.git
+Nuclear Physics Detectors library
+https://eicweb.phy.anl.gov/EIC/NPDet.git
 """
 
 import os
@@ -9,8 +9,8 @@ from ejpm.engine.env_gen import Set, Append, Prepend
 from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class PodioRecipe(GitCmakeRecipe):
-    """Provides data for building and installing Genfit framework
+class NpDetRecipe(GitCmakeRecipe):
+    """Provides data for building and installing NPDet librarty
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
     install_path = {app_path}/root-{version}         # Where the binary installation is
@@ -22,37 +22,23 @@ class PodioRecipe(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(PodioRecipe, self).__init__('podio')                        # This name will be used in ejpm commands
-        self.config['branch'] = 'v00-13'                                # The branch or tag to be cloned (-b flag)
-        self.config['repo_address'] = 'https://github.com/AIDASoft/podio.git'    # Repo address
-        self.config['cmake_flags'] = '-DBUILD_TESTING=ON'
-        self.config['cxx_standard'] = 17
+        super(NpDetRecipe, self).__init__('npdet')    # This name will be used in ejpm commands
+        self.required_deps = ['root', 'hepmc3', 'geant', 'dd4hep']
+        self.config['branch'] = 'master'                             # The branch or tag to be cloned (-b flag)
+        self.config['repo_address'] = 'https://eicweb.phy.anl.gov/EIC/NPDet.git'
 
     @staticmethod
     def gen_env(data):
         """Generates environments to be set"""
         path = data['install_path']
 
-        yield Set('PODIO_ROOT', path)
-
         # it could be lib or lib64. There are bugs on different platforms (RHEL&centos and WSL included)
         # https://stackoverflow.com/questions/46847939/config-site-for-vendor-libs-on-centos-x86-64
         # https: // bugzilla.redhat.com / show_bug.cgi?id = 1510073
 
-        import platform
-        if platform.system() == 'Darwin':
-            if os.path.isdir(os.path.join(path, 'lib64')):
-                yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib64'))
-            else:
-                yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib'))
-
-        if os.path.isdir(os.path.join(path, 'lib64')):
-            yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib64'))
-        else:
-            yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
-
-        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'podio'))
-
+        # yield Prepend('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake'))
+        yield Prepend('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
+        yield Prepend('PATH', os.path.join(path, 'bin'))
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
@@ -62,9 +48,8 @@ class PodioRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "python-jinja2 python-yaml",
-            'centos': "",
-            'centos8': "",
+            'ubuntu': "libspdlog-dev libocct-foundation-dev occt-misc libocct-draw-dev libocct-data-exchange-dev libfmt-dev",
+            'centos': ""
         },
         'optional': {
             'ubuntu': "",
