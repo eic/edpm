@@ -53,6 +53,7 @@ class DD4HEPRecipe(GitCmakeRecipe):
         install_path = data['install_path']
         bin_path = os.path.join(install_path, 'bin')
         lib_path = os.path.join(install_path, 'lib')        # on some platforms
+        include_path = os.path.join(install_path, 'include')        # on some platforms
         cmake_path = os.path.join(install_path, 'cmake')
 
         # The next is about conda
@@ -68,6 +69,7 @@ class DD4HEPRecipe(GitCmakeRecipe):
             env_updates = [
                 env_gen.Append('LD_LIBRARY_PATH', lib_path),
                 env_gen.Append('CMAKE_PREFIX_PATH', cmake_path),
+                env_gen.Append('ROOT_INCLUDE_PATH', include_path),   # So that rootcling could find it
             ]
 
             if platform.system() == 'Darwin':
@@ -79,16 +81,21 @@ class DD4HEPRecipe(GitCmakeRecipe):
         # We just call geant4.sh in different shells
         yield Prepend('PATH', bin_path)  # to make available clhep-config and others
 
-        sh_text = "source {}".format(os.path.join(bin_path, 'thisdd4hep_only.sh'))
+        # We just call thisroot.xx in different shells
+        bash_thisdd4hep_path = os.path.join(bin_path, 'thisdd4hep_only.sh')
+        bash_text = '\n' \
+                    'if [[ -z "$DD4HEP_INSTALLED_BY_CONDA" ]]; then \n' \
+                    '   if test -f "{0}"; then \n' \
+                    '      source {0}; \n' \
+                    '   fi\n' \
+                    'fi\n'.format(bash_thisdd4hep_path)
+
 
         # in Geant CSH script Geant asks to get a path for geant bin directory
         csh_text = 'echo "WARNING(!) DD4HEP requires bash to setup environment variables'
 
-        sh_text = sh_text if not is_under_conda else "# Don't call thisdd4hep_only.sh under conda"
-        csh_text = csh_text if not is_under_conda else "# Don't call thisdd4hep_only.sh under conda"
-
         yield env_gen.RawText(
-            sh_text,
+            bash_text,
             csh_text,
             update_python_environment
         )

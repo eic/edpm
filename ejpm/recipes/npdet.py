@@ -23,7 +23,7 @@ class NpDetRecipe(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(NpDetRecipe, self).__init__('npdet')    # This name will be used in ejpm commands
-        self.required_deps = ['root', 'hepmc3', 'geant', 'dd4hep']
+        self.required_deps = ['eigen3', 'hepmc3', 'root', 'geant', 'dd4hep']
         self.config['branch'] = 'master'                             # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://eicweb.phy.anl.gov/EIC/NPDet.git'
 
@@ -48,7 +48,7 @@ class NpDetRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "libspdlog-dev libocct-foundation-dev occt-misc libocct-draw-dev libocct-data-exchange-dev libfmt-dev",
+            'ubuntu': "libspdlog-dev libocct-foundation-dev occt-misc libocct-draw-dev libocct-data-exchange-dev libfmt-dev libtbb-dev",
             'centos': ""
         },
         'optional': {

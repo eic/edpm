@@ -31,7 +31,7 @@ class RootRecipe(Recipe):
 
         # Fill the common path pattern
         super(RootRecipe, self).__init__("root")
-        self.config['branch'] = 'v6-22-02'
+        self.config['branch'] = 'v6-24-02'
         self.config['cmake_custom_flags'] = ''
         self.config['cmake_build_type'] = 'RelWithDebInfo'
         self.config['cxx_standard'] = '14'
