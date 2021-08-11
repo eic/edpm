@@ -46,7 +46,12 @@ class GitCmakeRecipe(Recipe):
 
         #
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone --depth 1 -b {branch} {repo_address} {source_path}"\
+        if "git_clone_depth" not in self.config.keys():
+            is_main_branch = self.config.get("branch", "") not in ["master", "main"]
+            self.config["git_clone_depth"] = "--depth 1" if is_main_branch else ""
+
+
+        self.clone_command = "git clone {git_clone_depth} -b {branch} {repo_address} {source_path}"\
             .format(**self.config)
 
         # cmake command:

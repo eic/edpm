@@ -28,7 +28,7 @@ class DD4HEPRecipe(GitCmakeRecipe):
         # Set initial values for parent class and self
         super(DD4HEPRecipe, self).__init__('dd4hep')
 
-        self.config['branch'] = 'v01-16'
+        self.config['branch'] = 'v01-17'
         self.config['repo_address'] = 'https://github.com/AIDASoft/DD4hep.git'
         self.config['cmake_flags'] = ' -DDD4HEP_USE_GEANT4=ON -DDD4HEP_USE_LCIO=OFF '
 
