@@ -1,6 +1,6 @@
 exclude .gitignore
-exclude run_ejpm.py
+exclude run_edpm.py
 exclude containers
 
 include pip_readme.md
-recursive-include ejpm/ *.py
+recursive-include edpm/ *.py

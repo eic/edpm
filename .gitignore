@@ -4,7 +4,7 @@
 # Python egg metadata, regenerated from source files by setuptools.
 /*.egg-info
 
-# ejpm files
+# edpm files
 
 db.json
 

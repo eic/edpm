@@ -1,7 +1,7 @@
 import os
 import inspect
 from setuptools import setup
-from ejpm.version import version as ejpm_version
+from edpm.version import version as edpm_version
 
 # The directory containing this file
 this_script_dir = os.path.dirname(inspect.stack()[0][1])
@@ -12,12 +12,12 @@ with open(os.path.join(this_script_dir, "pip_readme.md"), 'r') as readme_file:
 
 # This call to setup() does all the work
 setup(
-    name="ejpm",
-    version=ejpm_version,
+    name="edpm",
+    version=edpm_version,
     description="EIC Jana Package Manager",
     long_description=readme,
     long_description_content_type="text/markdown",
-    url="https://gitlab.com/eic/escalate/ejpm",
+    url="https://gitlab.com/eic/escalate/edpm",
     author="Dmitry Romanov",
     author_email="romanov@jlab.org",
     license="MIT",
@@ -34,13 +34,13 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
     ],
-    packages=["ejpm"],
+    packages=["edpm"],
     include_package_data=True,
     setup_requires=["click", "appdirs"],
     install_requires=["click", "appdirs"],
     entry_points={
         "console_scripts": [
-            "ejpm=ejpm:ejpm_cli",
+            "edpm=edpm:edpm_cli",
         ]
     },
 )

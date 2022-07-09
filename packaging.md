@@ -48,7 +48,7 @@ python -m twine upload --cert /home/romanov/JLabCA.crt dist/*
 A tutorial:
 https://packaging.python.org/tutorials/packaging-projects/
 
-ejpm pip: https://pypi.org/project/ejpm/#history
+edpm pip: https://pypi.org/project/edpm/#history
 
 SO question for JLab certificate validation
 https://stackoverflow.com/questions/10667960/python-requests-throwing-sslerror/10668173

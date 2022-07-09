@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+import sys
+import os
+import inspect
+
+if __name__ == '__main__':
+
+    # make sure this command will work with edpm in this dir
+    edpm_file_path = os.path.dirname(inspect.stack()[0][1])
+
+    # Fixes the case if somebody set a link like ln -s /.../bin/edpm /usr/bin/
+    if os.path.islink(edpm_file_path):
+        edpm_file_path = os.path.realpath(edpm_file_path)
+
+    edpm_top_dir = os.path.dirname(edpm_file_path)
+
+    sys.path.insert(0, edpm_top_dir)
+
+    try:
+        import edpm
+
+        # Run edpm cli
+        edpm.edpm_cli()
+    except ModuleNotFoundError as ex:
+        if 'appdirs' in str(ex):
+            print("No module named 'appdirs'. Please install it. 'python3 -m pip install --user appdirs' should work")
