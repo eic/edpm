@@ -1,9 +1,5 @@
 # edpm
 
-<h2><span style="color:red;">The repository is moved</span></h2>
-
-### ejpm was renamed to edpm and lives on [https://github.com/eic/edpm](https://github.com/eic/edpm)
-
 **edpm** stands for **E**IC **d**evelopment  **p**acket ~~**m**anager~~ helper
 
 **The goal** of edpm is to provide esier experience of building EIC simulation and reconstruction 
