@@ -249,7 +249,7 @@ class PacketStateDatabase(object):
         # version 3 to 4 migration
         if file_version == 3:
             if 'cxx_standard' not in data['global_build_config']:
-                data['global_build_config']['cxx_standard'] = '11'
+                data['global_build_config']['cxx_standard'] = '17'
 
             data['file_version'] = 4
 

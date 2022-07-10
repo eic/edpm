@@ -31,10 +31,10 @@ class RootRecipe(Recipe):
 
         # Fill the common path pattern
         super(RootRecipe, self).__init__("root")
-        self.config['branch'] = 'v6-24-02'
+        self.config['branch'] = 'v6-26-04'
         self.config['cmake_custom_flags'] = ''
         self.config['cmake_build_type'] = 'RelWithDebInfo'
-        self.config['cxx_standard'] = '14'
+        self.config['cxx_standard'] = '17'
 
     def find_python(self):
         """Searches default python which is first found in PATH"""

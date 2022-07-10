@@ -1,6 +1,6 @@
 
 # Stringified version. Used both for setup.py and for internal code
-version = '0.3.54'
+version = '0.4.00'
 
 # version as the tuple of ints
 version_tuple = tuple(int(val) for val in version.split('.'))
