@@ -23,9 +23,9 @@ class PodioRecipe(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(PodioRecipe, self).__init__('podio')                        # This name will be used in edpm commands
-        self.config['branch'] = 'v00-13'                                # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'v00-14-03'                                # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/AIDASoft/podio.git'    # Repo address
-        self.config['cmake_flags'] = '-DBUILD_TESTING=ON'
+        self.config['cmake_flags'] = '-DBUILD_TESTING=ON -DUSE_EXTERNAL_CATCH2=OFF'
         self.config['cxx_standard'] = 17
 
     @staticmethod

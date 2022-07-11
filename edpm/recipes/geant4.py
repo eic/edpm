@@ -22,10 +22,10 @@ class GeantRecipe(Recipe):
     """
 
     def __init__(self):
-        super(GeantRecipe, self).__init__('geant')
+        super(GeantRecipe, self).__init__('geant4')
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
-        self.config['branch'] = 'v10.7.1'
+        self.config['branch'] = 'v11.0.2'
         self.config['cmake_build_type'] = 'RelWithDebInfo'
 
 

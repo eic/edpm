@@ -26,7 +26,7 @@ class HepMCRecipe(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(HepMCRecipe, self).__init__('hepmc')
+        super(HepMCRecipe, self).__init__('hepmc2')
 
         self.config['branch'] = 'HEPMC_02_06_09'
         self.config['repo_address'] = 'https://gitlab.cern.ch/hepmc/HepMC.git'

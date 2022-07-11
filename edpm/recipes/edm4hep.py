@@ -22,8 +22,9 @@ class PodioRecipe(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(PodioRecipe, self).__init__('podio')                        # This name will be used in edpm commands
-        self.config['branch'] = 'v00-05'                                # The branch or tag to be cloned (-b flag)
+        super(PodioRecipe, self).__init__('podio')                          # This name will be used in edpm commands
+        self.config['branch'] = 'v00-05'                                    # The branch or tag to be cloned (-b flag)
+        self.required_deps = ['podio']
         self.config['repo_address'] = 'https://github.com/key4hep/EDM4hep'    # Repo address
         self.config['cmake_flags'] = ''
         self.config['cxx_standard'] = 17

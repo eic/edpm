@@ -23,7 +23,7 @@ class ActsRecipe(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(ActsRecipe, self).__init__('acts')                        # This name will be used in edpm commands
-        self.config['branch'] = 'v8.3.0'                                # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'v19.4.0'                                # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/acts-project/acts'    # Repo address
         self.config['cmake_flags'] = '-DACTS_BUILD_PLUGIN_TGEO=ON -DACTS_BUILD_PLUGIN_DD4HEP=ON -DACTS_BUILD_PLUGIN_DIGITIZATION=ON ACTS_BUILD_PLUGIN_JSON=ON '
         self.config['cxx_standard'] = 17
