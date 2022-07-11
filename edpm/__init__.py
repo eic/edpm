@@ -12,7 +12,7 @@ The database file doesn't exist. Probably you run 'edpm' for one of the first ti
 
 1. Install or check OS maintained required packages:
     > edpm req ubuntu         # for all packets edpm knows to built/install
-    > edpm req ubuntu ejana   # for ejana and its dependencies only
+    > edpm req ubuntu eicrecon   # for eicrecon and its dependencies only
    
    * - at this point put 'ubuntu' for debian and 'centos' for RHEL and CentOS systems. 
    Will be updated in future to support macOS, and to have grained versions
@@ -26,12 +26,12 @@ The database file doesn't exist. Probably you run 'edpm' for one of the first ti
    > edpm set root `$ROOTSYS`
    
    You may set paths for other installed dependencies:
-   > edpm install ejana --missing --explain    # to see missing dependencies
+   > edpm install eicrecon --missing --explain    # to see missing dependencies
    > edpm set <name> <path>                    # to set dependency path
    
 3. Then you can install all missing dependencies:
 
-   > edpm install ejana --missing
+   > edpm install eicrecon --missing
    
 
 P.S - you can read this message by adding --help-first flag
@@ -49,7 +49,7 @@ _starting_workdir = ""
 @pass_edpm_context
 @click.pass_context
 def edpm_cli(ctx, ectx, debug, top_dir):
-    """edpm stands for EIC Jana Packet Manager"""
+    """edpm stands for EIC Development Packet Manager"""
 
     assert isinstance(ectx, edpmApi)    # Type check for ectx
 

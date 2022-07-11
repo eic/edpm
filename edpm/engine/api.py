@@ -186,7 +186,7 @@ class edpmApi(object):
                 step.update_python_env()  # Do environment update
 
     def req_get_known_os(self):
-        return self.pm.os_deps_by_name['ejana']['required'].keys()   # TODO change for
+        return self.pm.os_deps_by_name['eicrecon']['required'].keys()   # TODO change for
 
     def req_get_deps(self, os_name, packet_names=None):
         """ Returns

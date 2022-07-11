@@ -49,7 +49,7 @@ class RecipeManager(object):
 
         # The next are collection of requirements for different operating systems
         # The type is map to have requirements by packets, i.e.:
-        #     self.centos_required_packets['ejana'] - list for ejana
+        #     self.centos_required_packets['eicrecon'] - list for eicrecon
         self.os_deps_by_name = {}
 
     def load_installers(self, modules_dir="", package_name=""):
@@ -97,11 +97,11 @@ class RecipeManager(object):
     def get_installation_chain_names(self, main_recepie_name, deps_only=False):
         """
         Returns name of the package + dependencies edpm can install
-        so it is like: ['CLHEP', 'root', ..., 'ejana'] for installer_name=ejana
+        so it is like: ['CLHEP', 'root', ..., 'eicrecon'] for installer_name=eicrecon
         it is single: ['CLHEP'] for installer_name='CLHEP'
 
         :param deps_only: get only names of dependencies not packet name included
-        :param main_recepie_name: name of packet like 'ejana'
+        :param main_recepie_name: name of packet like 'eicrecon'
         :return: list with dependencies names and installer name itself
         """
 

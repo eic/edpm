@@ -20,7 +20,7 @@ def req(ctx, ectx, os_name, args, print_mode):
     \b
     Example:
       req ubuntu
-      req centos ejana
+      req centos eicrecon
       req centos root clhep
 
     By adding --optional, --required, --all flags you can use this command with packet managers:\n
@@ -56,7 +56,7 @@ def req(ctx, ectx, os_name, args, print_mode):
         click.echo(ctx.get_help())
         ctx.exit(1)
 
-    # We have something like 'ubuntu ejana'
+    # We have something like 'ubuntu eicrecon'
     required, optional = ectx.req_get_deps(os_name, args)
 
     if print_mode == "optional":

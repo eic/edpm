@@ -8,7 +8,7 @@ framework and supporting packages on a user machine with development reasons.
 ### Table of contents:
 * [Motivation](#motivation)
 * [edpm installation](#installation)
-* [Get ejana installed](#get-ejana-installed)
+* [Get eicrecon installed](#get-eicrecon-installed)
 * [Manage environment](#environment)
 * [Troubleshooting](#installation-troubleshooting)
 * [Manual or devel installation](#manual-or-development-installation)
@@ -38,20 +38,20 @@ Install everything else
 ```bash
 
 # install prerequesties
-edpm req centos ejana         # get list of OS packets required to build jana and deps
+edpm req centos eicrecon         # get list of OS packets required to build jana and deps
 sudo yum install ...          # install whatever 'edpm req' shows
 
 # setup installation dir and existing packets, introspect
 edpm --top-dir=<where-to>     # Directory where packets will be installed
 edpm                          # To see how edpm is configured
-edpm install ejana --explain  # To see what is to be installed
+edpm install eicrecon --explain  # To see what is to be installed
 edpm set root `$ROOTSYS`      # if you have CERN.ROOT. Or skip this step
 edpm set <packet> <path>      # set other existing packets. Or skip this step!!!
 edpm config global cxx_standard=17   # It is recommended if compiler supports C++17
 
 
 # Build and install the rest
-edpm install ejana            # install ejana and dependencies (like genfit, jana and rave)
+edpm install eicrecon            # install eicrecon and dependencies (like genfit, jana and rave)
 edpm install g4e              # install Geant-4-Eic and dependencies (Geant4, etc)
 
 # Set environment
@@ -87,7 +87,7 @@ What about Spack? - Spack works and shines on clusters with supervision of exper
 In failed countless times when the task was to install something working for students. 
 Spack requires to know Spack and its concepts to debug its deep dependencies failures
 
-At this points **edpm** tries to unify experience and make it simple to deploy eJANA for:
+At this points **edpm** tries to unify experience and make it simple to deploy eicrecon for:
 
 - Users on RHEL 7 and CentOS
 - Users on Ubutnu (and Windows with WSL)
@@ -159,17 +159,17 @@ More on this:
 
 <br><br>
 
-## Get ejana installed
+## Get eicrecon installed
 
 (or crash course to edpm)
 
 ***TL;DR;*** example for CentOS/RHEL7
 ```bash
-edpm req centos ejana         # get list of OS packets required to build jana and deps
+edpm req centos eicrecon         # get list of OS packets required to build jana and deps
 sudo yum install ...          # install watever 'edpm req' shows
 edpm --top-dir=<where-to>     # Directory where packets will be installed
 edpm set root `$ROOTSYS`      # if you have CERN.ROOT. Or skip this step
-edpm install ejana --missing  # install ejana and dependencies (like genfit, jana and rave)
+edpm install eicrecon --missing  # install eicrecon and dependencies (like genfit, jana and rave)
 source<(edpm env)             # set environment variables
 ```
 
@@ -180,7 +180,7 @@ source<(edpm env)             # set environment variables
 
     ```bash
     edpm req ubuntu         # for all packets that edpm knows
-    edpm req centos ejana   # for ejana and its dependencies only
+    edpm req centos eicrecon   # for eicrecon and its dependencies only
     ```
    
     At this point only ***'ubuntu'*** and ***'centos'*** are known words for ```req``` command. Put: 
@@ -202,7 +202,7 @@ source<(edpm env)             # set environment variables
    
    You may set paths for other installed dependencies combining:  
    ```bash
-   edpm install ejana --missing --explain    # to see missing dependencies
+   edpm install eicrecon --missing --explain    # to see missing dependencies
    edpm set <name> <path>                    # to set dependency path
    edpm set jana <path to jana2 install>     # JANA2 as an example
    ```
@@ -212,7 +212,7 @@ source<(edpm env)             # set environment variables
 4. Then you can install edpm and all missing dependencies:
 
     ```bash
-    edpm install ejana
+    edpm install eicrecon
     ```
 
 5. Set right environment variables (right in the next section)

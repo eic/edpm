@@ -47,7 +47,7 @@ def _print_cmake(ectx):
     db = ectx.db
     pm = ectx.pm
 
-    flag_names_by_packet_names = pm.recipes_by_name["ejana"].cmake_deps_flag_names
+    flag_names_by_packet_names = pm.recipes_by_name["eicrecon"].cmake_deps_flag_names
 
     flags = ['-D{}="{}"'.format(flag_names_by_packet_names[name], install_info[INSTALL_PATH])
              for name, install_info in zip(db.packet_names, map(db.get_active_install, db.packet_names))

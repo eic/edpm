@@ -25,15 +25,15 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
 
     \b
     Examples:
-      > edpm install ejana --missing    # install ejana and all missing dependencies
+      > edpm install eicrecon --missing    # install eicrecon and all missing dependencies
       > edpm install rave --single      # install just rave package, dependencies are not checked
-      > edpm install ejana --all        # install all ejana dependencies by edpm
+      > edpm install eicrecon --all        # install all eicrecon dependencies by edpm
                                         # even if user pointed some deps to external places
 
     \b
     --explain flag may be used to see what dependencies packet has and what is missing
 
-      > edpm install ejana --missing --explain   # print what to be installed but not install
+      > edpm install eicrecon --missing --explain   # print what to be installed but not install
 
     """
 
@@ -251,4 +251,4 @@ def _print_help_no_top_path():
            "     edpm --top-dir=`pwd`\n\n"
 
            "  to install missing packets to your home directory: \n"
-           "     edpm --top-dir=~/.ejana\n\n")
+           "     edpm --top-dir=~/.eicrecon\n\n")

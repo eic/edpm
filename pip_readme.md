@@ -9,18 +9,18 @@ framework and supporting packages on a user machine with development reasons.
 ```bash
 
 # INSTALL PREREQUESTIES
-edpm req centos ejana         # get list of OS packets required to build jana and deps
+edpm req centos eicrecon         # get list of OS packets required to build jana and deps
 sudo yum install ...          # install watever 'edpm req' shows
 
 # or if you are a lucky bash user (yes, csh is still common in physics):
-sudo yum install $(edpm req centos ejana --all) 
+sudo yum install $(edpm req centos eicrecon --all) 
 
 # SETUP edpm
 edpm --top-dir=<where-to>   # Directory where packets will be installed
 edpm set root `$ROOTSYS`    # (optional) if you have CERN.ROOT or other monster packets: 
 
 # INSTALL PACKETS
-edpm install ejana          # install ejana and dependencies (like genfit, jana and rave)
+edpm install eicrecon          # install eicrecon and dependencies (like genfit, jana and rave)
 edpm install g4e            # install 'Geant 4 EIC' and dependencies (like vgm, hepmc)
 
 # SET RIGHT ENVIRONMENT 
@@ -47,7 +47,7 @@ At this points **edpm** tries to unify experience and make it simple to deploy e
 - Docker and other containers
 
 
-It should be as easy as ```> edpm install ejana``` to build and install a packet called 'ejana'
+It should be as easy as ```> edpm install eicrecon``` to build and install a packet called 'eicrecon'
  and its dependencies. But it should also provide a possibility to adopt existing installations
   and have a fine control over dependencies: ```> edpm set root /opt/root6_04_16```
 
@@ -59,7 +59,7 @@ download binaries (working with GPG keys, etc.), finds fastest mirrors, manage..
     build system and one can compile and install e<sup>JANA</sup> without edpm   
 
 
-## Get ejana installed
+## Get eicrecon installed
 
 Step by step explained instruction:
 
@@ -68,7 +68,7 @@ Step by step explained instruction:
     ```bash
     # To see the prerequesties
     edpm req ubuntu         # for all packets that edpm knows
-    edpm req centos ejana   # for ejana and its dependencies only
+    edpm req centos eicrecon   # for eicrecon and its dependencies only
     
     # To put everything into packet manager 
     apt-get -y install `edpm req ubuntu --all`   # debian
@@ -94,16 +94,16 @@ Step by step explained instruction:
    
    You may set paths for other installed dependencies combining:  
    ```bash
-   edpm install ejana --missing --explain    # to see missing dependencies
+   edpm install eicrecon --missing --explain    # to see missing dependencies
    edpm set <name> <path>                    # to set dependency path
    ```
    
    Or you may skip this step and just get everything installed by edpm
    
-4. **Install ejana** and all missing dependencies:
+4. **Install eicrecon** and all missing dependencies:
 
     ```bash
-    edpm install ejana
+    edpm install eicrecon
     ```
 
 5. **Set environment**. There are 3 ways for doing this this: 

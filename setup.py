@@ -14,7 +14,7 @@ with open(os.path.join(this_script_dir, "pip_readme.md"), 'r') as readme_file:
 setup(
     name="edpm",
     version=edpm_version,
-    description="EIC Jana Package Manager",
+    description="EIC Development Package Manager",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/eic/edpm",

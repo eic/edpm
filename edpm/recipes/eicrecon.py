@@ -1,6 +1,6 @@
 """
-This file provides information of how to build and configure EIC Jana (ejana) framework:
-https://gitlab.com/eic/ejana
+This file provides information of how to build and configure EIC Reconstruction (eicrecon) framework:
+https://gitlab.com/eic/eicrecon
 
 """
 
@@ -35,10 +35,6 @@ class EicreconRecipe(Recipe):
     def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
-        # (!) at this point we alwais use dev environment
-        if self.config['install_mode'] == 'dev':
-            return self._setup_dev()
-
         #
         # use_common_dirs_scheme sets standard package variables:
         # version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
@@ -49,7 +45,7 @@ class EicreconRecipe(Recipe):
 
         #
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/escalate/ejana.git {source_path}"\
+        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/escalate/eicrecon.git {source_path}"\
             .format(**self.config)
 
         # cmake command:
@@ -98,7 +94,7 @@ class EicreconRecipe(Recipe):
     def gen_env(data):
         """Generates environments to be set"""
         install_path = data['install_path']
-        yield Set('EJANA_HOME', install_path)
+        yield Set('eicrecon_HOME', install_path)
         yield Prepend('JANA_PLUGIN_PATH', os.path.join(install_path, 'plugins'))
         yield Prepend('PATH', os.path.join(install_path, 'bin'))
 
