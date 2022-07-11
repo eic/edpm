@@ -12,7 +12,7 @@ from edpm.engine.env_gen import Set, Prepend
 from edpm.engine.recipe import Recipe
 
 
-class GeantRecipe(Recipe):
+class EcceDetectorRecipe(Recipe):
     """Provides data for building and installing Geant4 framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -26,7 +26,7 @@ class GeantRecipe(Recipe):
         """
 
         # Set initial values for parent class and self
-        super(GeantRecipe, self).__init__('g4e')
+        super(EcceDetectorRecipe, self).__init__('ecce')
         self.clone_command = ''             # is set during self.setup(...)
         self.build_cmd = ''                 # is set during self.setup(...)
         self.config['branch'] = 'v1.4.1'
