@@ -1,7 +1,7 @@
 """
-This file provides information of how to build and configure Geant4 framework:
-https://gitlab.com/jlab-eic/g4e.git
-
+EIC DD4Hep detector geometry files:
+https://github.com/eic/ecce
+https://github.com/eic/ip6
 
 """
 
@@ -26,24 +26,26 @@ class EcceDetectorRecipe(Recipe):
         """
 
         # Set initial values for parent class and self
-        super(EcceDetectorRecipe, self).__init__('ecce')
+        super(EcceDetectorRecipe, self).__init__('detector')
         self.clone_command = ''             # is set during self.setup(...)
         self.build_cmd = ''                 # is set during self.setup(...)
-        self.config['branch'] = 'v1.4.1'
+        self.config['branch'] = 'master'
         self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm']
-        self.config['repo_address'] = 'https://gitlab.com/eic/escalate/g4e.git'
+        self.config['repo_address_ecce'] = 'https://github.com/eic/ecce'
+        self.config['repo_address_ip6'] = 'https://github.com/eic/ip6'
 
     def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
         #
         # The directory with source files for current version
-        self.config['source_path'] = "{app_path}/g4e-dev".format(**self.config)
-        self.config['build_path'] = "{app_path}/g4e-dev/cmake-build-debug".format(**self.config)  # build in dev directory
-        self.config['install_path'] = "{app_path}/g4e-dev".format(**self.config)
+        self.use_common_dirs_scheme()
 
         #
         # Git download link. Clone with shallow copy
+        self.config['source_path_ecce'] = os.path.join(self.config['source_path'], 'ecce')
+        self.config['source_path_ip6'] = os.path.join(self.config['source_path'], 'ip6')
+
         self.clone_command = "git clone -b {branch} {repo_address} {source_path}"\
             .format(**self.config)
 
@@ -53,7 +55,7 @@ class EcceDetectorRecipe(Recipe):
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(**self.config)
-
+        
     def step_install(self):
         self.step_clone()
         self.step_build()

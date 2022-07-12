@@ -25,7 +25,7 @@ class PodioRecipe(GitCmakeRecipe):
         super(PodioRecipe, self).__init__('podio')                        # This name will be used in edpm commands
         self.config['branch'] = 'v00-14-03'                                # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/AIDASoft/podio.git'    # Repo address
-        self.config['cmake_flags'] = '-DBUILD_TESTING=ON -DUSE_EXTERNAL_CATCH2=OFF'
+        self.config['cmake_flags'] = '-DBUILD_TESTING=ON'
         self.config['cxx_standard'] = 17
 
     @staticmethod
@@ -62,7 +62,7 @@ class PodioRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "python-jinja2 python-yaml",
+            'ubuntu': "python3-jinja2 python3-yaml",
             'centos': "",
             'centos8': "",
         },

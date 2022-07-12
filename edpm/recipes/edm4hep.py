@@ -9,7 +9,7 @@ from edpm.engine.env_gen import Set, Append, Prepend
 from edpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class PodioRecipe(GitCmakeRecipe):
+class Edm4HepRecipe(GitCmakeRecipe):
     """Provides data for building and installing Genfit framework
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
@@ -22,11 +22,11 @@ class PodioRecipe(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(PodioRecipe, self).__init__('podio')                          # This name will be used in edpm commands
-        self.config['branch'] = 'v00-05'                                    # The branch or tag to be cloned (-b flag)
+        super(Edm4HepRecipe, self).__init__('edm4hep')                          # This name will be used in edpm commands
+        self.config['branch'] = 'v00-05'                                        # The branch or tag to be cloned (-b flag)
         self.required_deps = ['podio']
-        self.config['repo_address'] = 'https://github.com/key4hep/EDM4hep'    # Repo address
-        self.config['cmake_flags'] = ''
+        self.config['repo_address'] = 'https://github.com/key4hep/EDM4hep'      # Repo address
+        self.config['cmake_flags'] = '-DUSE_EXTERNAL_CATCH2=OFF'
         self.config['cxx_standard'] = 17
 
     @staticmethod
