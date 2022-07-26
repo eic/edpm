@@ -27,33 +27,30 @@ class EicreconRecipe(Recipe):
         """
         """
         super(EicreconRecipe, self).__init__('eicrecon')
-        self.clone_command = ""
-        self.build_command = ""
-        self.required_deps = ['root', 'hepmc3', 'podio', 'edm4hep', 'geant4', 'dd4hep', 'jana2']
-        self.config['branch'] = 'master'
+        self.config['repo_address'] = 'https://github.com/eic/EICrecon.git'
+        self.required_deps = ['eigen3', 'clhep', 'hepmc3', 'root', 'podio', 'edm4hep', 'geant4', 'acts', 'dd4hep', 'jana2', 'detector']
+        self.config['branch'] = 'main'
 
     def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
-        #
-        # use_common_dirs_scheme sets standard package variables:
-        # version      = 'v{}-{:02}-{:02}'                 # Stringified version. Used to create directories and so on
-        # source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
-        # build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
-        # install_path = {app_path}/root-{version}         # Where the binary installation is
-        self.use_common_dirs_scheme()
-
-        #
         # Git download link. Clone with shallow copy
-        self.clone_command = "git clone --depth 1 -b {branch} https://gitlab.com/eic/escalate/eicrecon.git {source_path}"\
+        self.config['source_path'] = "{app_path}/{branch}".format(**self.config)
+
+        # The directory for cmake build
+        self.config['build_path'] = "{app_path}/{branch}/ecce/cmake-build-debug".format(**self.config)
+
+        self.config['install_path'] = "{app_path}/{branch}/compiled".format(**self.config)
+
+        self.config['clone_command'] = "git clone -b {branch} {repo_address} {source_path}" \
             .format(**self.config)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.build_cmd = "cmake -Wno-dev -DCMAKE_INSTALL_PREFIX={install_path} {source_path}" \
-                         "&& cmake --build . -- -j {build_threads}" \
-                         "&& cmake --build . --target install" \
-                         .format(**self.config)  # make global options like '-j8'. Skip now
+        self.config['build_cmd'] = "cmake -w -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
+                                   "&& cmake --build . -- -j {build_threads}" \
+                                   "&& cmake --build . --target install" \
+            .format(**self.config)
 
     def step_install(self):
         self.step_clone()
@@ -67,19 +64,19 @@ class EicreconRecipe(Recipe):
             return  # The directory exists and is not empty. Nothing to do
 
         run('mkdir -p {source_path}'.format(**self.config))   # Create the directory
-        run(self.clone_command)                               # Execute git clone command
+        run(self.config['clone_command'])                               # Execute git clone command
 
     def step_build(self):
         """Builds JANA from the ground"""
 
         # Create build directory
-        run('mkdir -p {}'.format(self.build_path))
+        run('mkdir -p {}'.format(self.config['build_path']))
 
         # go to our build directory
-        workdir(self.build_path)
+        workdir(self.config['build_path'])
 
         # run scons && scons install
-        run(self.build_cmd)
+        run(self.config['build_cmd'])
 
     def step_reinstall(self):
         """Delete everything and start over"""

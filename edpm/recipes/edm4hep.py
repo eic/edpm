@@ -51,7 +51,7 @@ class Edm4HepRecipe(GitCmakeRecipe):
         else:
             yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
 
-        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'edm4hep'))
+        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'EDM4HEP'))
 
 
     #

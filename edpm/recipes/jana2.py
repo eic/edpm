@@ -38,6 +38,8 @@ class JanaRecipe(GitCmakeRecipe):
         yield Append('JANA_PLUGIN_PATH', '$JANA_HOME/plugins')
         yield Prepend('PATH', '$JANA_HOME/bin')
 
+        yield Append('CMAKE_PREFIX_PATH', os.path.join(install_path, 'lib', 'cmake', 'JANA'))
+
     #
     # OS dependencies are a map of software packets installed by os maintainers
     # The map should be in form:

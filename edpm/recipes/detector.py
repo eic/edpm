@@ -135,14 +135,23 @@ class EcceDetectorRecipe(Recipe):
     def gen_env(data):
         """Generates environments to be set"""
 
-        install_path = os.path.join(data['install_path'], 'share/ecce/')
+        install_path = data['built_with_config']['install_path_ecce']
+        # print(data)
+        # exit(1)
+        ecce_lib_path = os.path.join(data['built_with_config']['install_path_ecce'], 'lib')
+        ip6_lib_path = os.path.join(data['built_with_config']['install_path_ip6'], 'lib')
 
-        yield Set('DETECTOR_PATH', install_path)
+        yield Set('DETECTOR_PATH', os.path.join(install_path, 'share', 'ecce'))
 
         if platform.system() == 'Darwin':
-            yield Prepend('DYLD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
+            yield Prepend('DYLD_LIBRARY_PATH', ecce_lib_path)
+            yield Prepend('DYLD_LIBRARY_PATH', ip6_lib_path)
 
-        yield Prepend('LD_LIBRARY_PATH', os.path.join(install_path, 'lib'))
+        yield Prepend('LD_LIBRARY_PATH', ecce_lib_path)
+        yield Prepend('LD_LIBRARY_PATH', ip6_lib_path)
+
+        yield Set('EIC_DD4HEP_HOME', data['built_with_config']['install_path_ecce'])
+        yield Set('IP6_DD4HEP_HOME', data['built_with_config']['install_path_ip6'])
 
 
     #
