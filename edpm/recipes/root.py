@@ -216,19 +216,26 @@ class RootRecipe(Recipe):
     #                   }
     os_dependencies = {
         'required': {
-            'ubuntu': "dpkg-dev binutils libx11-dev libxpm-dev libxft-dev libxext-dev",
-            'centos': "gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel",
+            'ubuntu18': "dpkg-dev binutils libx11-dev libxpm-dev libxft-dev libxext-dev",
+            'ubuntu22': "dpkg-dev binutils libx11-dev libxpm-dev libxft-dev libxext-dev",
+            'centos7': "gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel",
             'centos8': "gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel"
         },
         'optional': {
-            'ubuntu': "gfortran libssl-dev libpcre3-dev "
+            'ubuntu18': "gfortran libssl-dev libpcre3-dev "
                       "xlibmesa-glu-dev libglew1.5-dev libftgl-dev "
                       "libmysqlclient-dev libfftw3-dev libcfitsio-dev "
                       "graphviz-dev libavahi-compat-libdnssd-dev "
                       "libldap2-dev python-dev libxml2-dev libkrb5-dev "
                       "libgsl0-dev",
+            'ubuntu22': "gfortran libssl-dev libpcre3-dev "
+                        "xlibmesa-glu-dev libglew1.5-dev libftgl-dev "
+                        "libmysqlclient-dev libfftw3-dev libcfitsio-dev "
+                        "graphviz-dev libavahi-compat-libdnssd-dev "
+                        "libldap2-dev python-dev libxml2-dev libkrb5-dev "
+                        "libgsl0-dev",
 
-            'centos': "gcc-gfortran openssl-devel pcre-devel "
+            'centos7': "gcc-gfortran openssl-devel pcre-devel "
                       "mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel "
                       "fftw-devel cfitsio-devel graphviz-devel "
                       "avahi-compat-libdns_sd-devel libldap-dev python-devel "

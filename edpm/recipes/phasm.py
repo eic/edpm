@@ -45,13 +45,6 @@ class PhasmRecipe(GitCmakeRecipe):
     #                     'optional': {'ubuntu': "space separated packet names", 'centos': "..."}
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
-        'required': {
-            'ubuntu': "",
-            'centos': "",
-            'centos8': ""
-        },
-        'optional': {
-            'ubuntu': "",
-            'centos': ""
-        },
+        'required': {},
+        'optional': {},
     }

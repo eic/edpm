@@ -111,16 +111,7 @@ class DD4HEPRecipe(GitCmakeRecipe):
     #
     # OS dependencies are a map of software packets installed by os maintainers
     # The map should be in form:
-    # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'centos': "..."},
-    #                     'optional': {'ubuntu': "space separated packet names", 'centos': "..."}
+    # os_dependencies = { 'required': {'ubuntu18': "space separated packet names", 'centos': "..."},
+    #                     'optional': {'ubuntu18': "space separated packet names", 'centos': "..."}
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
-    os_dependencies = {
-        'required': {
-            'ubuntu': "",
-            'centos': ""
-        },
-        'optional': {
-            'ubuntu': "",
-            'centos': ""
-        },
-    }
+    os_dependencies = {}

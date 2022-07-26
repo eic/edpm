@@ -48,11 +48,8 @@ class NpDetRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "libspdlog-dev libocct-foundation-dev occt-misc libocct-draw-dev libocct-data-exchange-dev libfmt-dev libtbb-dev",
-            'centos': ""
+            'ubuntu18': "libspdlog-dev libocct-foundation-dev occt-misc libocct-draw-dev libocct-data-exchange-dev libfmt-dev libtbb-dev",
+            'ubuntu22': "libspdlog-dev libocct-foundation-dev occt-misc libocct-draw-dev libocct-data-exchange-dev libfmt-dev libtbb-dev",
         },
-        'optional': {
-            'ubuntu': "",
-            'centos': ""
-        },
+        'optional': {},
     }

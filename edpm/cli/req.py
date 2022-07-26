@@ -19,23 +19,24 @@ def req(ctx, ectx, os_name, args, print_mode):
 
     \b
     Example:
-      req ubuntu
-      req centos eicrecon
-      req centos root clhep
+      req ubuntu22
+      req centos7 eicrecon
+      req centos8 root clhep
 
     By adding --optional, --required, --all flags you can use this command with packet managers:\n
       apt install `edpm req ubuntu --all`
 
+    Known OS: ubuntu18 ubuntu22 centos7 centos8
 
+    Aliases: rhel, rhel7, rhel8, mint, debian
     """
 
     os_aliases = {
-        "centos7": "centos",
-        "rhel": "centos",
-        "rhel7": "centos",
+        "rhel": "centos8",
+        "rhel7": "centos7",
         "rhel8": "centos8",
-        "mint": "ubuntu",
-        "debian": "ubuntu"
+        "mint": "ubuntu22",
+        "debian": "ubuntu18"
     }
 
     assert isinstance(ectx, edpmApi)

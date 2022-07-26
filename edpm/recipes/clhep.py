@@ -52,11 +52,10 @@ class ClhepRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "cmake",
-            'centos': "cmake"
+            'ubuntu18': "cmake",
+            'ubuntu22': "cmake",
+            'centos7': "cmake",
+            'centos8': "cmake"
         },
-        'optional': {
-            'ubuntu': "",
-            'centos': ""
-        },
+        'optional': {},
     }

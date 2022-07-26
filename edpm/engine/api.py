@@ -186,7 +186,12 @@ class edpmApi(object):
                 step.update_python_env()  # Do environment update
 
     def req_get_known_os(self):
-        return self.pm.os_deps_by_name['eicrecon']['required'].keys()   # TODO change for
+        names_set = set()
+        for name in self.pm.recipes_by_name.keys():
+            if 'required' in self.pm.os_deps_by_name[name]:
+                for key in self.pm.os_deps_by_name[name]['required'].keys():
+                    names_set.add(key)
+        return names_set   # TODO change for
 
     def req_get_deps(self, os_name, packet_names=None):
         """ Returns

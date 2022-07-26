@@ -48,12 +48,10 @@ class JanaRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "scons libxerces-c-dev curl python3-dev",
-            'centos': "scons xerces-c-devel curl",
-            'centos8': "python3-scons xerces-c-devel curl"
+            'ubuntu18': "libxerces-c-dev curl python3-dev",
+            'ubuntu22': "libxerces-c-dev curl python3-dev",
+            'centos7': "xerces-c-devel curl",
+            'centos8': "xerces-c-devel curl"
         },
-        'optional': {
-            'ubuntu': "",
-            'centos': ""
-        },
+        'optional': {},
     }

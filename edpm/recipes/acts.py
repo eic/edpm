@@ -73,12 +73,9 @@ class ActsRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-test-dev libeigen3-dev",
-            'centos': "boost-devel eigen3-devel",
+            'ubuntu18': "libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-test-dev libeigen3-dev",
+            'ubuntu22': "libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-test-dev libeigen3-dev",
+            'centos7': "boost-devel eigen3-devel",
             'centos8': "boost-devel eigen3-devel",
-        },
-        'optional': {
-            'ubuntu': "",
-            'centos': ""
         },
     }

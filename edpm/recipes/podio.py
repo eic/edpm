@@ -62,12 +62,10 @@ class PodioRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu': "python3-jinja2 python3-yaml",
-            'centos': "",
+            'ubuntu18': "python3-jinja2 python3-yaml",
+            'ubuntu22': "python3-jinja2 python3-yaml",
+            'centos7': "",
             'centos8': "",
         },
-        'optional': {
-            'ubuntu': "",
-            'centos': ""
-        },
+        'optional': {},
     }
