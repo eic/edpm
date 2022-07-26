@@ -62,6 +62,7 @@ class ActsRecipe(GitCmakeRecipe):
 
         # share/cmake/Acts
         yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'Acts'))
+        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'ActsDD4hep'))
 
 
     #

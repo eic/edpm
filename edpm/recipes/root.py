@@ -234,9 +234,9 @@ class RootRecipe(Recipe):
                       "avahi-compat-libdns_sd-devel libldap-dev python-devel "
                       "libxml2-devel gsl-static",
             'centos8': "gcc-gfortran openssl-devel pcre-devel "
-                      "mesa-libGL-devel mesa-libGLU-devel glew-devel ftgl-devel mysql-devel "
-                      "fftw-devel cfitsio-devel graphviz-devel "
-                      "avahi-compat-libdns_sd-devel openldap-devel python36-devel "
+                      "mesa-libGL-devel mesa-libGLU-devel ftgl-devel mysql-devel "
+                      "fftw-devel cfitsio-devel graphviz "
+                      "openldap-devel python36-devel "
                       "libxml2-devel gsl-devel"
         },
     }

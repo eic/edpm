@@ -173,7 +173,12 @@ def _install_with_deps(ectx, request):
     assert isinstance(request, InstallationRequest)
     assert isinstance(ectx, edpmApi)
 
-    must_exist_chain = _build_deps_requests(ectx, request)
+    try:
+        must_exist_chain = _build_deps_requests(ectx, request)
+    except KeyError as err:
+        mprint("<red>Error finding one of the dependencies:</red>")
+        print(err)
+        exit(1)
 
     #
     # First. Hit 'setup' function on all dependencies.
