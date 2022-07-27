@@ -35,12 +35,12 @@ class EicreconRecipe(Recipe):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # Git download link. Clone with shallow copy
-        self.config['source_path'] = "{app_path}/{branch}".format(**self.config)
+        self.config['source_path'] = "{app_path}/eicrecon-{branch}".format(**self.config)
 
         # The directory for cmake build
-        self.config['build_path'] = "{app_path}/{branch}/ecce/cmake-build-debug".format(**self.config)
+        self.config['build_path'] = "{app_path}/eicrecon-{branch}/cmake-build-debug".format(**self.config)
 
-        self.config['install_path'] = "{app_path}/{branch}/compiled".format(**self.config)
+        self.config['install_path'] = "{app_path}/eicrecon-{branch}".format(**self.config)
 
         self.config['clone_command'] = "git clone -b {branch} {repo_address} {source_path}" \
             .format(**self.config)
