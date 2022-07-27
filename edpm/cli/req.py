@@ -28,10 +28,11 @@ def req(ctx, ectx, os_name, args, print_mode):
 
     Known OS: ubuntu18 ubuntu22 centos7 centos8
 
-    Aliases: rhel, rhel7, rhel8, mint, debian
+    Aliases: rhel, rhel7, rhel8, mint, debian, ubuntu
     """
 
     os_aliases = {
+        "ubuntu": "ubuntu22",
         "rhel": "centos8",
         "rhel7": "centos7",
         "rhel8": "centos8",
