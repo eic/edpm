@@ -41,17 +41,11 @@ class Edm4HepRecipe(GitCmakeRecipe):
 
         import platform
         if platform.system() == 'Darwin':
-            if os.path.isdir(os.path.join(path, 'lib64')):
-                yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib64'))
-            else:
-                yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib'))
+            yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib'))
 
-        if os.path.isdir(os.path.join(path, 'lib64')):
-            yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib64'))
-        else:
-            yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
-
+        yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
         yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'EDM4HEP'))
+        yield Set('EDM4HEP_ROOT', path)
 
 
     #
