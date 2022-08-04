@@ -32,7 +32,7 @@ class EpicDetectorRecipe(Recipe):
         self.config['branch'] = 'main'
         self.config['branch_epic'] = self.config['branch']
         self.config['branch_ip6'] = 'master'    # https://github.com/eic/ip6/issues/1
-        self.required_deps = ['clhep', 'root', 'hepmc3', 'dd4hep', 'acts']
+        self.required_deps = ['clhep', 'eigen3', 'root', 'hepmc3', 'podio', 'edm4hep', 'geant4', 'acts',  'dd4hep']
         self.config['repo_address_epic'] = 'https://github.com/eic/epic'
         self.config['repo_address_ip6'] = 'https://github.com/eic/ip6'
 
@@ -61,15 +61,15 @@ class EpicDetectorRecipe(Recipe):
 
         # Link ip6 repo to epic, as IP6 should be linked to installed epic
         self.config['ip6_link_source'] = "{install_path_ip6}/share/ip6".format(**self.config)
-        self.config['ip6_link_target'] = "{install_path_epic}/share/ecce/ip6".format(**self.config)
+        self.config['ip6_link_target'] = "{install_path_epic}/share/epic/ip6".format(**self.config)
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.config['build_cmd_epic'] = "cmake -w -DCMAKE_INSTALL_PREFIX={install_path_epic} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path_epic}" \
+        self.config['build_cmd_epic'] = "cmake -DCMAKE_INSTALL_PREFIX={install_path_epic} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path_epic}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(**self.config)
-        self.config['build_cmd_ip6'] = "cmake -w -DCMAKE_INSTALL_PREFIX={install_path_ip6} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path_ip6}" \
+        self.config['build_cmd_ip6'] = "cmake -DCMAKE_INSTALL_PREFIX={install_path_ip6} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path_ip6}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
                          .format(**self.config)

@@ -169,12 +169,12 @@ def _install_packet(ectx, request):
     db.save()
 
 
-def _install_with_deps(ectx, request):
-    assert isinstance(request, InstallationRequest)
+def _install_with_deps(ectx, target_request):
+    assert isinstance(target_request, InstallationRequest)
     assert isinstance(ectx, edpmApi)
 
     try:
-        must_exist_chain = _build_deps_requests(ectx, request)
+        must_exist_chain = _build_deps_requests(ectx, target_request)
     except KeyError as err:
         mprint("<red>Error finding one of the dependencies:</red>")
         print(err)
@@ -206,13 +206,13 @@ def _install_with_deps(ectx, request):
 
     #
     # Select packets to install. mode tells what we should do with dependencies
-    if request.mode == 'missing':
+    if target_request.mode == 'missing':
         # select only missing packets
         process_chain = [request for request in must_exist_chain if request in missing_chain]
-    elif request.mode == 'single':
+    elif target_request.mode == 'single':
         # single = we only one packet
         process_chain = [request]
-    elif request.mode == 'all':
+    elif target_request.mode == 'all':
         # all - we just overwrite everything
         process_chain = [request for request in must_exist_chain]
     else:
@@ -230,11 +230,11 @@ def _install_with_deps(ectx, request):
         mprint("   <blue>{:<6}</blue> : {}", request.name, request.recipe.install_path)
 
     # It is just explanation
-    if request.just_explain:
+    if target_request.just_explain:
         return
 
     # Set environment before build
-    ectx.update_python_env(process_chain, request.mode)  # set environment spitting on existing missing
+    ectx.update_python_env(process_chain, target_request.mode)  # set environment spitting on existing missing
 
     #
     for request in process_chain:

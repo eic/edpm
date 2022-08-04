@@ -223,16 +223,16 @@ class RootRecipe(Recipe):
         },
         'optional': {
             'ubuntu18': "gfortran libssl-dev libpcre3-dev "
-                      "xlibmesa-glu-dev libglew1.5-dev libftgl-dev "
+                      "xlibmesa-glu-dev libglew-dev libftgl-dev "
                       "libmysqlclient-dev libfftw3-dev libcfitsio-dev "
                       "graphviz-dev libavahi-compat-libdnssd-dev "
-                      "libldap2-dev python-dev libxml2-dev libkrb5-dev "
+                      "libldap2-dev python3-dev libxml2-dev libkrb5-dev "
                       "libgsl0-dev",
             'ubuntu22': "gfortran libssl-dev libpcre3-dev "
-                        "xlibmesa-glu-dev libglew1.5-dev libftgl-dev "
+                        "xlibmesa-glu-dev libglew-dev libftgl-dev "
                         "libmysqlclient-dev libfftw3-dev libcfitsio-dev "
                         "graphviz-dev libavahi-compat-libdnssd-dev "
-                        "libldap2-dev python-dev libxml2-dev libkrb5-dev "
+                        "libldap2-dev python3-dev libxml2-dev libkrb5-dev "
                         "libgsl0-dev",
 
             'centos7': "gcc-gfortran openssl-devel pcre-devel "
@@ -243,7 +243,7 @@ class RootRecipe(Recipe):
             'centos8': "gcc-gfortran openssl-devel pcre-devel "
                       "mesa-libGL-devel mesa-libGLU-devel ftgl-devel mysql-devel "
                       "fftw-devel cfitsio-devel graphviz "
-                      "openldap-devel python36-devel "
+                      "openldap-devel python3-devel "
                       "libxml2-devel gsl-devel"
         },
     }
