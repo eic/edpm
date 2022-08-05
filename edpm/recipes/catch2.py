@@ -1,6 +1,6 @@
 """
-EDM4Hep
-https://github.com/key4hep/EDM4hep
+Catch2 unit testing framework
+https://github.com/catchorg/Catch2
 """
 
 import os
@@ -9,8 +9,8 @@ from edpm.engine.env_gen import Set, Append, Prepend
 from edpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class Edm4HepRecipe(GitCmakeRecipe):
-    """Provides data for building and installing Genfit framework
+class Catch2(GitCmakeRecipe):
+    """Provides data for building and installing Catch2 unit testing
     source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
     build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
     install_path = {app_path}/root-{version}         # Where the binary installation is
@@ -22,11 +22,10 @@ class Edm4HepRecipe(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(Edm4HepRecipe, self).__init__('edm4hep')                          # This name will be used in edpm commands
-        self.config['branch'] = 'v00-05'                                        # The branch or tag to be cloned (-b flag)
-        self.required_deps = ['clhep', 'eigen3', 'root', 'hepmc3', 'podio', 'edm4hep', 'geant4', 'acts', 'dd4hep', 'jana2']
-        self.config['repo_address'] = 'https://github.com/key4hep/EDM4hep'      # Repo address
-        self.config['cmake_flags'] = '-DUSE_EXTERNAL_CATCH2=ON'
+        super(Catch2, self).__init__('catch2')                          # This name will be used in edpm commands
+        self.config['branch'] = 'v3.1.0'                                        # The branch or tag to be cloned (-b flag)
+        self.required_deps = []
+        self.config['repo_address'] = 'https://github.com/catchorg/Catch2.git'      # Repo address
         self.config['cxx_standard'] = 17
 
     @staticmethod
@@ -44,8 +43,9 @@ class Edm4HepRecipe(GitCmakeRecipe):
             yield Append('DYLD_LIBRARY_PATH', os.path.join(path, 'lib'))
 
         yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
-        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'EDM4HEP'))
-        yield Set('EDM4HEP_ROOT', path)
+        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'Catch2'))
+
+
 
 
     #
