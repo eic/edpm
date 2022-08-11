@@ -28,7 +28,7 @@ class EicreconRecipe(Recipe):
         """
         super(EicreconRecipe, self).__init__('eicrecon')
         self.config['repo_address'] = 'https://github.com/eic/EICrecon.git'
-        self.required_deps = ['catch2', 'eigen3', 'clhep', 'hepmc3', 'root', 'podio', 'edm4hep', 'geant4', 'acts', 'dd4hep', 'jana2', 'detector']
+        self.required_deps = ['catch2', 'eigen3', 'clhep', 'hepmc3', 'root', 'podio', 'edm4hep', 'geant4', 'dd4hep', 'acts', 'jana2', 'detector']
         self.config['branch'] = 'main'
 
     def setup(self, db):
@@ -47,7 +47,7 @@ class EicreconRecipe(Recipe):
 
         # cmake command:
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
-        self.config['build_cmd'] = "cmake -w -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
+        self.config['build_cmd'] = "cmake -DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} {source_path}" \
                                    "&& cmake --build . -- -j {build_threads}" \
                                    "&& cmake --build . --target install" \
             .format(**self.config)
