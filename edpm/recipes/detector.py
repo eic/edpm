@@ -60,7 +60,7 @@ class EpicDetectorRecipe(Recipe):
         self.config['install_path'] = self.config['install_path_epic']
 
         # Link ip6 repo to epic, as IP6 should be linked to installed epic
-        self.config['ip6_link_source'] = "{install_path_ip6}/share/ip6".format(**self.config)
+        self.config['ip6_link_source'] = "{install_path_ip6}/share/ip6/ip6".format(**self.config)
         self.config['ip6_link_target'] = "{install_path_epic}/share/epic/ip6".format(**self.config)
 
         # cmake command:
