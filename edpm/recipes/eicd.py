@@ -25,7 +25,7 @@ class EicDataRecipe(GitCmakeRecipe):
         super(EicDataRecipe, self).__init__('eicd')                        # This name will be used in edpm commands
         self.config['branch'] = 'v2.0.0'                                # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/eic/eicd.git'    # Repo address
-        self.config['cmake_flags'] = ''
+        self.config['cmake_flags'] = '-DBUILD_DATA_MODEL=ON'
         self.config['cxx_standard'] = 17
 
     @staticmethod
