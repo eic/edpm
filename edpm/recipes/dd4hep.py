@@ -30,7 +30,7 @@ class DD4HEPRecipe(GitCmakeRecipe):
 
         self.config['branch'] = 'v01-20-02'
         self.config['repo_address'] = 'https://github.com/AIDASoft/DD4hep.git'
-        self.config['cmake_flags'] = ' -DDD4HEP_USE_GEANT4=ON -DDD4HEP_USE_LCIO=OFF '
+        self.config['cmake_flags'] = ' -DDD4HEP_USE_GEANT4=ON -DDD4HEP_USE_EDM4HEP=ON -DDD4HEP_USE_LCIO=OFF '
 
     @staticmethod
     def gen_env(data):
