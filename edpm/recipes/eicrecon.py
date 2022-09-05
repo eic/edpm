@@ -109,7 +109,12 @@ class EicreconRecipe(Recipe):
     # os_dependencies = { 'required': {'ubuntu': "space separated packet names", 'centos': "..."},
     #                     'optional': {'ubuntu': "space separated packet names", 'centos': "..."}
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
-    os_dependencies = {}
+    os_dependencies = {
+            'ubuntu18': "libspdlog-dev",
+            'ubuntu22': "libspdlog-dev",
+            'centos7': "spdlog-devel",
+            'centos8': "spdlog-devel"
+    }
 
     # Flags that can me made in cmake
     cmake_deps_flag_names = {

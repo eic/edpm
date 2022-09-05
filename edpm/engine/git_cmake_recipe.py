@@ -50,7 +50,8 @@ class GitCmakeRecipe(Recipe):
             is_main_branch = self.config.get("branch", "") not in ["master", "main"]
             self.config["git_clone_depth"] = "--depth 1" if is_main_branch else ""
 
-
+        print("!!!!!!!!!!!!!!!!!!!!!!", self.config['branch'])
+        print("!!!!!!!!!!!!!!!!!!!!!!", self.config['repo_address'])
         self.clone_command = "git clone {git_clone_depth} -b {branch} {repo_address} {source_path}"\
             .format(**self.config)
 

@@ -23,9 +23,9 @@ class ActsRecipe(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(ActsRecipe, self).__init__('acts')                        # This name will be used in edpm commands
-        self.config['branch'] = 'v19.4.0'                                # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'v20.1.0'                               # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/acts-project/acts'    # Repo address
-        self.config['cmake_flags'] = '-DACTS_BUILD_PLUGIN_TGEO=ON -DACTS_BUILD_PLUGIN_DD4HEP=ON -DACTS_BUILD_PLUGIN_DIGITIZATION=ON ACTS_BUILD_PLUGIN_JSON=ON '
+        self.config['cmake_flags'] = '-DACTS_BUILD_PLUGIN_TGEO=ON -DACTS_BUILD_PLUGIN_DD4HEP=ON -DACTS_BUILD_PLUGIN_DIGITIZATION=ON -DACTS_BUILD_PLUGIN_JSON=ON '
         self.config['cxx_standard'] = 17
 
     def setup(self, db):
@@ -62,6 +62,7 @@ class ActsRecipe(GitCmakeRecipe):
 
         # share/cmake/Acts
         yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'Acts'))
+        yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'nlohmann_json'))
         yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'ActsDD4hep'))
 
 
@@ -73,9 +74,9 @@ class ActsRecipe(GitCmakeRecipe):
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
         'required': {
-            'ubuntu18': "libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-test-dev libeigen3-dev",
-            'ubuntu22': "libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-test-dev libeigen3-dev",
-            'centos7': "boost-devel eigen3-devel",
-            'centos8': "boost-devel eigen3-devel",
+            'ubuntu18': "libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-test-dev",
+            'ubuntu22': "libboost-dev libboost-filesystem-dev libboost-program-options-dev libboost-test-dev",
+            'centos7': "boost-devel",
+            'centos8': "boost-devel",
         },
     }

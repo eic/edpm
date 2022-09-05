@@ -192,7 +192,7 @@ def _install_with_deps(ectx, target_request):
         request.recipe.setup(ectx.db)
 
     #
-    # Lets see what is missing and tell it to the user
+    # Let's see what is missing and tell it to the user
     missing_chain = []
     mprint("\nCurrent status of the packet and dependencies:")
     for request in must_exist_chain:
@@ -211,7 +211,7 @@ def _install_with_deps(ectx, target_request):
         process_chain = [request for request in must_exist_chain if request in missing_chain]
     elif target_request.mode == 'single':
         # single = we only one packet
-        process_chain = [request]
+        process_chain = [target_request]
     elif target_request.mode == 'all':
         # all - we just overwrite everything
         process_chain = [request for request in must_exist_chain]

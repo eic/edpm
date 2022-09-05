@@ -168,7 +168,7 @@ class PacketStateDatabase(object):
         # Search for existing installation with this installation path
         existing_install = self.get_install(packet_name, install_path)
 
-        # If we didn't find an install, lets add a new one
+        # If we didn't find an installation, lets add a new one
         if existing_install is None:
             existing_install = {}
 
@@ -180,7 +180,7 @@ class PacketStateDatabase(object):
         # if updating_data has IS_ACTIVE flag set to True, We have to uncheck all other our packets
         if updating_data.get(IS_ACTIVE, False):
             for install in self.get_installs(packet_name):
-                # We compare it just by == as all saved installs have gone through os.path.normpath
+                # We compare it just by == as all saved installations have gone through os.path.normpath
                 assert isinstance(install, dict)
                 install[IS_ACTIVE] = False
 
