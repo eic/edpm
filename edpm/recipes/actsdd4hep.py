@@ -10,21 +10,17 @@ from edpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
 class ActsDD4Hep(GitCmakeRecipe):
-    """Provides data for building and installing Catch2 unit testing
-    source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
-    build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
-    install_path = {app_path}/root-{version}         # Where the binary installation is
-    """
+    """Provides Recipe for building Acts-DD4Hep plugin connecting library and setting its environment"""
 
     def __init__(self):
         """
-        Installs Genfit track fitting framework
+        Installs Acts-DD4Hep plugin connecting library
         """
 
         # Set initial values for parent class and self
-        super(ActsDD4Hep, self).__init__('actsdd4hep')                          # This name will be used in edpm commands
-        self.config['branch'] = 'v1.0.1'                                        # The branch or tag to be cloned (-b flag)
-        self.required_deps = ['acts']
+        super(ActsDD4Hep, self).__init__('actsdd4hep')             # This name will be used in edpm commands
+        self.config['branch'] = 'v1.0.1'                           # The branch or tag to be cloned (-b flag)
+        self.required_deps = ['dd4hep', 'acts']
         self.config['repo_address'] = 'https://github.com/acts-project/acts-dd4hep.git'      # Repo address
         self.config['cxx_standard'] = 17
 
@@ -39,9 +35,6 @@ class ActsDD4Hep(GitCmakeRecipe):
 
         yield Append('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
         yield Append('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'ActsDD4hep'))
-
-
-
 
     #
     # OS dependencies are a map of software packets installed by os maintainers

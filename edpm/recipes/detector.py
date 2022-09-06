@@ -156,6 +156,8 @@ class EpicDetectorRecipe(Recipe):
 
         yield Set('EIC_DD4HEP_HOME', data['built_with_config']['install_path_epic'])
         yield Set('IP6_DD4HEP_HOME', data['built_with_config']['install_path_ip6'])
+        yield Set('BEAMLINE_PATH', data['built_with_config']['install_path_ip6'])
+
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
