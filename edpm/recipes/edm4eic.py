@@ -1,6 +1,6 @@
 """
-EicD
-https://github.com/eic/eicd.git
+EIC Event data model extension
+https://github.com/eic/edm4eic.git
 """
 
 import os
@@ -9,12 +9,8 @@ from edpm.engine.env_gen import Set, Append, Prepend
 from edpm.engine.git_cmake_recipe import GitCmakeRecipe
 
 
-class EicDataRecipe(GitCmakeRecipe):
-    """Provides data for building and installing Genfit framework
-    source_path  = {app_path}/src/{version}          # Where the sources for the current version are located
-    build_path   = {app_path}/build/{version}        # Where sources are built. Kind of temporary dir
-    install_path = {app_path}/root-{version}         # Where the binary installation is
-    """
+class Edm4EicRecipe(GitCmakeRecipe):
+    """"""
 
     def __init__(self):
         """
@@ -22,9 +18,9 @@ class EicDataRecipe(GitCmakeRecipe):
         """
 
         # Set initial values for parent class and self
-        super(EicDataRecipe, self).__init__('eicd')                        # This name will be used in edpm commands
-        self.config['branch'] = 'v2.0.0'                                # The branch or tag to be cloned (-b flag)
-        self.config['repo_address'] = 'https://github.com/eic/eicd.git'    # Repo address
+        super(Edm4EicRecipe, self).__init__('edm4eic')                        # This name will be used in edpm commands
+        self.config['branch'] = 'v1.0.0'                                # The branch or tag to be cloned (-b flag)
+        self.config['repo_address'] = 'https://github.com/eic/edm4eic.git'    # Repo address
         self.config['cmake_flags'] = '-DBUILD_DATA_MODEL=ON'
         self.config['cxx_standard'] = 17
 
