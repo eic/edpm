@@ -32,7 +32,7 @@ class EpicDetectorRecipe(Recipe):
         self.config['branch'] = 'main'
         self.config['branch_epic'] = self.config['branch']
         self.config['branch_ip6'] = 'master'    # https://github.com/eic/ip6/issues/1
-        self.required_deps = ['clhep', 'eigen3', 'root', 'hepmc3', 'podio', 'edm4hep', 'eicd', 'geant4','dd4hep', 'acts', 'actsdd4hep' ]
+        self.required_deps = ['clhep', 'eigen3', 'root', 'hepmc3', 'podio', 'edm4hep', 'edm4eic', 'geant4','dd4hep', 'acts', 'actsdd4hep' ]
         self.config['repo_address_epic'] = 'https://github.com/eic/epic'
         self.config['repo_address_ip6'] = 'https://github.com/eic/ip6'
 

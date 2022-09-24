@@ -28,7 +28,7 @@ class EicreconRecipe(Recipe):
         """
         super(EicreconRecipe, self).__init__('eicrecon')
         self.config['repo_address'] = 'https://github.com/eic/EICrecon.git'
-        self.required_deps = ['catch2', 'eigen3', 'clhep', 'hepmc3', 'root', 'podio', 'edm4hep', 'eicd', 'geant4', 'dd4hep', 'acts', 'jana2', 'detector']
+        self.required_deps = ['catch2', 'eigen3', 'clhep', 'hepmc3', 'root', 'podio', 'edm4hep', 'eicd', 'geant4', 'dd4hep', 'acts', 'jana2', 'detector', 'algorithms']
         self.config['branch'] = 'main'
 
     def setup(self, db):
