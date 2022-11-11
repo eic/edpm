@@ -25,7 +25,7 @@ class GeantRecipe(Recipe):
         super(GeantRecipe, self).__init__('geant4')
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
-        self.config['branch'] = 'v11.0.2'
+        self.config['branch'] = 'v11.0.3'
         self.config['cmake_build_type'] = 'RelWithDebInfo'
 
 
@@ -49,7 +49,7 @@ class GeantRecipe(Recipe):
         self.build_cmd = """
             cmake
                 -DGEANT4_INSTALL_DATA=ON
-                -DGEANT4_BUILD_CXXSTD={cxx_standard}
+                -DCMAKE_CXX_STANDARD={cxx_standard}
                 -DGEANT4_USE_GDML=ON
                 -DGEANT4_USE_SYSTEM_CLHEP=ON
                 -DCLHEP_ROOT_DIR=$CLHEP
