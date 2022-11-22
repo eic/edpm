@@ -1,8 +1,6 @@
 """
 This file provides information of how to build and configure HepMC framework:
 https://gitlab.cern.ch/hepmc/HepMC3
-
-
 """
 
 import os
@@ -10,7 +8,6 @@ import os
 from edpm.engine.commands import run, workdir, env
 from edpm.engine.env_gen import Set, Append, Prepend
 from edpm.engine.git_cmake_recipe import GitCmakeRecipe
-
 
 
 class HepMC3Recipe(GitCmakeRecipe):
@@ -30,7 +27,7 @@ class HepMC3Recipe(GitCmakeRecipe):
 
         self.config['branch'] = '3.2.5'
         self.config['repo_address'] = 'https://gitlab.cern.ch/hepmc/HepMC3.git'
-        self.config['cmake_flags'] = ' -DHEPMC3_ENABLE_ROOTIO=OFF -DHEPMC3_ENABLE_PYTHON=OFF -DHEPMC3_BUILD_EXAMPLES=ON'
+        self.config['cmake_flags'] = ' -DHEPMC3_ENABLE_ROOTIO=OFF -DHEPMC3_ENABLE_PYTHON=OFF -DHEPMC3_BUILD_EXAMPLES=OFF'
 
     def step_build(self):
 

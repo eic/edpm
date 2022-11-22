@@ -23,7 +23,7 @@ class NpDetRecipe(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(NpDetRecipe, self).__init__('npdet')    # This name will be used in edpm commands
-        self.required_deps = ['eigen3', 'hepmc3', 'root', 'geant', 'dd4hep']
+        self.required_deps = ['eigen3', 'hepmc3', 'root', 'geant4', 'dd4hep']
         self.config['branch'] = 'master'                             # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://eicweb.phy.anl.gov/EIC/NPDet.git'
 

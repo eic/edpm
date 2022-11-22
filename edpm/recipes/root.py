@@ -31,7 +31,7 @@ class RootRecipe(Recipe):
 
         # Fill the common path pattern
         super(RootRecipe, self).__init__("root")
-        self.config['branch'] = 'v6-26-06'
+        self.config['branch'] = 'v6-26-10'
         self.config['cmake_custom_flags'] = ''
         self.config['cmake_build_type'] = 'RelWithDebInfo'
         self.config['cxx_standard'] = '17'
@@ -216,8 +216,8 @@ class RootRecipe(Recipe):
     #                   }
     os_dependencies = {
         'required': {
-            'ubuntu18': "dpkg-dev binutils libx11-dev libxpm-dev libxft-dev libxext-dev",
-            'ubuntu22': "dpkg-dev binutils libx11-dev libxpm-dev libxft-dev libxext-dev",
+            'ubuntu18': "dpkg-dev binutils libx11-dev libxpm-dev libxft-dev libxext-dev liblzma-dev",
+            'ubuntu22': "dpkg-dev binutils libx11-dev libxpm-dev libxft-dev libxext-dev liblzma-dev",
             'centos7': "gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel",
             'centos8': "gcc binutils libX11-devel libXpm-devel libXft-devel libXext-devel"
         },
