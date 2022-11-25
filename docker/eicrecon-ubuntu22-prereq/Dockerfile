@@ -63,7 +63,7 @@ RUN python3 -m pip install --user --upgrade --force-reinstall  click &&\
 
 # eicrecon stack
 RUN edpm install clhep && edpm clean clhep &&\
-    edpm install eigen3 && edpm clean eigen3 &&\    
+    edpm install eigen3 && edpm clean eigen3 &&\
     edpm install -j${BUILD_THREADS} root && edpm clean root &&\
     edpm install hepmc3 && edpm clean hepmc3 &&\    
     edpm install -j${BUILD_THREADS} geant4 && edpm clean geant4
