@@ -25,7 +25,7 @@ class JanaRecipe(GitCmakeRecipe):
 
     def __init__(self):
         super(JanaRecipe, self).__init__('jana2')
-        self.config['branch'] = 'v2.0.7'
+        self.config['branch'] = 'v2.0.8'
         self.config['repo_address'] = 'https://github.com/JeffersonLab/JANA2.git'
 
     @staticmethod
