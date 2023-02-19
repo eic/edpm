@@ -19,6 +19,7 @@
 import inspect
 import json
 import os
+import pathlib
 from os import path
 import shlex
 import subprocess
@@ -75,51 +76,6 @@ class ImageInfo:
     def __repr__(self):
         return f"Image '{self.full_name}'"
 
-# List of images
-image_chains = {}
-images = []
-
-def configure_default_images(tag = 'dev', jobs=cpu_count):
-    def set_images_params(images, root_path, organization, tag):
-        for name,image in images.items():            
-            image.tag = tag
-            image.path = os.path.join(root_path, name)
-            image.organization=organization
-
-    global image_chains, images
-
-    # List of images (and its dependencies)
-    images = [
-        ImageInfo(category='devops', name='eicrecon-ubuntu22-prereq', flags='--build-arg BUILD_THREADS={}'.format(jobs)),  # doesn't depends on images from this collection
-        ImageInfo(category='devops', name='eicrecon-ubuntu22',   depends_on='eicrecon-ubuntu22-prereq'),
-        #ImageInfo(category='devops', name='eicrecon-rhel-ubi8-prereq', flags='--build-arg BUILD_THREADS={}'.format(jobs)),
-        # ImageInfo(category='devops', name='ejana-ubuntu18-prereq'),
-        # ImageInfo(category='devops', name='miniconda-ubuntu16'),
-        # ImageInfo(category='eic',    name='eic-science', flags='--build-arg BUILD_THREADS={}'.format(jobs)),
-        # ImageInfo(category='eic',    name='eic-mceg'   , depends_on='eic-science'),
-        # ImageInfo(category='eic',    name='escalate'   , depends_on='eic-mceg'),
-    ]
-
-    # put image_chains as {<category>:{<alias>:ImageInfo}} dictionary
-    # and all_images {<alias>:ImageInfo}
-    all_images = {}
-    image_chains = {}
-    for image in images:
-        if image.category not in image_chains:
-            image_chains[image.category] = {}        
-        image_chains[image.category][image.aslias] = image
-        all_images[image.aslias] = image
-
-    # add missing info
-    set_images_params(image_chains['devops'], devops_root_path, 'eicdev', tag)
-#    set_images_params(image_chains['eic'], eic_root_path, 'electronioncollider', tag)
-    
-    image_chains['all'] = all_images
-
-    
-
-# Create a default images with the number of jobs = cpu_count
-configure_default_images()
 
 def _run(command: Union[str, list]) -> Tuple[int, datetime, datetime, List]:
     """Wrapper around subprocess.Popen that returns:
@@ -203,16 +159,6 @@ class DockerAutomation(object):
             docker tag ejana-centos7-prereq eicdev/ejana-centos7-prereq:latest
             docker push eicdev/ejana-centos7-prereq:latest
         """
-        # Check if we built dependency
-        if self.check_deps:
-            if image.depends_on and image.depends_on not in self.built_images_by_name.keys():
-                message = f"The image {image.name} depends on {image.depends_on} which has not been built. " \
-                          f"Run this script with check-deps=false in order to force {image.name} building"
-                logger.error(message)
-
-                # Save it to the logs
-                self._append_log('check', image.full_name,  1, datetime.now(), datetime.now(), [message])                
-                return
 
         # no-cache flag given?
         no_cache_str = "--no-cache" if self.no_cache else ""
@@ -285,12 +231,6 @@ class DockerAutomation(object):
             self.push(name)
 
 def main():
-    def print_images():
-        for image_set_name, image_set in image_chains.items():
-            print(image_set_name)
-            for image in image_set:
-                print(f'   {image}')
-
     # Argument parsing
     cwd = os.getcwd()
     parser = argparse.ArgumentParser()
@@ -302,52 +242,49 @@ def main():
     parser.add_argument("--check-deps", type=bool, help="Check that dependency is built", default=True)
     parser.add_argument("-j", "--jobs", type=int, default=cpu_count, help="Number of parallel jobs")
 
-    parser.add_argument("command", type=str, help="'list' = list known images. 'devops', 'eic', 'eic-ubuntu' 'all' = build set of images. exact image name = build that image")
+    parser.add_argument("command", type=str, nargs="*", help="directories with Dockerfile")
     args = parser.parse_args()
 
-    configure_default_images(args.tag, args.jobs)
-
     if args.log_to_file:
-
         # create file handler which logs even debug messages
         fh.setLevel(logging.DEBUG)
         ch.setLevel(logging.INFO)
         logger.addHandler(fh)
     else:
-
         ch.setLevel(logging.DEBUG)
 
-
     # add the handlers to the logger
-    
     logger.addHandler(ch)
 
+    # What images to build
+    if not args.command:
+        print("No image is provided, using default")
+        args.command = ['eicrecon-ubuntu22-prereq', 'eicrecon-ubuntu22']
 
-    if args.command == 'list':
-        print_images()
-        exit(0)
+    print(f"Images: {args.command} (arg type of {type(args.command)})")
 
-    if args.command in ['devops', 'eic', 'all']:
-        single_image_build = False
-        automation = DockerAutomation(image_chains[args.command])
-    else:
-        single_image_build = True
-        automation = DockerAutomation(image_chains['all'])
-        automation.check_deps = False
+    # Number of jobs to build
+    print(f"Number of jobs: {args.jobs}")
 
+    images = {}
+    for command in args.command:
+
+
+        images[command] = ImageInfo(
+            name=command,
+            path=path.join(this_path, command),
+            org='electronioncollider',
+            tag=args.tag,
+            flags=f'--build-arg BUILD_THREADS={args.jobs}'
+        )
+    automation = DockerAutomation(images)
     automation.no_cache = args.no_cache
     automation.push_after_build = args.push
     automation.tag_latest = args.latest
 
-    if single_image_build:
-        automation.build(args.command)
-    else:
-        automation.build_all()
-
+    automation.build_all()
     logs = automation.operation_logs
-
     os.chdir(cwd)
-
     error_code = 0
 
     logger.info('SUMMARY:')
@@ -357,7 +294,6 @@ def main():
         logger.info("{op:<12} {name:<38} {ret_code:<9} {duration_str:<11} {start_time_str:<21} {end_time_str:<21}".format(**log))
         if log['ret_code'] !=0:
             error_code = log['ret_code']
-
     #import json
     #with open('result.json', 'w') as outfile:
     #    json.dump(logs, outfile, indent=4, ensure_ascii=False)

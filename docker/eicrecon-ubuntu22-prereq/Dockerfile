@@ -60,12 +60,16 @@ RUN python3 -m pip install --user --upgrade --force-reinstall  click &&\
 #      sudo chmod 777 /var/cache/debconf/passwords.dat &&\
 #      sudo apt-get -y -q install $(edpm req --all ubuntu) &&\
 #      sudo rm -rf /var/lib/apt/lists/*
-
+# (!) Build with C++20
 # eicrecon stack
-RUN edpm install clhep && edpm clean clhep &&\
-    edpm install eigen3 && edpm clean eigen3 &&\
+RUN edpm config global cxx_standard=20 &&\
+    edpm install clhep && edpm clean clhep &&\
+    edpm install eigen3 && edpm clean eigen3
+
+RUN edpm config root branch="v6-28-00" &&\
+    edpm config root cmake_custom_flags="-Droofit=OFF" &&\
     edpm install -j${BUILD_THREADS} root && edpm clean root &&\
-    edpm install hepmc3 && edpm clean hepmc3 &&\    
+    edpm install hepmc3 && edpm clean hepmc3 &&\
     edpm install -j${BUILD_THREADS} geant4 && edpm clean geant4
 
 
