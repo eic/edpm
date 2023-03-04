@@ -23,7 +23,7 @@ class Catch2(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(Catch2, self).__init__('catch2')                          # This name will be used in edpm commands
-        self.config['branch'] = 'v3.1.0'                                        # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'v3.3.2'                                        # The branch or tag to be cloned (-b flag)
         self.required_deps = []
         self.config['repo_address'] = 'https://github.com/catchorg/Catch2.git'      # Repo address
         self.config['cxx_standard'] = 17

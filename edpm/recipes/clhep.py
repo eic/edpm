@@ -19,7 +19,7 @@ class ClhepRecipe(GitCmakeRecipe):
         super(ClhepRecipe, self).__init__('clhep')
         self.clone_command = ''             # will be set by self.set_app_path
         self.build_cmd = ''                 # will be set by self.set_app_path
-        self.config['branch'] = 'CLHEP_2_4_5_3'
+        self.config['branch'] = 'CLHEP_2_4_6_4'
         self.config['repo_address'] = 'https://gitlab.cern.ch/CLHEP/CLHEP.git'
 
     @staticmethod

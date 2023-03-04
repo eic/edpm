@@ -23,7 +23,7 @@ class Edm4HepRecipe(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(Edm4HepRecipe, self).__init__('edm4hep')                          # This name will be used in edpm commands
-        self.config['branch'] = 'v00-06'                                        # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'v00-07-02'                                        # The branch or tag to be cloned (-b flag)
         self.required_deps = ['clhep', 'eigen3', 'root', 'hepmc3', 'podio', 'edm4hep', 'geant4', 'acts', 'dd4hep', 'jana2']
         self.config['repo_address'] = 'https://github.com/key4hep/EDM4hep'      # Repo address
         self.config['cmake_flags'] = '-DUSE_EXTERNAL_CATCH2=ON'

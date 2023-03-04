@@ -6,7 +6,7 @@
 # docker run --rm -it --init eicdev/eicrecon-ubuntu22-prereq:latest
 # docker run --rm -it --init -p8888:8888 eicdev/eicrecon-ubuntu22-prereq:latest
 
-FROM ubuntu:22.04
+FROM ubuntu:latest
 
 # Number of build threads
 ARG BUILD_THREADS=8
@@ -62,7 +62,7 @@ RUN python3 -m pip install --user --upgrade --force-reinstall  click &&\
 #      sudo rm -rf /var/lib/apt/lists/*
 # (!) Build with C++20
 # eicrecon stack
-RUN edpm config global cxx_standard=20 &&\
+RUN edpm config global cxx_standard=17 &&\
     edpm install clhep && edpm clean clhep &&\
     edpm install eigen3 && edpm clean eigen3
 
