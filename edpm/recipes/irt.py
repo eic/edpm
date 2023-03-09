@@ -24,6 +24,7 @@ class IrtRecipe(GitCmakeRecipe):
         path = data['install_path']
 
         yield Prepend('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'IRT'))
+        
 
     #
     # OS dependencies are a map of software packets installed by os maintainers
