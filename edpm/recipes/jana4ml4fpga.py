@@ -1,6 +1,6 @@
 """
-This file provides information of how to build and configure EIC Reconstruction (eicrecon) framework:
-https://gitlab.com/eic/eicrecon
+https://github.com/JeffersonLab/JANA4ML4FPGA
+
 
 """
 
@@ -11,7 +11,7 @@ from edpm.engine.recipe import Recipe
 from edpm.engine.commands import run, env, workdir
 
 
-class EicreconRecipe(Recipe):
+class Jana4ml4fpgaRecipe(Recipe):
     """Provides data for building and installing JANA framework
 
     PackageInstallationContext is located in recipe.py and contains the next standard package variables:
@@ -26,21 +26,21 @@ class EicreconRecipe(Recipe):
     def __init__(self):
         """
         """
-        super(EicreconRecipe, self).__init__('eicrecon')
-        self.config['repo_address'] = 'https://github.com/eic/EICrecon.git'
-        self.required_deps = ['catch2', 'eigen3', 'clhep', 'hepmc3', 'root', 'podio', 'edm4hep', 'edm4eic', 'geant4', 'dd4hep', 'acts', 'actsdd4hep', 'jana2', 'epic', 'algorithms', 'irt']
+        super(Jana4ml4fpgaRecipe, self).__init__('jana4ml4fpga')
+        self.config['repo_address'] = 'https://github.com/JeffersonLab/JANA4ML4FPGA'
+        self.required_deps = ['root', 'jana2']
         self.config['branch'] = 'main'
 
     def setup(self, db):
         """Sets all variables like source dirs, build dirs, etc"""
 
         # Git download link. Clone with shallow copy
-        self.config['source_path'] = "{app_path}/eicrecon-{branch}".format(**self.config)
+        self.config['source_path'] = "{app_path}/jana4ml4fpga-{branch}".format(**self.config)
 
         # The directory for cmake build
-        self.config['build_path'] = "{app_path}/eicrecon-{branch}/cmake-build-debug".format(**self.config)
+        self.config['build_path'] = "{app_path}/jana4ml4fpga-{branch}/cmake-build-debug".format(**self.config)
 
-        self.config['install_path'] = "{app_path}/eicrecon-{branch}".format(**self.config)
+        self.config['install_path'] = "{app_path}/jana4ml4fpga-{branch}".format(**self.config)
 
         self.config['clone_command'] = "git clone -b {branch} {repo_address} {source_path}" \
             .format(**self.config)
@@ -91,7 +91,7 @@ class EicreconRecipe(Recipe):
     def gen_env(data):
         """Generates environments to be set"""
         install_path = data['install_path']
-        yield Set('eicrecon_HOME', install_path)
+        yield Set('jana4ml4fpga_HOME', install_path)
         yield Prepend('JANA_PLUGIN_PATH', os.path.join(install_path, 'plugins'))
         yield Prepend('PATH', os.path.join(install_path, 'bin'))
 
@@ -110,7 +110,7 @@ class EicreconRecipe(Recipe):
     #                     'optional': {'ubuntu': "space separated packet names", 'centos': "..."}
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
-            'ubuntu18': "libspdlog-dev libfastjet-dev",
+            'ubuntu18': "libspdlog-dev",
             'ubuntu22': "libspdlog-dev",
             'centos7': "spdlog-devel",
             'centos8': "spdlog-devel"

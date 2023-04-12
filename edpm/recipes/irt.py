@@ -15,7 +15,7 @@ class IrtRecipe(GitCmakeRecipe):
 
     def __init__(self):
         super(IrtRecipe, self).__init__('irt')
-        self.config['branch'] = 'v1.0.3'
+        self.config['branch'] = 'v1.0.5'
         self.config['repo_address'] = 'https://github.com/eic/irt.git'
 
     @staticmethod
@@ -23,7 +23,8 @@ class IrtRecipe(GitCmakeRecipe):
         """Generates environments to be set"""
         path = data['install_path']
 
-        yield Prepend('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'IRT'))
+        yield Prepend('CMAKE_PREFIX_PATH', os.path.join(path, 'lib', 'cmake', 'IRT'))
+        yield Prepend('LD_LIBRARY_PATH', os.path.join(path, 'lib'))
         
 
     #
