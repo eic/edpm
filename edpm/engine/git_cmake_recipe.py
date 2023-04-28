@@ -50,6 +50,11 @@ class GitCmakeRecipe(Recipe):
             is_main_branch = self.config.get("branch", "") not in ["master", "main"]
             self.config["git_clone_depth"] = "--depth 1" if is_main_branch else ""
 
+        # Add RelWithDebInfo for cmake by default
+        cmake_build_type = self.config.get("cmake_build_type", "")
+        if not cmake_build_type:
+            self.config['cmake_build_type'] = "RelWithDebInfo"
+
         #print("!!!!!!!!!!!!!!!!!!!!!!", self.config['branch'])
         #print("!!!!!!!!!!!!!!!!!!!!!!", self.config['repo_address'])
         self.clone_command = "git clone {git_clone_depth} -b {branch} {repo_address} {source_path}"\
@@ -59,6 +64,7 @@ class GitCmakeRecipe(Recipe):
         # the  -Wno-dev  flag is to ignore the project developers cmake warnings for policy CMP0075
         self.build_cmd = "cmake -Wno-dev " \
                          "-DCMAKE_INSTALL_PREFIX={install_path} -DCMAKE_CXX_STANDARD={cxx_standard} " \
+                         "-DCMAKE_BUILD_TYPE={cmake_build_type} " \
                          "{cmake_flags} {cmake_custom_flags} {source_path}" \
                          "&& cmake --build . -- -j {build_threads}" \
                          "&& cmake --build . --target install" \
@@ -83,7 +89,7 @@ class GitCmakeRecipe(Recipe):
         run(self.clone_command)
 
     def step_build(self):
-        """Builds JANA from the ground"""
+        """Builds from the ground"""
 
         # Create build directory
         run('mkdir -p {}'.format(self.build_path))
