@@ -15,7 +15,7 @@ class IrtRecipe(GitCmakeRecipe):
 
     def __init__(self):
         super(IrtRecipe, self).__init__('irt')
-        self.config['branch'] = 'v1.0.5'
+        self.config['branch'] = 'v1.0.6'
         self.config['repo_address'] = 'https://github.com/eic/irt.git'
 
     @staticmethod

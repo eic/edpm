@@ -16,7 +16,7 @@ class EpicRecipe(GitCmakeRecipe):
         # Set initial values for parent class and self
         super(EpicRecipe, self).__init__('epic')    # This name will be used in edpm commands
         self.required_deps = ['clhep', 'eigen3', 'root', 'hepmc3', 'podio', 'edm4hep', 'edm4eic', 'geant4','dd4hep', 'acts', 'actsdd4hep', 'actssvg']
-        self.config['branch'] = 'main'                             # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = '23.08.0'                             # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/eic/epic'
 
     @staticmethod

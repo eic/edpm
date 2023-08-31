@@ -19,7 +19,7 @@ class ActsSvg(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(ActsSvg, self).__init__('actssvg')             # This name will be used in edpm commands
-        self.config['branch'] = 'v0.4.28'                          # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'v0.4.35'                          # The branch or tag to be cloned (-b flag)
         self.required_deps = ['acts']
         self.config['repo_address'] = 'https://github.com/acts-project/actsvg.git'      # Repo address
         self.config['cxx_standard'] = 17
