@@ -19,7 +19,7 @@ class Edm4EicRecipe(GitCmakeRecipe):
 
         # Set initial values for parent class and self
         super(Edm4EicRecipe, self).__init__('edm4eic')                        # This name will be used in edpm commands
-        self.config['branch'] = 'v2.1.0'                                # The branch or tag to be cloned (-b flag)
+        self.config['branch'] = 'v3.0.1'                                # The branch or tag to be cloned (-b flag)
         self.config['repo_address'] = 'https://github.com/eic/edm4eic.git'    # Repo address
         self.config['cmake_flags'] = '-DBUILD_DATA_MODEL=ON'
         self.config['cxx_standard'] = 17

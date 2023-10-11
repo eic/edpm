@@ -43,6 +43,8 @@ class EpicRecipe(GitCmakeRecipe):
     #                     'optional': {'ubuntu': "space separated packet names", 'centos': "..."}
     # The idea behind is to generate easy to use instructions: 'sudo apt-get install ... ... ... '
     os_dependencies = {
-        'required': {},
+        'required': {
+            'ubuntu': 'libfmt-dev'
+        },
         'optional': {},
     }
