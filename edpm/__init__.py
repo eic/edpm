@@ -1,7 +1,7 @@
 import os
 import click
 
-from edpm.engine.api import pass_edpm_context, DB_FILE_PATH, ENV_CSH_PATH, ENV_SH_PATH, edpmApi, print_packets_info
+from edpm.engine.api import pass_edpm_context, DB_FILE_PATH, ENV_CSH_PATH, ENV_SH_PATH, EdpmApi, print_packets_info
 from edpm.engine.db import PacketStateDatabase
 from edpm.engine.output import markup_print as mprint
 
@@ -43,6 +43,7 @@ P.S - you can read this message by adding --help-first flag
 
 _starting_workdir = ""
 
+
 @click.group(invoke_without_command=True)
 @click.option('--debug/--no-debug', default=False)
 @click.option('--top-dir', default="")
@@ -51,7 +52,7 @@ _starting_workdir = ""
 def edpm_cli(ctx, ectx, debug, top_dir):
     """edpm stands for EIC Development Packet Manager"""
 
-    assert isinstance(ectx, edpmApi)    # Type check for ectx
+    assert isinstance(ectx, EdpmApi)    # Type check for ectx
 
     # Load db and modules from disk
     db_existed = ectx.load_shmoad_ugly_toad()    # False => Couldn't load and used default

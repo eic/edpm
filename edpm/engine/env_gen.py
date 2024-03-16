@@ -1,5 +1,6 @@
 import os
 
+
 class EnvironmentManipulation(object):
     def __init__(self, name, value):
         self.name = name
@@ -37,16 +38,6 @@ class Append(EnvironmentManipulation):
         # PATH = "${PATH:+${PATH}:}$HOME/bin"
         # https://unix.stackexchange.com/a/415028/109031
         ret_str = "export {name}=${{{name}:+${{{name}}}:}}{value}\n"
-
-        #for appending(instead of PATH="$PATH:$HOME/bin") and
-        # ret_str = (
-        #     '\n'
-        #     '# Make sure {name} is set\n'
-        #     'if [ -z "${name}" ]; then\n'
-        #     '    export {name}="{value}"\n'
-        #     'else\n'
-        #     '    export {name}=${name}:"{value}"\n'
-        #     'fi')
 
         return ret_str.format(name=self.name, value=self.value)
 

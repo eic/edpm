@@ -3,7 +3,7 @@ import os
 
 import click
 
-from edpm.engine.api import pass_edpm_context, edpmApi, print_packets_info
+from edpm.engine.api import pass_edpm_context, EdpmApi, print_packets_info
 from edpm.engine.output import markup_print as mprint
 
 
@@ -20,7 +20,7 @@ def mergedb(ctx, ectx, import_file):
     with new packages
     """
 
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
 
     # We need DB ready for this cli command
     ectx.ensure_db_exists()

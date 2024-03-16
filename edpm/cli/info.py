@@ -2,7 +2,7 @@
 
 import click
 
-from edpm.engine.api import pass_edpm_context, edpmApi
+from edpm.engine.api import pass_edpm_context, EdpmApi, print_packets_info
 from edpm.engine.db import INSTALL_PATH
 from edpm.engine.output import markup_print as mprint
 
@@ -34,7 +34,7 @@ def info(ctx, ectx, flag_cmake, flag_db, flag_db_path):
     if _no_flags_set(flag_cmake, flag_db, flag_db_path):
         flag_db = True
 
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
 
     # We need DB ready for this cli command
     ectx.ensure_db_exists()
@@ -57,21 +57,3 @@ def _print_cmake(ectx):
     print(" ".join(flags))
 
 
-def _print_installed(db):
-    installed_names = [name for name in db.packet_names]
-
-    # Fancy print of installed packets
-    if installed_names:
-        mprint('\n<b><magenta>INSTALLED PACKETS:</magenta></b> (*-active):')
-        for packet_name in installed_names:
-            mprint(' <b><blue>{}</blue></b>:'.format(packet_name))
-            installs = db.get_installs(packet_name)
-            for i, installation in enumerate(installs):
-                from edpm.engine.db import IS_OWNED, IS_ACTIVE, INSTALL_PATH
-
-                is_owned_str = '<green>(owned)</green>' if installation[IS_OWNED] else ''
-                is_active = installation[IS_ACTIVE]
-                is_active_str = '*' if is_active else ' '
-                path_str = installation[INSTALL_PATH]
-                id_str = "[{}]".format(i).rjust(4) if len(installs) > 1 else ""
-                mprint("  {}{} {} {}".format(is_active_str, id_str, path_str, is_owned_str))

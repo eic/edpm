@@ -1,6 +1,6 @@
 import click
 
-from edpm.engine.api import pass_edpm_context, edpmApi, ENV_SH_PATH, ENV_CSH_PATH
+from edpm.engine.api import pass_edpm_context, EdpmApi, ENV_SH_PATH, ENV_CSH_PATH
 
 
 @click.command()
@@ -40,7 +40,7 @@ So there are 3 ways of managing environment variables
       to regenerate these 2 files
     """
 
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
 
     # check if DB file already exists
     if not ectx.db.exists():

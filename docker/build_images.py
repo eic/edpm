@@ -20,7 +20,6 @@ import inspect
 import json
 import os
 import pathlib
-from os import path
 import shlex
 import subprocess
 import argparse
@@ -40,7 +39,7 @@ fh = logging.FileHandler('build.log')
 ch = logging.StreamHandler()
 
 # Set pathes and global variables
-this_path = path.dirname(path.abspath(inspect.stack()[0][1]))
+this_path = os.path.dirname(os.path.abspath(inspect.stack()[0][1]))
 
 # Number of CPU-s
 cpu_count = multiprocessing.cpu_count()
@@ -49,26 +48,28 @@ if cpu_count > 1:
 
 logger.debug("CPU COUNT ", cpu_count)
 
+
 class ImageInfo:
-    def __init__(self, category:str='', org:str='', alias:str='', name:str='', path:str='', tag:str='', depends_on:str='',  flags:str=''):
+    def __init__(self, category: str = '', org: str = '', alias: str = '', name: str = '', image_path: str = '',
+                 tag: str = '', depends_on: str = '', flags: str = ''):
         """
         # Alias can be used to have the ImageInfo with the same name but different flags
         """
         self.category = category
         self.organization = org
-        self.aslias = alias
+        self.alias = alias
         self.name = name
         if not alias:
-            self.aslias = self.name
-        self.tag = tag        
-        self.depends_on = depends_on        
-        self.path = path     
-        self.flags = flags    # Additional flags needed to build
+            self.alias = self.name
+        self.tag = tag
+        self.depends_on = depends_on
+        self.path = image_path
+        self.flags = flags  # Additional flags needed to build
 
     @property
     def full_name(self):
         return f"{self.organization}/{self.name}:{self.tag}"
-    
+
     @property
     def tag_latest_name(self):
         return f"{self.organization}/{self.name}:latest"
@@ -79,7 +80,6 @@ class ImageInfo:
 
 def _run(command: Union[str, list]) -> Tuple[int, datetime, datetime, List]:
     """Wrapper around subprocess.Popen that returns:
-
 
     :return retval, start_time, end_time, lines
 
@@ -98,7 +98,7 @@ def _run(command: Union[str, list]) -> Tuple[int, datetime, datetime, List]:
     lines = []
 
     # stderr is redirected to STDOUT because otherwise it needs special handling
-    # we don't need it and we don't care as C++ warnings generate too much stderr
+    # we don't need it, and we don't care as C++ warnings generate too much stderr
     # which makes it pretty much like stdout
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     while True:
@@ -109,13 +109,13 @@ def _run(command: Union[str, list]) -> Tuple[int, datetime, datetime, List]:
         if process.poll() is not None and output == '':
             break
         if output:
-            term = fh.terminator
-            term = ch.terminator
+            fh_term = fh.terminator
+            ch_term = ch.terminator
             fh.terminator = ""
             ch.terminator = ""
             logger.debug(output)
-            fh.terminator = term
-            ch.terminator = term            
+            fh.terminator = fh_term
+            ch.terminator = ch_term
             lines.append(output)
 
     # Get return value and finishing time
@@ -132,7 +132,7 @@ class DockerAutomation(object):
 
     def __init__(self, images: Dict[str, ImageInfo]):  # like "ejana-centos7-prereq"
         self.operation_logs: List[dict] = []
-        self.images_by_name = images        
+        self.images_by_name = images
         self.check_deps = True
         self.no_cache = False
         self.push_after_build = True
@@ -142,7 +142,7 @@ class DockerAutomation(object):
     def _append_log(self, op, name, ret_code, start_time, end_time, output):
         """Saves data to specially formatted record"""
         duration = end_time - start_time
-        self.operation_logs.append({'op':op,
+        self.operation_logs.append({'op': op,
                                     'name': name,
                                     'ret_code': ret_code,
                                     'start_time': start_time,
@@ -167,7 +167,8 @@ class DockerAutomation(object):
         logger.debug(f"image.path = {image.path}")
 
         os.chdir(image.path)
-        retval, start_time, end_time, output = _run(f"docker build {no_cache_str} {image.flags} --tag={image.full_name} .")
+        retval, start_time, end_time, output = _run(
+            f"docker build {no_cache_str} {image.flags} --tag={image.full_name} .")
 
         # Log the results:
         self._append_log('build', image.full_name, retval, start_time, end_time, output)
@@ -175,23 +176,23 @@ class DockerAutomation(object):
         if retval:
             logger.error(f"(! ! !)   ERROR   (! ! !) build op return code is: {retval}")
             return
-        
+
         # Add to built images list built 
-        self.built_images_by_name[image.aslias]=image
-        
+        self.built_images_by_name[image.alias] = image
+
         # Tag this build as latest
         if self.tag_latest:
             retval, start_time, end_time, output = _run(f"docker tag {image.full_name} {image.tag_latest_name}")
 
             # Log the results:
             self._append_log('tag-latest', image.tag_latest_name, retval, start_time, end_time, output)
-            
+
             if retval:
                 logger.error(f"(! ! !)   ERROR   (! ! !) tag latest return code is: {retval}")
 
         # Push image after built
         if self.push_after_build:
-                self.push(image)
+            self.push(image)
 
     def build(self, image_name: str):
         self._build_image(self.images_by_name[image_name])
@@ -210,7 +211,7 @@ class DockerAutomation(object):
         retval, start_time, end_time, output = _run(f"docker push {image.full_name}")
 
         # Log the results:
-        self._append_log('push', image.full_name, retval, start_time, end_time, output)       
+        self._append_log('push', image.full_name, retval, start_time, end_time, output)
 
         if retval:
             logger.error(f"(! ! !)   ERROR   (! ! !) PUSH operation return code is: {retval}")
@@ -221,14 +222,14 @@ class DockerAutomation(object):
 
             # Log the results:
             self._append_log('push-latest', image.tag_latest_name, retval, start_time, end_time, output)
-            
+
             if retval:
                 logger.error(f"(! ! !)   ERROR   (! ! !) tag latest return code is: {retval}")
-
 
     def push_all(self):
         for name in self.images_by_name.keys():
             self.push(name)
+
 
 def main():
     # Argument parsing
@@ -259,7 +260,7 @@ def main():
     # What images to build
     if not args.command:
         print("No image is provided, using default")
-        args.command = ['eicrecon-ubuntu22-prereq', 'eicrecon-ubuntu22']
+        args.command = ['eicrecon-ubuntu22-prereq', 'eicrecon-ubuntu22', 'jana4ml4fpga-ubuntu22', 'ml4fpga-pre']
 
     print(f"Images: {args.command} (arg type of {type(args.command)})")
 
@@ -267,13 +268,11 @@ def main():
     print(f"Number of jobs: {args.jobs}")
 
     images = {}
-    for command in args.command:
-
-
-        images[command] = ImageInfo(
-            name=command,
-            path=path.join(this_path, command),
-            org='electronioncollider',
+    for image_name in args.command:
+        images[image_name] = ImageInfo(
+            name=image_name,
+            image_path=os.path.join(this_path, image_name),
+            org='electronioncollider' if "ml4fpga" in image_name else 'eicdev',
             tag=args.tag,
             flags=f'--build-arg BUILD_THREADS={args.jobs}'
         )
@@ -289,19 +288,21 @@ def main():
 
     logger.info('SUMMARY:')
     logger.info("{:<12} {:<38} {:<9} {:<11} {:<21} {:<21}"
-          .format('ACTION', 'IMAGE NAME', 'RETCODE', 'DURATION', 'START TIME', 'END TIME'))
+                .format('ACTION', 'IMAGE NAME', 'RETCODE', 'DURATION', 'START TIME', 'END TIME'))
     for log in logs:
-        logger.info("{op:<12} {name:<38} {ret_code:<9} {duration_str:<11} {start_time_str:<21} {end_time_str:<21}".format(**log))
-        if log['ret_code'] !=0:
+        logger.info(
+            "{op:<12} {name:<38} {ret_code:<9} {duration_str:<11} {start_time_str:<21} {end_time_str:<21}".format(
+                **log))
+        if log['ret_code'] != 0:
             error_code = log['ret_code']
-    #import json
-    #with open('result.json', 'w') as outfile:
+    # import json
+    # with open('result.json', 'w') as outfile:
     #    json.dump(logs, outfile, indent=4, ensure_ascii=False)
     return error_code, logs
 
-if __name__ == '__main__':
-    error_code, _ = main()
 
-    if error_code != 0:
-        exit(error_code)
-        
+if __name__ == '__main__':
+    ret_code, _ = main()
+
+    if ret_code != 0:
+        exit(ret_code)

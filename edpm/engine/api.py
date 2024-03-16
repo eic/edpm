@@ -2,7 +2,6 @@ import inspect
 import io
 import os
 import click
-import appdirs
 
 
 from edpm.engine.db import PacketStateDatabase, merge_db
@@ -12,14 +11,14 @@ from edpm.engine.output import markup_print as mprint
 from edpm.engine.py23 import to_unicode
 
 
-edpm_HOME_PATH = 'edpm_home_path'       # Home path of the edpm
-edpm_DATA_PATH = 'edpm_data_path'       # Path where
+EDPM_HOME_PATH = 'edpm_home_path'       # Home path of the edpm
+EDPM_DATA_PATH = 'edpm_data_path'       # Path where
 DB_FILE_PATH = 'db_file_path'           # Database file path
 ENV_SH_PATH = 'env_sh_path'             # SH environment generated file path
 ENV_CSH_PATH = 'env_csh_path'           # CSH environment generated file path
 
 
-class edpmApi(object):
+class EdpmApi(object):
     """This class holds data that is provided to most edpm CLI commands"""
 
     def __init__(self):
@@ -99,32 +98,32 @@ class edpmApi(object):
         # edpm home path
         # call 'dirname' 3 times as we have <db path>/edpm/cli
         edpm_home_path = os.path.dirname(os.path.dirname(os.path.dirname(inspect.stack()[0][1])))
-        self.config[edpm_HOME_PATH] = edpm_home_path
+        self.config[EDPM_HOME_PATH] = edpm_home_path
 
         #
         # edpm data path. It is where db.json and environment files are located
-        # We try to read it from edpm_DATA_PATH environment variable and then use standard (XDG) location
-        edpm_data_path = os.environ.get('edpm_DATA_PATH', None)
+        # We try to read it from EDPM_DATA_PATH environment variable and then use standard (XDG) location
+        edpm_data_path = os.environ.get('EDPM_DATA_PATH', None)
         if not edpm_data_path:
             # Get the default (XDG or whatever) standard path to store user data
-            edpm_data_path = appdirs.user_data_dir("edpm", "Dmitry Romanov")
+            edpm_data_path = os.getcwd()
 
             # In this case we care and create the directory
             if not os.path.isdir(edpm_data_path):
                 from edpm.engine.commands import run
                 run('mkdir -p "{}"'.format(edpm_data_path))
 
-        self.config[edpm_DATA_PATH] = edpm_data_path
+        self.config[EDPM_DATA_PATH] = edpm_data_path
 
         #
         # Database path
-        self.db.file_path = os.path.join(edpm_data_path, "db.json")
+        self.db.file_path = os.path.join(edpm_data_path, "scipm.lock.json")
         self.config[DB_FILE_PATH] = self.db.file_path
 
         #
         # environment script paths
-        self.config[ENV_SH_PATH] = os.path.join(edpm_data_path, "env.sh")
-        self.config[ENV_CSH_PATH] = os.path.join(edpm_data_path, "env.csh")
+        self.config[ENV_SH_PATH] = os.path.join(edpm_data_path, "scipm_env.sh")
+        self.config[ENV_CSH_PATH] = os.path.join(edpm_data_path, "scipm_env.csh")
 
     def configure_recipes(self):
         config = {}
@@ -134,7 +133,7 @@ class edpmApi(object):
             recipe.config.update(config)
 
     def update_python_env(self, process_chain=(), mode=''):
-        """Update python os.environ assuming we will install missing packets
+        """ Update python os.environ assuming we will install missing packets
 
            This func gets all 'active installation' of packages out of db to build environment
            if process_chain and mode are given, then depending on 'mode':
@@ -191,7 +190,7 @@ class edpmApi(object):
             if 'required' in self.pm.os_deps_by_name[name]:
                 for key in self.pm.os_deps_by_name[name]['required'].keys():
                     names_set.add(key)
-        return names_set   # TODO change for
+        return names_set                # TODO change for
 
     def req_get_deps(self, os_name, packet_names=None):
         """ Returns
@@ -234,7 +233,7 @@ class edpmApi(object):
 
 
 # Create a database class and @pass_db decorator so our commands could use it
-pass_edpm_context = click.make_pass_decorator(edpmApi, ensure=True)
+pass_edpm_context = click.make_pass_decorator(EdpmApi, ensure=True)
 
 
 def print_packets_info(db):

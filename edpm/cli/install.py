@@ -2,7 +2,7 @@ import os
 import click
 import copy
 
-from edpm.engine.api import pass_edpm_context, edpmApi
+from edpm.engine.api import pass_edpm_context, EdpmApi
 from edpm.engine.db import PacketStateDatabase, BUILT_WITH_CONFIG
 from edpm.engine.output import markup_print as mprint
 from edpm.engine.recipe_manager import RecipeManager, InstallationRequest
@@ -39,7 +39,7 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
 
     db = ectx.db
     pm = ectx.pm
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
     assert isinstance(db, PacketStateDatabase)
     assert isinstance(pm, RecipeManager)
 
@@ -92,7 +92,7 @@ def install(ctx, ectx, dep_mode, names, install_path="", build_threads=4, just_e
 
 def _build_deps_requests(ectx, initial_request):
     assert isinstance(initial_request, InstallationRequest)
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
 
     install_chain_names = ectx.pm.get_installation_chain_names(initial_request.name, initial_request.deps_only)
 
@@ -130,7 +130,7 @@ def _install_packet(ectx, request):
     """Installs packet using its 'installation instruction' class"""
 
     assert isinstance(request, InstallationRequest)
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
 
     db = ectx.db
     install_path = os.path.join(db.top_dir, request.name)
@@ -171,7 +171,7 @@ def _install_packet(ectx, request):
 
 def _install_with_deps(ectx, target_request):
     assert isinstance(target_request, InstallationRequest)
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
 
     try:
         must_exist_chain = _build_deps_requests(ectx, target_request)

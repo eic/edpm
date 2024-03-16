@@ -1,6 +1,6 @@
 import click
 
-from edpm.engine.api import pass_edpm_context, edpmApi
+from edpm.engine.api import pass_edpm_context, EdpmApi
 from edpm.engine.output import markup_print as mprint
 
 
@@ -13,7 +13,7 @@ from edpm.engine.output import markup_print as mprint
 def set(ctx, ectx, packet_name, install_path):
     """Sets packets"""
 
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
 
     # We need DB ready for this cli command
     ectx.ensure_db_exists()

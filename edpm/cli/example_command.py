@@ -1,8 +1,8 @@
-# EXAMPLE EMPTY COMMAND to copy paste to create a new one
+тьббь# EXAMPLE EMPTY COMMAND to copy paste to create a new one
 
 import click
 
-from edpm.engine.api import pass_edpm_context, edpmApi
+from edpm.engine.api import pass_edpm_context, EdpmApi
 from edpm.engine.output import markup_print as mprint
 
 
@@ -21,7 +21,7 @@ def example_command(ctx, ectx, packet_name, install_path):
       example_command ...
     """
 
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
 
     # We need DB ready for this cli command
     ectx.ensure_db_exists()

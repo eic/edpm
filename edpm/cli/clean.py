@@ -1,6 +1,6 @@
 import click
 
-from edpm.engine.api import pass_edpm_context, edpmApi
+from edpm.engine.api import pass_edpm_context, EdpmApi
 from edpm.engine.commands import run
 from edpm.engine.output import markup_print as mprint
 
@@ -28,7 +28,7 @@ def clean(ctx, ectx, packet_name, install_paths):
 
     """
     from edpm.engine.db import INSTALL_PATH, IS_OWNED, SOURCE_PATH, BUILD_PATH
-    assert isinstance(ectx, edpmApi)
+    assert isinstance(ectx, EdpmApi)
 
     # We need DB ready for this cli command
     ectx.ensure_db_exists()
