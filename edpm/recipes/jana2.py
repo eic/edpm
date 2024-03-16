@@ -25,7 +25,7 @@ class JanaRecipe(GitCmakeRecipe):
 
     def __init__(self):
         super(JanaRecipe, self).__init__('jana2')
-        self.config['branch'] = 'v2.0.9'
+        self.config['branch'] = 'master'
         self.config['repo_address'] = 'https://github.com/JeffersonLab/JANA2.git'
         self.config['cmake_flags'] = '-DUSE_ROOT=On -DUSE_PYTHON=Off -DUSE_PODIO=On'
 

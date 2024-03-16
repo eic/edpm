@@ -25,7 +25,7 @@ class HepMC3Recipe(GitCmakeRecipe):
         # Set initial values for parent class and self
         super(HepMC3Recipe, self).__init__('hepmc3')
 
-        self.config['branch'] = '3.2.5'
+        self.config['branch'] = '3.2.6'
         self.config['repo_address'] = 'https://gitlab.cern.ch/hepmc/HepMC3.git'
         self.config['cmake_flags'] = ' -DHEPMC3_ENABLE_ROOTIO=OFF -DHEPMC3_ENABLE_PYTHON=OFF -DHEPMC3_BUILD_EXAMPLES=OFF HEPMC3_CXX_STANDARD=17'
 

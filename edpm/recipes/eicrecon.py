@@ -28,7 +28,8 @@ class EicreconRecipe(Recipe):
         """
         super(EicreconRecipe, self).__init__('eicrecon')
         self.config['repo_address'] = 'https://github.com/eic/EICrecon.git'
-        self.required_deps = ['catch2', 'eigen3', 'clhep', 'hepmc3', 'root', 'podio', 'edm4hep', 'edm4eic', 'geant4', 'dd4hep', 'acts', 'actsdd4hep', 'jana2', 'epic', 'algorithms', 'irt']
+        self.required_deps = ['catch2', 'eigen3', 'clhep', 'hepmc3', 'root', 'podio', 'edm4hep', 'edm4eic', 'geant4',
+                              'dd4hep', 'acts', 'actsdd4hep', 'jana2', 'epic', 'algorithms', 'irt']
         self.config['branch'] = 'main'
 
     def setup(self, db):
@@ -92,7 +93,7 @@ class EicreconRecipe(Recipe):
         """Generates environments to be set"""
         install_path = data['install_path']
         yield Set('eicrecon_HOME', install_path)
-        yield Prepend('JANA_PLUGIN_PATH', os.path.join(install_path, 'plugins'))
+        yield Prepend('JANA_PLUGIN_PATH', os.path.join(install_path, 'lib', 'EICrecon', 'plugins'))
         yield Prepend('PATH', os.path.join(install_path, 'bin'))
 
         lib_path = os.path.join(install_path, 'lib')  # on some platforms
