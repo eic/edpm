@@ -26,7 +26,7 @@ class Edm4HepRecipe(GitCmakeRecipe):
         self.config['branch'] = 'v00-10-05'                                        # The branch or tag to be cloned (-b flag)
         self.required_deps = ['clhep', 'eigen3', 'root', 'hepmc3', 'podio', 'edm4hep', 'geant4', 'acts', 'dd4hep', 'jana2']
         self.config['repo_address'] = 'https://github.com/key4hep/EDM4hep'      # Repo address
-        self.config['cmake_flags'] = '-DUSE_EXTERNAL_CATCH2=ON'
+        self.config['cmake_flags'] = '-DUSE_EXTERNAL_CATCH2=OFF'
         self.config['cxx_standard'] = 17
 
     @staticmethod
