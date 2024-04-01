@@ -30,7 +30,7 @@ class Geant4EicRecipe(Recipe):
         self.clone_command = ''             # is set during self.setup(...)
         self.build_cmd = ''                 # is set during self.setup(...)
         self.config['branch'] = 'master'
-        self.required_deps = ['clhep', 'root', 'hepmc', 'geant', 'vgm']
+        self.required_deps = ['clhep', 'root', 'hepmc3', 'geant4', 'vgm']
         self.config['repo_address'] = 'https://gitlab.com/eic/escalate/g4e.git'
 
     def setup(self, db):
