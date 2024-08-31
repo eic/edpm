@@ -9,10 +9,10 @@ https://github.com/vmc-project/vgm
 
 import os
 
-from ejpm.engine.commands import run, workdir
-from ejpm.engine.env_gen import Set, Append
-from ejpm.engine.git_cmake_recipe import GitCmakeRecipe
-from ejpm.engine.recipe import Recipe
+from edpm.engine.commands import run, workdir
+from edpm.engine.env_gen import Set, Append
+from edpm.engine.git_cmake_recipe import GitCmakeRecipe
+from edpm.engine.recipe import Recipe
 
 
 class VgmRecipe(GitCmakeRecipe):

@@ -100,7 +100,6 @@ class RootRecipe(Recipe):
                          " -Dpythia6=OFF" \
                          " -Dpythia6_nolink=OFF" \
                          " -Dpythia8=OFF" \
-                         " -Dminuit2=ON" \
                          " {python_flag}" \
                          " {cmake_custom_flags}" \
                          " {source_path}" \
